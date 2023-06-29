@@ -1,17 +1,17 @@
 # Alizer
 
 ![Go](https://img.shields.io/badge/Go-1.19-blue)
-![Build status](https://github.com/redhat-developer/alizer/actions/workflows/CI.yml/badge.svg)
+[![Build status](https://github.com/devfile/alizer/actions/workflows/CI.yml/badge.svg)](https://github.com/devfile/alizer/actions/workflows/CI.yml)
 [![License](https://img.shields.io/badge/License-Apache%202.0-orange.svg)](./LICENSE)
 
-Alizer (which stands for Application Analyzer) is a utilily whose goal is to extract informations about an application source code.
-Such informations are:
+Alizer (which stands for Application Analyzer) is a utility whose goal is to extract information about an application source code.
+Such information are:
 
 - Programming languages.
 - Frameworks.
 - Tools used to build the application.
 
-Additionaly, Alizer can also select one devfile (cloud workspace file) from a list of available devfiles and/or
+Additionally, Alizer can also select one devfile (cloud workspace file) from a list of available devfiles and/or
 detect components (the concept of component is taken from Odo and its definition can be read on [odo.dev](https://odo.dev/docs/getting-started/basics/#component)).
 
 ## Usage
@@ -21,7 +21,6 @@ detect components (the concept of component is taken from Odo and its definition
 The Go CLI can be built with the below command:
 
 ```bash
-# inside the go/ dir
 $ go build alizer.go
 ```
 
@@ -64,7 +63,7 @@ $ go build alizer.go
 To analyze your source code with Alizer, just import it and use the recognizer:
 
 ```go
-import "github.com/redhat-developer/alizer/pkg/apis/recognizer"
+import "github.com/devfile/alizer/pkg/apis/recognizer"
 
 languages, err := recognizer.Analyze("your/project/path")
 ```
@@ -79,7 +78,7 @@ It detects all components which are found in the source tree where each componen
 - _Ports_: list of ports used by the component
 
 ```go
-import "github.com/redhat-developer/alizer/pkg/apis/recognizer"
+import "github.com/devfile/alizer/pkg/apis/recognizer"
 
 components, err := recognizer.DetectComponents("your/project/path")
 ```
@@ -93,7 +92,7 @@ For more info about port detection, see the [port detection](docs/public/port_de
 It selects a devfile from a list of devfiles (from a devfile registry or other storage) based on the information found in the source tree.
 
 ```go
-import "github.com/redhat-developer/alizer/pkg/apis/recognizer"
+import "github.com/devfile/alizer/pkg/apis/recognizer"
 
 devfile, err := recognizer.SelectDevFileFromTypes("your/project/path", devfiles)
 ```
@@ -158,7 +157,7 @@ For information on getting started, refer to the [CONTRIBUTING instructions](CON
 
 ## Release process
 
-The release process of `alizer` is very straightforward. You can create a new release [here](https://github.com/redhat-developer/alizer/releases/new).
+The release process of `alizer` is very straightforward. You can create a new release [here](https://github.com/devfile/alizer/releases/new).
 
 - The _title_ of the release has to be the new version. `Alizer` follows the `v{major}.{minor}.{bugfix}` format (e.g `v0.1.0`)
 - The _description_ of the release is optional. You may add a description if there were outstanding updates in the project, not mentioned in the issues or PRs of this release.
@@ -172,11 +171,11 @@ For each release a group of binary files is generated. More detailed we have the
 - `darwin/amd64`
 
 In order to download a binary file:
-* Go to the release you are interested for `https://github.com/thepetk/alizer/releases/tag/<release-tag>`
+* Go to the release you are interested for `https://github.com/devfile/alizer/releases/tag/<release-tag>`
 * In the **Assets** section you will see the list of generated binaries for the release.
 
 ## Feedback & Questions
 
-If you discover an issue please file a bug and we will fix it as soon as possible.
+If you discover an issue please file a bug, and we will fix it as soon as possible.
 
-- File a bug in [GitHub Issues](https://github.com/redhat-developer/alizer/issues).
+Issues are tracked in the [devfile/api](https://github.com/devfile/api) repo with the label [area/alizer](https://github.com/devfile/api/issues?q=is%3Aopen+is%3Aissue+label%3Aarea%2Falizer)
