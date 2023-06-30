@@ -211,7 +211,7 @@ func downloadDevFileTypesFromRegistry(url string, filter model.DevfileFilter) ([
 		return nil, err
 	}
 	// This value is set by the user in order to configure the registry
-	resp, err := http.Get(url) //nolint
+	resp, err := http.Get(url) // #nosec G107
 	if err != nil {
 		return []model.DevFileType{}, err
 	}
