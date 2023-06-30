@@ -180,7 +180,7 @@ _We have to keep the old way of fetching devfiles from library in order to ensur
 ### recognizer.MatchDevfiles
 This function will take 3 parameters `(path string, devFileTypes []model.DevFileType, filter map[string]interface{})`. If someone wants to filter the selected devfiles for specific version range the have to write:
 ```golang
-import "github.com/redhat-developer/alizer/pkg/apis/recognizer"
+import "github.com/devfile/alizer/pkg/apis/recognizer"
 filter := map[string]interface{} {
         "max-version": "2.1.0",
         "min-version": "2.0.0",
