@@ -42,11 +42,22 @@ type Component struct {
 	Ports     []int
 }
 
+type Version struct {
+	SchemaVersion string
+	Default       bool
+	Version       string
+}
+
 type DevFileType struct {
 	Name        string
 	Language    string
 	ProjectType string
 	Tags        []string
+}
+
+type DevfileFilter struct {
+	MinVersion string
+	MaxVersion string
 }
 
 type ApplicationFileInfo struct {
