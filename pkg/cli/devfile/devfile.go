@@ -1,12 +1,13 @@
 package devfile
 
 import (
+	"github.com/devfile/alizer/pkg/apis/model"
 	"github.com/devfile/alizer/pkg/apis/recognizer"
 	"github.com/devfile/alizer/pkg/utils"
 	"github.com/spf13/cobra"
 )
 
-var logLevel, registry string
+var logLevel, registry, minVersion, maxVersion string
 
 func NewCmdDevfile() *cobra.Command {
 	devfileCmd := &cobra.Command{
@@ -17,6 +18,8 @@ func NewCmdDevfile() *cobra.Command {
 		Run:   doSelectDevfile,
 	}
 	devfileCmd.Flags().StringVar(&logLevel, "log", "", "log level for alizer. Default value: error. Accepted values: [debug, info, warning]")
+	devfileCmd.Flags().StringVar(&minVersion, "min-version", "", "minimum version of devfile schemaVersion. Minimum allowed version: 2.0.0")
+	devfileCmd.Flags().StringVar(&maxVersion, "max-version", "", "maximum version of devfile schemaVersion. Minimum allowed version: 2.0.0")
 	devfileCmd.Flags().StringVarP(&registry, "registry", "r", "", "registry where to download the devfiles. Default value: https://registry.devfile.io")
 	return devfileCmd
 }
@@ -27,12 +30,16 @@ func doSelectDevfile(cmd *cobra.Command, args []string) {
 		return
 	}
 	if registry == "" {
-		registry = "https://registry.devfile.io/index"
+		registry = "https://registry.devfile.io/"
 	}
 	err := utils.GenLogger(logLevel)
 	if err != nil {
 		utils.PrintWrongLoggingLevelMessage(cmd.Name())
 		return
 	}
-	utils.PrintPrettifyOutput(recognizer.SelectDevFilesFromRegistry(args[0], registry))
+	filter := model.DevfileFilter{
+		MinVersion: minVersion,
+		MaxVersion: maxVersion,
+	}
+	utils.PrintPrettifyOutput(recognizer.MatchDevfiles(args[0], registry, filter))
 }
