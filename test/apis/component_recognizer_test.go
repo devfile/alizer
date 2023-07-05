@@ -300,7 +300,7 @@ func TestPortDetectionJavascriptExpressEnvOROperatorWithEnvVar(t *testing.T) {
 }
 
 func TestPortDetectionPHPLaravel(t *testing.T) {
-	testPortDetectionInProject(t, "projectLaravel", []int{9988})
+	testPortDetectionInProject(t, "laravel", []int{9988})
 }
 
 func TestPortDetectionJavascriptExpressEnvOROperatorWithoutEnvVar(t *testing.T) {
