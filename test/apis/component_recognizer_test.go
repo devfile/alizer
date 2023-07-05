@@ -101,7 +101,7 @@ func TestComponentDetectionOnNextJs(t *testing.T) {
 }
 
 func TestComponentDetectionOnNuxtJs(t *testing.T) {
-	isComponentsInProject(t, "nuxt-app", 1, "typescript", "nuxt-app")
+	isComponentsInProject(t, "nuxtjs-app", 1, "typescript", "nuxt-app")
 }
 
 func TestComponentDetectionOnSvelteJs(t *testing.T) {
@@ -367,11 +367,11 @@ func TestPortDetectionAngularPortInStartScript(t *testing.T) {
 }
 
 func TestPortDetectionNextJsPortInStartScript(t *testing.T) {
-	testPortDetectionInProject(t, "projectNextjs", []int{8610})
+	testPortDetectionInProject(t, "nextjs-app", []int{8610})
 }
 
 func TestPortDetectionNuxtJsPortInConfigFile(t *testing.T) {
-	testPortDetectionInProject(t, "projectNuxt", []int{8787})
+	testPortDetectionInProject(t, "nuxtjs-app", []int{8787})
 }
 
 func TestPortDetectionSvelteJsPortInStartScript(t *testing.T) {
