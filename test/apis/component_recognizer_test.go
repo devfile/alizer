@@ -335,15 +335,15 @@ func TestPortDetectionDjango(t *testing.T) {
 }
 
 func TestPortDetectionFlask(t *testing.T) {
-	testPortDetectionInProject(t, "projectFlask", []int{3000})
+	testPortDetectionInProject(t, "flask", []int{3000})
 }
 
 func TestPortDetectionFlaskAssignedVariable(t *testing.T) {
-	testPortDetectionInProject(t, "projectFlaskAssignedVariable", []int{3001})
+	testPortDetectionInProject(t, "flask-port-assigned-variable", []int{3001})
 }
 
 func TestPortDetectionFlaskStringValue(t *testing.T) {
-	testPortDetectionInProject(t, "projectFlaskStringValue", []int{})
+	testPortDetectionInProject(t, "flask-port-string-value", []int{})
 }
 
 func TestPortDetectionGoGin(t *testing.T) {
