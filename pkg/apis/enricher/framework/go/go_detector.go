@@ -98,6 +98,13 @@ func GetPortWithMatchIndexesGo(content string, matchIndexes []int, toBeReplaced 
 	portPlaceholder := content[matchIndexes[0]:matchIndexes[1]]
 	// we should end up with something like ".ListenAndServe(PORT"
 	portPlaceholder = strings.Replace(portPlaceholder, toBeReplaced, "", -1)
+	// try to replace any string quotes
+	portPlaceholder = strings.Replace(portPlaceholder, "\"", "", -1)
+	// check if the placeholder is an IP:PORT
+	splitedPlaceholder := strings.Split(portPlaceholder, ":")
+	if len(splitedPlaceholder) > 1 {
+		portPlaceholder = splitedPlaceholder[len(splitedPlaceholder)-1]
+	}
 	// if we are lucky enough portPlaceholder contains a real HOST:PORT otherwise it is a variable/expression
 	re, err := regexp.Compile(`:*(\d+)`)
 	if err != nil {
