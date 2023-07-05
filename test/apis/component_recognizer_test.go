@@ -260,7 +260,7 @@ func TestPortDetectionWithSecondLevelContainerFile(t *testing.T) {
 }
 
 func TestPortDetectionJavaMicronaut(t *testing.T) {
-	testPortDetectionInProject(t, "projectMicronaut", []int{4444})
+	testPortDetectionInProject(t, "micronaut", []int{4444})
 }
 
 func TestPortDetectionJavaWildfly(t *testing.T) {
