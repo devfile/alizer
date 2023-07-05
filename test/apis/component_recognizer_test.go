@@ -236,11 +236,11 @@ func TestPortDetectionWithDockerComposeExpose(t *testing.T) {
 }
 
 func TestPortDetectionWithDockerComposeShortSyntaxPorts(t *testing.T) {
-	testPortDetectionInProject(t, "projectDockerComposePortsShortSyntax", []int{3000, 1234})
+	testPortDetectionInProject(t, "docker-compose-ports-short-syntax", []int{3000, 1234})
 }
 
 func TestPortDetectionWithDockerComposeLongSyntaxPorts(t *testing.T) {
-	testPortDetectionInProject(t, "projectDockerComposePortsLongSyntax", []int{6060})
+	testPortDetectionInProject(t, "docker-compose-ports-long-syntax", []int{6060})
 }
 
 func TestPortDetectionWithDockerFile(t *testing.T) {
