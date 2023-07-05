@@ -117,7 +117,7 @@ func TestComponentDetectionOnLaravel(t *testing.T) {
 }
 
 func TestComponentDetectionNoResult(t *testing.T) {
-	components := getComponentsFromProject(t, "simple")
+	components := getComponentsFromTestProject(t, "simple")
 	if len(components) > 0 {
 		t.Errorf("Expected 0 components but found " + strconv.Itoa(len(components)))
 	}
@@ -181,21 +181,15 @@ func updateContent(filePath string, data []byte) error {
 }
 
 func TestComponentDetectionMultiProjects(t *testing.T) {
-	components := getComponentsFromProject(t, "")
+	components := getComponentsFromTestProject(t, "")
 	nComps := 33
 	if len(components) != nComps {
 		t.Errorf("Expected " + strconv.Itoa(nComps) + " components but found " + strconv.Itoa(len(components)))
 	}
 }
 
-func getComponentsFromProject(t *testing.T, project string) []model.Component {
+func getComponentsFromTestProject(t *testing.T, project string) []model.Component {
 	testingProjectPath := GetTestProjectPath(project)
-
-	return getComponentsFromProjectInner(t, testingProjectPath)
-}
-
-func getComponentsFromPortProject(t *testing.T, project string) []model.Component {
-	testingProjectPath := GetTestPortProjectPath(project)
 
 	return getComponentsFromProjectInner(t, testingProjectPath)
 }
@@ -215,7 +209,7 @@ func getComponentsFromFiles(t *testing.T, files []string, settings model.Detecti
 }
 
 func isComponentsInProject(t *testing.T, project string, expectedNumber int, expectedLanguage string, expectedProjectName string) {
-	components := getComponentsFromProject(t, project)
+	components := getComponentsFromTestProject(t, project)
 	verifyComponents(t, components, expectedNumber, expectedLanguage, expectedProjectName)
 }
 
@@ -369,7 +363,7 @@ func TestPortDetectionGoMux(t *testing.T) {
 }
 
 func TestPortDetectionAngularPortInStartScript(t *testing.T) {
-	testPortDetectionInProject(t, "projectAngularjs", []int{8780})
+	testPortDetectionInProject(t, "angularjs", []int{8780})
 }
 
 func TestPortDetectionNextJsPortInStartScript(t *testing.T) {
@@ -389,7 +383,7 @@ func TestPortDetectionVuePortInStartScript(t *testing.T) {
 }
 
 func testPortDetectionInProject(t *testing.T, project string, ports []int) {
-	components := getComponentsFromPortProject(t, project)
+	components := getComponentsFromTestProject(t, project)
 	if len(components) == 0 {
 		t.Errorf("No component detected")
 	}
