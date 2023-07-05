@@ -89,7 +89,7 @@ func TestComponentDetectionOnFastHTTP(t *testing.T) {
 }
 
 func TestComponentDetectionOnAngular(t *testing.T) {
-	isComponentsInProject(t, "angularjs", 1, "typescript", "angularjs")
+	isComponentsInProject(t, "js-angular", 1, "typescript", "angularjs")
 }
 
 func TestComponentDetectionOnExpress(t *testing.T) {
@@ -182,7 +182,7 @@ func updateContent(filePath string, data []byte) error {
 
 func TestComponentDetectionMultiProjects(t *testing.T) {
 	components := getComponentsFromTestProject(t, "")
-	nComps := 33
+	nComps := 50
 	if len(components) != nComps {
 		t.Errorf("Expected " + strconv.Itoa(nComps) + " components but found " + strconv.Itoa(len(components)))
 	}
@@ -264,7 +264,7 @@ func TestPortDetectionJavaMicronaut(t *testing.T) {
 }
 
 func TestPortDetectionJavaWildfly(t *testing.T) {
-	testPortDetectionInProject(t, "projectWildfly", []int{8085})
+	testPortDetectionInProject(t, "wildfly", []int{8085})
 }
 
 func TestPortDetectionJavaQuarkus(t *testing.T) {
@@ -276,11 +276,11 @@ func TestPortDetectionJavaJBossEAP(t *testing.T) {
 }
 
 func TestPortDetectionJavaVertxHttpPort(t *testing.T) {
-	testPortDetectionInProject(t, "projectVertxHttpPort", []int{2321})
+	testPortDetectionInProject(t, "vertx", []int{2321})
 }
 
 func TestPortDetectionJavaVertxServerPort(t *testing.T) {
-	testPortDetectionInProject(t, "projectVertxServerPort", []int{5555})
+	testPortDetectionInProject(t, "vertx-port-server", []int{5555})
 }
 
 func TestPortDetectionJavascriptExpressClear(t *testing.T) {
@@ -375,11 +375,11 @@ func TestPortDetectionNuxtJsPortInConfigFile(t *testing.T) {
 }
 
 func TestPortDetectionSvelteJsPortInStartScript(t *testing.T) {
-	testPortDetectionInProject(t, "projectSvelte", []int{8282})
+	testPortDetectionInProject(t, "svelte-app", []int{8282})
 }
 
 func TestPortDetectionVuePortInStartScript(t *testing.T) {
-	testPortDetectionInProject(t, "projectVue", []int{8282})
+	testPortDetectionInProject(t, "vue-app", []int{8282})
 }
 
 func testPortDetectionInProject(t *testing.T, project string, ports []int) {
