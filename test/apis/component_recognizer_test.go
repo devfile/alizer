@@ -248,7 +248,7 @@ func TestPortDetectionWithDockerFile(t *testing.T) {
 }
 
 func TestPortDetectionWithContainerFile(t *testing.T) {
-	testPortDetectionInProject(t, "projectContainerFile", []int{8085})
+	testPortDetectionInProject(t, "containerfile", []int{8085})
 }
 
 func TestPortDetectionWithSecondLevelDockerFile(t *testing.T) {
