@@ -314,7 +314,7 @@ func TestPortDetectionJavascriptExpressVariable(t *testing.T) {
 func TestPortDetectionJavascriptReactEnvVariable(t *testing.T) {
 	oldValue := os.Getenv("PORT")
 	os.Setenv("PORT", "2121")
-	testPortDetectionInProject(t, "projectReactEnv", []int{2121})
+	testPortDetectionInProject(t, "reactjs", []int{2121})
 	if oldValue == "" {
 		os.Unsetenv("PORT")
 	} else {
@@ -323,11 +323,11 @@ func TestPortDetectionJavascriptReactEnvVariable(t *testing.T) {
 }
 
 func TestPortDetectionJavascriptReactEnvFile(t *testing.T) {
-	testPortDetectionInProject(t, "projectReactEnv", []int{1231})
+	testPortDetectionInProject(t, "reactjs", []int{1231})
 }
 
 func TestPortDetectionJavascriptReactScript(t *testing.T) {
-	testPortDetectionInProject(t, "projectReactScript", []int{5353})
+	testPortDetectionInProject(t, "reactjs-script", []int{5353})
 }
 
 func TestPortDetectionDjango(t *testing.T) {
