@@ -232,7 +232,7 @@ func verifyComponents(t *testing.T, components []model.Component, expectedNumber
 }
 
 func TestPortDetectionWithDockerComposeExpose(t *testing.T) {
-	testPortDetectionInProject(t, "projectDockerComposeExpose", []int{3000, 8000})
+	testPortDetectionInProject(t, "docker-compose-expose", []int{3000, 8000})
 }
 
 func TestPortDetectionWithDockerComposeShortSyntaxPorts(t *testing.T) {
@@ -331,7 +331,7 @@ func TestPortDetectionJavascriptReactScript(t *testing.T) {
 }
 
 func TestPortDetectionDjango(t *testing.T) {
-	testPortDetectionInProject(t, "projectDjango", []int{3543})
+	testPortDetectionInProject(t, "django", []int{3543})
 }
 
 func TestPortDetectionFlask(t *testing.T) {
