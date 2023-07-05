@@ -12,54 +12,16 @@ package recognizer
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"path/filepath"
 	"strconv"
-	"strings"
 	"testing"
 
 	"github.com/devfile/alizer/pkg/apis/model"
-	"github.com/devfile/alizer/pkg/apis/recognizer"
 	"github.com/devfile/alizer/pkg/utils"
 )
 
-func TestComponentDetectionOnMicronaut(t *testing.T) {
-	isComponentsInProject(t, "micronaut", 1, "java", "myMicronautProject")
-}
-
-func TestComponentDetectionOnWildFly(t *testing.T) {
-	isComponentsInProject(t, "wildfly", 1, "java", "wildfly")
-}
-
-func TestComponentDetectionOnOpenLiberty(t *testing.T) {
-	isComponentsInProject(t, "open-liberty", 1, "java", "openliberty")
-}
-
-func TestComponentDetectionOnJBossEAP(t *testing.T) {
-	isComponentsInProject(t, "jboss-eap", 1, "java", "jboss-eap")
-}
-
-func TestComponentDetectionOnQuarkus(t *testing.T) {
-	isComponentsInProject(t, "quarkus", 1, "java", "code-with-quarkus-maven")
-}
-
-func TestComponentDetectionOnSpring(t *testing.T) {
-	isComponentsInProject(t, "spring", 1, "java", "spring")
-}
-
-func TestComponentDetectionOnJavascript(t *testing.T) {
-	isComponentsInProject(t, "nodejs-ex", 1, "javascript", "nodejs-starter")
-}
-
-func TestComponentDetectionOnDjango(t *testing.T) {
-	isComponentsInProject(t, "django", 1, "python", "django")
-}
-
-func TestComponentDetectionOnFlask(t *testing.T) {
-	isComponentsInProject(t, "flask", 1, "python", "flask")
-}
-
+// component detection: dotnet, f-sharp, net-vb
 func TestComponentDetectionOnDotNet(t *testing.T) {
 	isComponentsInProject(t, "s2i-dotnetcore-ex", 1, "c#", "app")
 }
@@ -72,10 +34,10 @@ func TestComponentDetectionOnVBNet(t *testing.T) {
 	isComponentsInProject(t, "net-vb", 1, "Visual Basic .NET", "net-vb")
 }
 
-func TestComponentDetectionOnGoLang(t *testing.T) {
-	isComponentsInProject(t, "golang-gin-app", 1, "Go", "golang-gin-app")
-}
+// port detection: dotnet
+// not supported
 
+// component detection: go
 func TestComponentDetectionOnBeego(t *testing.T) {
 	isComponentsInProject(t, "beego", 1, "Go", "beego")
 }
@@ -88,8 +50,116 @@ func TestComponentDetectionOnFastHTTP(t *testing.T) {
 	isComponentsInProject(t, "fasthttp", 1, "Go", "fasthttp")
 }
 
+func TestComponentDetectionOnGin(t *testing.T) {
+	isComponentsInProject(t, "golang-gin-app", 1, "Go", "golang-gin-app")
+}
+
+func TestComponentDetectionOnFiber(t *testing.T) {
+	isComponentsInProject(t, "golang-fiber", 1, "Go", "golang-fiber")
+}
+
+func TestComponentDetectionOnMux(t *testing.T) {
+	isComponentsInProject(t, "golang-mux", 1, "Go", "golang-mux")
+}
+
+// port detection: go
+func TestPortDetectionGoBeego(t *testing.T) {
+	testPortDetectionInProject(t, "beego", []int{1999})
+}
+
+func TestPortDetectionGoEcho(t *testing.T) {
+	testPortDetectionInProject(t, "echo", []int{8585})
+}
+
+func TestPortDetectionGoFasthttp(t *testing.T) {
+	testPortDetectionInProject(t, "fasthttp", []int{2999})
+}
+
+func TestPortDetectionGoGin(t *testing.T) {
+	testPortDetectionInProject(t, "golang-gin-app", []int{8789})
+}
+
+func TestPortDetectionGo(t *testing.T) {
+	testPortDetectionInProject(t, "golang-runtime", []int{8080})
+}
+
+func TestPortDetectionGoMux(t *testing.T) {
+	testPortDetectionInProject(t, "golang-mux", []int{8000})
+}
+
+func TestPortDetectionGoFiber(t *testing.T) {
+	testPortDetectionInProject(t, "golang-fiber", []int{3000})
+}
+
+// component detection: java
+func TestComponentDetectionOnJBossEAP(t *testing.T) {
+	isComponentsInProject(t, "jboss-eap", 1, "java", "jboss-eap")
+}
+
+func TestComponentDetectionOnMicronaut(t *testing.T) {
+	isComponentsInProject(t, "micronaut", 1, "java", "myMicronautProject")
+}
+
+func TestComponentDetectionOnOpenLiberty(t *testing.T) {
+	isComponentsInProject(t, "open-liberty", 1, "java", "openliberty")
+}
+
+func TestComponentDetectionOnQuarkus(t *testing.T) {
+	isComponentsInProject(t, "quarkus", 1, "java", "code-with-quarkus-maven")
+}
+
+func TestComponentDetectionOnSpring(t *testing.T) {
+	isComponentsInProject(t, "spring", 1, "java", "spring")
+}
+
+func TestComponentDetectionOnVertx(t *testing.T) {
+	isComponentsInProject(t, "vertx", 1, "java", "http-vertx")
+}
+
+func TestComponentDetectionOnWildFly(t *testing.T) {
+	isComponentsInProject(t, "wildfly", 1, "java", "wildfly")
+}
+
+// port detection: java
+func TestPortDetectionJavaJBossEAP(t *testing.T) {
+	testPortDetectionInProject(t, "jboss-eap", []int{8380})
+}
+
+func TestPortDetectionJavaMicronaut(t *testing.T) {
+	testPortDetectionInProject(t, "micronaut", []int{4444})
+}
+
+func TestPortDetectionOnOpenLiberty(t *testing.T) {
+	testPortDetectionInProject(t, "open-liberty", []int{9080, 9443})
+}
+
+func TestPortDetectionJavaQuarkus(t *testing.T) {
+	testPortDetectionInProject(t, "quarkus", []int{9898})
+}
+
+func TestPortDetectionSpring(t *testing.T) {
+	testPortDetectionInProject(t, "spring", []int{9012})
+}
+
+func TestPortDetectionJavaVertxHttpPort(t *testing.T) {
+	testPortDetectionInProject(t, "vertx", []int{2321})
+}
+
+func TestPortDetectionJavaVertxServerPort(t *testing.T) {
+	testPortDetectionInProject(t, "vertx-port-server", []int{5555})
+}
+
+func TestPortDetectionJavaWildfly(t *testing.T) {
+	testPortDetectionInProject(t, "wildfly", []int{8085})
+}
+
+// component detection: javascript, typescript
+func TestComponentDetectionOnJavascript(t *testing.T) {
+	isComponentsInProject(t, "nodejs-ex", 1, "javascript", "nodejs-starter")
+}
+
 func TestComponentDetectionOnAngular(t *testing.T) {
-	isComponentsInProject(t, "js-angular", 1, "typescript", "angularjs")
+	isComponentsInProject(t, "angularjs", 1, "typescript", "angularjs")
 }
 
 func TestComponentDetectionOnExpress(t *testing.T) {
@@ -104,6 +174,10 @@ func TestComponentDetectionOnNuxtJs(t *testing.T) {
 	isComponentsInProject(t, "nuxtjs-app", 1, "typescript", "nuxt-app")
 }
 
+func TestComponentDetectionOnReactJs(t *testing.T) {
+	isComponentsInProject(t, "reactjs", 1, "javascript", "simple-react-template")
+}
+
 func TestComponentDetectionOnSvelteJs(t *testing.T) {
 	isComponentsInProject(t, "svelte-app", 1, "javascript", "svelte-app")
 }
@@ -112,10 +186,106 @@ func TestComponentDetectionOnVue(t *testing.T) {
 	isComponentsInProject(t, "vue-app", 1, "typescript", "vue-app")
 }
 
+// port detection: javascript, typescript
+func TestPortDetectionAngularPortInStartScript(t *testing.T) {
+	testPortDetectionInProject(t, "angularjs", []int{8780})
+}
+
+func TestPortDetectionJavascriptExpressClear(t *testing.T) {
+	testPortDetectionInProject(t, "expressjs", []int{7777})
+}
+
+func TestPortDetectionJavascriptExpressEnv(t *testing.T) {
+	os.Setenv("TEST_EXPRESS_ENV", "1111")
+	testPortDetectionInProject(t, "expressjs-env", []int{1111})
+	os.Unsetenv("TEST_EXPRESS_ENV")
+}
+
+func TestPortDetectionJavascriptExpressEnvOROperatorWithEnvVar(t *testing.T) {
+	os.Setenv("TEST_EXPRESS_ENV", "1111")
+	testPortDetectionInProject(t, "expressjs-env-logical-or", []int{1111})
+	os.Unsetenv("TEST_EXPRESS_ENV")
+}
+
+func TestPortDetectionJavascriptExpressEnvOROperatorWithoutEnvVar(t *testing.T) {
+	testPortDetectionInProject(t, "expressjs-env-logical-or", []int{8080})
+}
+func TestPortDetectionJavascriptExpressVariable(t *testing.T) {
+	testPortDetectionInProject(t, "expressjs-variable", []int{3000})
+}
+
+func TestPortDetectionNextJsPortInStartScript(t *testing.T) {
+	testPortDetectionInProject(t, "nextjs-app", []int{8610})
+}
+
+func TestPortDetectionNuxtJsPortInConfigFile(t *testing.T) {
+	testPortDetectionInProject(t, "nuxtjs-app", []int{8787})
+}
+
+func TestPortDetectionJavascriptReactEnvVariable(t *testing.T) {
+	oldValue := os.Getenv("PORT")
+	os.Setenv("PORT", "2121")
+	testPortDetectionInProject(t, "reactjs", []int{2121})
+	if oldValue == "" {
+		os.Unsetenv("PORT")
+	} else {
+		os.Setenv("PORT", oldValue)
+	}
+}
+
+func TestPortDetectionJavascriptReactEnvFile(t *testing.T) {
+	testPortDetectionInProject(t, "reactjs", []int{1231})
+}
+
+func TestPortDetectionJavascriptReactScript(t *testing.T) {
+	testPortDetectionInProject(t, "reactjs-script", []int{5353})
+}
+
+func TestPortDetectionSvelteJsPortInStartScript(t *testing.T) {
+	testPortDetectionInProject(t, "svelte-app", []int{8282})
+}
+
+func TestPortDetectionVuePortInStartScript(t *testing.T) {
+	testPortDetectionInProject(t, "vue-app", []int{8282})
+}
+
+// component detection: php
 func TestComponentDetectionOnLaravel(t *testing.T) {
 	isComponentsInProject(t, "laravel", 1, "PHP", "laravel")
 }
 
+// port detection: php
+func TestPortDetectionPHPLaravel(t *testing.T) {
+	testPortDetectionInProject(t, "laravel", []int{9988})
+}
+
+// component detection: python
+func TestComponentDetectionOnDjango(t *testing.T) {
+	isComponentsInProject(t, "django", 1, "python", "django")
+}
+
+func TestComponentDetectionOnFlask(t *testing.T) {
+	isComponentsInProject(t, "flask", 1, "python", "flask")
+}
+
+// port detection: python
+func TestPortDetectionDjango(t *testing.T) {
+	testPortDetectionInProject(t, "django", []int{3543})
+}
+
+func TestPortDetectionFlask(t *testing.T) {
+	testPortDetectionInProject(t, "flask", []int{3000})
+}
+
+func TestPortDetectionFlaskAssignedVariable(t *testing.T) {
+	testPortDetectionInProject(t, "flask-port-assigned-variable", []int{3001})
+}
+
+func TestPortDetectionFlaskStringValue(t *testing.T) {
+	testPortDetectionInProject(t, "flask-port-string-value", []int{})
+}
+
+// component detection: corner cases
 func TestComponentDetectionNoResult(t *testing.T) {
 	components := getComponentsFromTestProject(t, "simple")
 	if len(components) > 0 {
@@ -163,23 +333,6 @@ func TestComponentDetectionWithGitIgnoreRule(t *testing.T) {
 	}
 }
 
-func updateContent(filePath string, data []byte) error {
-	f, err := os.OpenFile(filePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		return err
-	}
-	defer func() error {
-		if err := f.Close(); err != nil {
-			return fmt.Errorf("error closing file: %s", err)
-		}
-		return nil
-	}()
-	if _, err := f.Write(data); err != nil {
-		return err
-	}
-	return nil
-}
-
 func TestComponentDetectionMultiProjects(t *testing.T) {
 	components := getComponentsFromTestProject(t, "")
 	nComps := 50
@@ -188,49 +341,7 @@ func TestComponentDetectionMultiProjects(t *testing.T) {
 	}
 }
 
-func getComponentsFromTestProject(t *testing.T, project string) []model.Component {
-	testingProjectPath := GetTestProjectPath(project)
-
-	return getComponentsFromProjectInner(t, testingProjectPath)
-}
-
-func getComponentsFromProjectInner(t *testing.T, testingProjectPath string) []model.Component {
-	components, err := recognizer.DetectComponents(testingProjectPath)
-	if err != nil {
-		t.Error(err)
-	}
-
-	return components
-}
-
-func getComponentsFromFiles(t *testing.T, files []string, settings model.DetectionSettings) []model.Component {
-	ctx := context.Background()
-	return recognizer.DetectComponentsFromFilesList(files, settings, &ctx)
-}
-
-func isComponentsInProject(t *testing.T, project string, expectedNumber int, expectedLanguage string, expectedProjectName string) {
-	components := getComponentsFromTestProject(t, project)
-	verifyComponents(t, components, expectedNumber, expectedLanguage, expectedProjectName)
-}
-
-func verifyComponents(t *testing.T, components []model.Component, expectedNumber int, expectedLanguage string, expectedProjectName string) {
-	hasComponents := len(components) == expectedNumber
-	if hasComponents {
-		isExpectedComponent := strings.EqualFold(expectedLanguage, components[0].Languages[0].Name)
-		if !isExpectedComponent {
-			t.Errorf("Project does not use " + expectedLanguage + " language")
-		}
-		if expectedProjectName != "" {
-			isExpectedProjectName := strings.EqualFold(expectedProjectName, components[0].Name)
-			if !isExpectedProjectName {
-				t.Errorf("Main component has a different project name. Expected " + expectedProjectName + " but it was " + components[0].Name)
-			}
-		}
-	} else {
-		t.Errorf("Expected " + strconv.Itoa(expectedNumber) + " of components but it was " + strconv.Itoa(len(components)))
-	}
-}
-
+// port detection: other cases
 func TestPortDetectionWithDockerComposeExpose(t *testing.T) {
 	testPortDetectionInProject(t, "docker-compose-expose", []int{3000, 8000})
 }
@@ -257,153 +368,4 @@ func TestPortDetectionWithSecondLevelDockerFile(t *testing.T) {
 
 func TestPortDetectionWithSecondLevelContainerFile(t *testing.T) {
 	testPortDetectionInProject(t, "containerfile-nested", []int{8085})
-}
-
-func TestPortDetectionJavaMicronaut(t *testing.T) {
-	testPortDetectionInProject(t, "micronaut", []int{4444})
-}
-
-func TestPortDetectionJavaWildfly(t *testing.T) {
-	testPortDetectionInProject(t, "wildfly", []int{8085})
-}
-
-func TestPortDetectionJavaQuarkus(t *testing.T) {
-	testPortDetectionInProject(t, "quarkus", []int{9898})
-}
-
-func TestPortDetectionJavaJBossEAP(t *testing.T) {
-	testPortDetectionInProject(t, "jboss-eap", []int{8380})
-}
-
-func TestPortDetectionJavaVertxHttpPort(t *testing.T) {
-	testPortDetectionInProject(t, "vertx", []int{2321})
-}
-
-func TestPortDetectionJavaVertxServerPort(t *testing.T) {
-	testPortDetectionInProject(t, "vertx-port-server", []int{5555})
-}
-
-func TestPortDetectionJavascriptExpressClear(t *testing.T) {
-	testPortDetectionInProject(t, "expressjs", []int{7777})
-}
-
-func TestPortDetectionJavascriptExpressEnv(t *testing.T) {
-	os.Setenv("TEST_EXPRESS_ENV", "1111")
-	testPortDetectionInProject(t, "expressjs-env", []int{1111})
-	os.Unsetenv("TEST_EXPRESS_ENV")
-}
-
-func TestPortDetectionJavascriptExpressEnvOROperatorWithEnvVar(t *testing.T) {
-	os.Setenv("TEST_EXPRESS_ENV", "1111")
-	testPortDetectionInProject(t, "expressjs-env-logical-or", []int{1111})
-	os.Unsetenv("TEST_EXPRESS_ENV")
-}
-
-func TestPortDetectionPHPLaravel(t *testing.T) {
-	testPortDetectionInProject(t, "laravel", []int{9988})
-}
-
-func TestPortDetectionJavascriptExpressEnvOROperatorWithoutEnvVar(t *testing.T) {
-	testPortDetectionInProject(t, "expressjs-env-logical-or", []int{8080})
-}
-
-func TestPortDetectionJavascriptExpressVariable(t *testing.T) {
-	testPortDetectionInProject(t, "expressjs-variable", []int{3000})
-}
-
-func TestPortDetectionJavascriptReactEnvVariable(t *testing.T) {
-	oldValue := os.Getenv("PORT")
-	os.Setenv("PORT", "2121")
-	testPortDetectionInProject(t, "reactjs", []int{2121})
-	if oldValue == "" {
-		os.Unsetenv("PORT")
-	} else {
-		os.Setenv("PORT", oldValue)
-	}
-}
-
-func TestPortDetectionJavascriptReactEnvFile(t *testing.T) {
-	testPortDetectionInProject(t, "reactjs", []int{1231})
-}
-
-func TestPortDetectionJavascriptReactScript(t *testing.T) {
-	testPortDetectionInProject(t, "reactjs-script", []int{5353})
-}
-
-func TestPortDetectionDjango(t *testing.T) {
-	testPortDetectionInProject(t, "django", []int{3543})
-}
-
-func TestPortDetectionFlask(t *testing.T) {
-	testPortDetectionInProject(t, "flask", []int{3000})
-}
-
-func TestPortDetectionFlaskAssignedVariable(t *testing.T) {
-	testPortDetectionInProject(t, "flask-port-assigned-variable", []int{3001})
-}
-
-func TestPortDetectionFlaskStringValue(t *testing.T) {
-	testPortDetectionInProject(t, "flask-port-string-value", []int{})
-}
-
-func TestPortDetectionGoGin(t *testing.T) {
-	testPortDetectionInProject(t, "golang-gin-app", []int{8789})
-}
-
-func TestPortDetectionGo(t *testing.T) {
-	testPortDetectionInProject(t, "go-runtime", []int{8080})
-}
-
-func TestPortDetectionGoFiber(t *testing.T) {
-	testPortDetectionInProject(t, "golang-fiber", []int{3000})
-}
-
-func TestPortDetectionGoMux(t *testing.T) {
-	testPortDetectionInProject(t, "golang-mux", []int{8000})
-}
-
-func TestPortDetectionAngularPortInStartScript(t *testing.T) {
-	testPortDetectionInProject(t, "angularjs", []int{8780})
-}
-
-func TestPortDetectionNextJsPortInStartScript(t *testing.T) {
-	testPortDetectionInProject(t, "nextjs-app", []int{8610})
-}
-
-func TestPortDetectionNuxtJsPortInConfigFile(t *testing.T) {
-	testPortDetectionInProject(t, "nuxtjs-app", []int{8787})
-}
-
-func TestPortDetectionSvelteJsPortInStartScript(t *testing.T) {
-	testPortDetectionInProject(t, "svelte-app", []int{8282})
-}
-
-func TestPortDetectionVuePortInStartScript(t *testing.T) {
-	testPortDetectionInProject(t, "vue-app", []int{8282})
-}
-
-func testPortDetectionInProject(t *testing.T, project string, ports []int) {
-	components := getComponentsFromTestProject(t, project)
-	if len(components) == 0 {
-		t.Errorf("No component detected")
-	}
-
-	portsDetected := components[0].Ports
-	if len(portsDetected) != len(ports) {
-		t.Errorf("Length of found ports and expected ports is different")
-	}
-
-	found := false
-	for _, port := range ports {
-		for _, portDetected := range portsDetected {
-			if port == portDetected {
-				found = true
-				break
-			}
-		}
-		if !found {
-			t.Errorf("Port " + strconv.Itoa(port) + " have not been detected")
-		}
-		found = false
-	}
 }
