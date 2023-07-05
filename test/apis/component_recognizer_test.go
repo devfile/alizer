@@ -252,11 +252,11 @@ func TestPortDetectionWithContainerFile(t *testing.T) {
 }
 
 func TestPortDetectionWithSecondLevelDockerFile(t *testing.T) {
-	testPortDetectionInProject(t, "projectNestedDockerFile", []int{8085})
+	testPortDetectionInProject(t, "dockerfile-nested", []int{8085})
 }
 
 func TestPortDetectionWithSecondLevelContainerFile(t *testing.T) {
-	testPortDetectionInProject(t, "projectNestedContainerFile", []int{8085})
+	testPortDetectionInProject(t, "containerfile-nested", []int{8085})
 }
 
 func TestPortDetectionJavaMicronaut(t *testing.T) {
