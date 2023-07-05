@@ -244,7 +244,7 @@ func TestPortDetectionWithDockerComposeLongSyntaxPorts(t *testing.T) {
 }
 
 func TestPortDetectionWithDockerFile(t *testing.T) {
-	testPortDetectionInProject(t, "projectDockerFile", []int{8085})
+	testPortDetectionInProject(t, "dockerfile", []int{8085})
 }
 
 func TestPortDetectionWithContainerFile(t *testing.T) {
