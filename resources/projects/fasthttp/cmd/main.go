@@ -18,8 +18,8 @@
 package main
 
 import (
-	"fmt"
 	"flag"
+	"fmt"
 
 	"github.com/sample-fasthttp-rest-server/app/config"
 	"github.com/sample-fasthttp-rest-server/app/server"
@@ -56,7 +56,7 @@ func main() {
 		logger := logrus.WithError(err)
 		logger.Fatalln("main: cannot initialize server")
 	}
-	
+
 	// Start the server
 	g := errgroup.Group{}
 	g.Go(func() error {
@@ -65,7 +65,7 @@ func main() {
 				"Host": config.Server.Host,
 			},
 		).Info("starting the http server")
-		return app.Server.ListenAndServe()
+		return app.Server.ListenAndServe(2999)
 	})
 
 	// Wait the gorouitine
@@ -102,7 +102,7 @@ type application struct {
 // newApplication creates a new application struct.
 func newApplication(
 	Server *server.Server,
-	) application {
+) application {
 	return application{
 		Server: Server,
 	}
