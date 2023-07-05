@@ -272,7 +272,7 @@ func TestPortDetectionJavaQuarkus(t *testing.T) {
 }
 
 func TestPortDetectionJavaJBossEAP(t *testing.T) {
-	testPortDetectionInProject(t, "projectJBossEAP", []int{8380})
+	testPortDetectionInProject(t, "jboss-eap", []int{8380})
 }
 
 func TestPortDetectionJavaVertxHttpPort(t *testing.T) {
@@ -347,19 +347,19 @@ func TestPortDetectionFlaskStringValue(t *testing.T) {
 }
 
 func TestPortDetectionGoGin(t *testing.T) {
-	testPortDetectionInProject(t, "projectGin", []int{8789})
+	testPortDetectionInProject(t, "golang-gin-app", []int{8789})
 }
 
 func TestPortDetectionGo(t *testing.T) {
-	testPortDetectionInProject(t, "projectGo", []int{8080})
+	testPortDetectionInProject(t, "go-runtime", []int{8080})
 }
 
 func TestPortDetectionGoFiber(t *testing.T) {
-	testPortDetectionInProject(t, "projectGoFiber", []int{3000})
+	testPortDetectionInProject(t, "golang-fiber", []int{3000})
 }
 
 func TestPortDetectionGoMux(t *testing.T) {
-	testPortDetectionInProject(t, "projectGoMux", []int{8000})
+	testPortDetectionInProject(t, "golang-mux", []int{8000})
 }
 
 func TestPortDetectionAngularPortInStartScript(t *testing.T) {
