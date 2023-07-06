@@ -2,7 +2,7 @@
   "name": "vue-app",
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --port 8282",
     "build": "run-p type-check build-only",
     "preview": "vite preview",
     "build-only": "vite build",

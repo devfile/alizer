@@ -1,5 +1,0 @@
-micronaut:
-  application:
-    name: untitled
-  server:
-    port: 4444
