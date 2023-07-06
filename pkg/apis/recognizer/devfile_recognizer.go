@@ -23,7 +23,10 @@ import (
 
 	"github.com/devfile/alizer/pkg/apis/model"
 	"github.com/devfile/alizer/pkg/utils"
+	"github.com/hashicorp/go-version"
 )
+
+const MinimumAllowedVersion = "2.0.0"
 
 func SelectDevFilesFromTypes(path string, devFileTypes []model.DevFileType) ([]int, error) {
 	alizerLogger := utils.GetOrCreateLogger()
@@ -102,15 +105,31 @@ func SelectDevFileUsingLanguagesFromTypes(languages []model.Language, devFileTyp
 	return devFilesIndexes[0], nil
 }
 
+func MatchDevfiles(path string, url string, filter model.DevfileFilter) ([]model.DevFileType, error) {
+	alizerLogger := utils.GetOrCreateLogger()
+	alizerLogger.V(0).Info("Starting devfile matching")
+	alizerLogger.V(1).Info(fmt.Sprintf("Downloading devfiles from registry %s", url))
+	devFileTypesFromRegistry, err := downloadDevFileTypesFromRegistry(url, filter)
+	if err != nil {
+		return []model.DevFileType{}, err
+	}
+
+	return selectDevfiles(path, devFileTypesFromRegistry)
+}
+
 func SelectDevFilesFromRegistry(path string, url string) ([]model.DevFileType, error) {
 	alizerLogger := utils.GetOrCreateLogger()
 	alizerLogger.V(0).Info("Starting devfile matching")
 	alizerLogger.V(1).Info(fmt.Sprintf("Downloading devfiles from registry %s", url))
-	devFileTypesFromRegistry, err := downloadDevFileTypesFromRegistry(url)
+	devFileTypesFromRegistry, err := downloadDevFileTypesFromRegistry(url, model.DevfileFilter{MinVersion: "", MaxVersion: ""})
 	if err != nil {
 		return []model.DevFileType{}, err
 	}
-	alizerLogger.V(1).Info(fmt.Sprintf("Fetched %d devfiles", len(devFileTypesFromRegistry)))
+
+	return selectDevfiles(path, devFileTypesFromRegistry)
+}
+
+func selectDevfiles(path string, devFileTypesFromRegistry []model.DevFileType) ([]model.DevFileType, error) {
 	indexes, err := SelectDevFilesFromTypes(path, devFileTypesFromRegistry)
 	if err != nil {
 		return []model.DevFileType{}, err
@@ -122,10 +141,11 @@ func SelectDevFilesFromRegistry(path string, url string) ([]model.DevFileType, e
 	}
 
 	return devFileTypes, nil
+
 }
 
 func SelectDevFileFromRegistry(path string, url string) (model.DevFileType, error) {
-	devFileTypes, err := downloadDevFileTypesFromRegistry(url)
+	devFileTypes, err := downloadDevFileTypesFromRegistry(url, model.DevfileFilter{MinVersion: "", MaxVersion: ""})
 	if err != nil {
 		return model.DevFileType{}, err
 	}
@@ -137,17 +157,63 @@ func SelectDevFileFromRegistry(path string, url string) (model.DevFileType, erro
 	return devFileTypes[index], nil
 }
 
-func downloadDevFileTypesFromRegistry(url string) ([]model.DevFileType, error) {
-	url = adaptUrl(url)
-	// Get the data
-	resp, err := http.Get(url)
+func GetUrlWithVersions(url, minVersion, maxVersion string) (string, error) {
+	minAllowedVersion, err := version.NewVersion(MinimumAllowedVersion)
 	if err != nil {
-		// retry by appending index to url
-		url = appendIndexPath(url)
-		resp, err = http.Get(url)
+		return "", nil
+	}
+
+	if minVersion != "" && maxVersion != "" {
+		minV, err := version.NewVersion(minVersion)
 		if err != nil {
-			return []model.DevFileType{}, err
+			return url, nil
 		}
+		maxV, err := version.NewVersion(maxVersion)
+		if err != nil {
+			return url, nil
+		}
+		if maxV.LessThan(minV) {
+			return "", fmt.Errorf("max-version cannot be lower than min-version")
+		}
+		if maxV.LessThan(minAllowedVersion) || minV.LessThan(minAllowedVersion) {
+			return "", fmt.Errorf("min and/or max version are lower than the minimum allowed version (2.0.0)")
+		}
+
+		return fmt.Sprintf("%s?minSchemaVersion=%s&maxSchemaVersion=%s", url, minVersion, maxVersion), nil
+	} else if minVersion != "" {
+		minV, err := version.NewVersion(minVersion)
+		if err != nil {
+			return "", nil
+		}
+		if minV.LessThan(minAllowedVersion) {
+			return "", fmt.Errorf("min version is lower than the minimum allowed version (2.0.0)")
+		}
+		return fmt.Sprintf("%s?minSchemaVersion=%s", url, minVersion), nil
+	} else if maxVersion != "" {
+		maxV, err := version.NewVersion(maxVersion)
+		if err != nil {
+			return "", nil
+		}
+		if maxV.LessThan(minAllowedVersion) {
+			return "", fmt.Errorf("max version is lower than the minimum allowed version (2.0.0)")
+		}
+		return fmt.Sprintf("%s?maxSchemaVersion=%s", url, maxVersion), nil
+	} else {
+		return url, nil
+	}
+}
+
+func downloadDevFileTypesFromRegistry(url string, filter model.DevfileFilter) ([]model.DevFileType, error) {
+	url = adaptUrl(url)
+	tmpUrl := appendIndexPath(url)
+	url, err := GetUrlWithVersions(tmpUrl, filter.MinVersion, filter.MaxVersion)
+	if err != nil {
+		return nil, err
+	}
+	// This value is set by the user in order to configure the registry
+	resp, err := http.Get(url) // #nosec G107
+	if err != nil {
+		return []model.DevFileType{}, err
 	}
 	defer func() error {
 		if err := resp.Body.Close(); err != nil {
@@ -177,9 +243,9 @@ func downloadDevFileTypesFromRegistry(url string) ([]model.DevFileType, error) {
 
 func appendIndexPath(url string) string {
 	if strings.HasSuffix(url, "/") {
-		return url + "index"
+		return url + "v2index"
 	}
-	return url + "/index"
+	return url + "/v2index"
 }
 
 func adaptUrl(url string) string {
