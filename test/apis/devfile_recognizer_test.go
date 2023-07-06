@@ -110,7 +110,7 @@ func TestDetectNextJsDevfile(t *testing.T) {
 }
 
 func TestDetectNuxtJsDevfile(t *testing.T) {
-	detectDevFiles(t, "nuxt-app", []string{"nodejs-nuxtjs", "nodejs-vue"})
+	detectDevFiles(t, "nuxtjs-app", []string{"nodejs-nuxtjs", "nodejs-vue"})
 }
 
 func TestDetectVueDevfile(t *testing.T) {
@@ -118,7 +118,7 @@ func TestDetectVueDevfile(t *testing.T) {
 }
 
 func TestDetectReactJSDevfile(t *testing.T) {
-	detectDevFiles(t, "react", []string{"nodejs-react"})
+	detectDevFiles(t, "reactjs", []string{"nodejs-react"})
 }
 
 func TestDetectSvelteDevfile(t *testing.T) {
