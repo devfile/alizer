@@ -121,7 +121,7 @@ func SelectDevFilesFromRegistry(path string, url string) ([]model.DevFileType, e
 	alizerLogger := utils.GetOrCreateLogger()
 	alizerLogger.V(0).Info("Starting devfile matching")
 	alizerLogger.V(1).Info(fmt.Sprintf("Downloading devfiles from registry %s", url))
-	devFileTypesFromRegistry, err := downloadDevFileTypesFromRegistry(url, model.DevfileFilter{MinVersion: "", MaxVersion: ""})
+	devFileTypesFromRegistry, err := downloadDevFileTypesFromRegistry(url, model.DevfileFilter{MinSchemaVersion: "", MaxSchemaVersion: ""})
 	if err != nil {
 		return []model.DevFileType{}, err
 	}
@@ -145,7 +145,7 @@ func selectDevfiles(path string, devFileTypesFromRegistry []model.DevFileType) (
 }
 
 func SelectDevFileFromRegistry(path string, url string) (model.DevFileType, error) {
-	devFileTypes, err := downloadDevFileTypesFromRegistry(url, model.DevfileFilter{MinVersion: "", MaxVersion: ""})
+	devFileTypes, err := downloadDevFileTypesFromRegistry(url, model.DevfileFilter{MinSchemaVersion: "", MaxSchemaVersion: ""})
 	if err != nil {
 		return model.DevFileType{}, err
 	}
@@ -157,47 +157,47 @@ func SelectDevFileFromRegistry(path string, url string) (model.DevFileType, erro
 	return devFileTypes[index], nil
 }
 
-func GetUrlWithVersions(url, minVersion, maxVersion string) (string, error) {
+func GetUrlWithVersions(url, minSchemaVersion, maxSchemaVersion string) (string, error) {
 	minAllowedVersion, err := version.NewVersion(MinimumAllowedVersion)
 	if err != nil {
 		return "", nil
 	}
 
-	if minVersion != "" && maxVersion != "" {
-		minV, err := version.NewVersion(minVersion)
+	if minSchemaVersion != "" && maxSchemaVersion != "" {
+		minV, err := version.NewVersion(minSchemaVersion)
 		if err != nil {
 			return url, nil
 		}
-		maxV, err := version.NewVersion(maxVersion)
+		maxV, err := version.NewVersion(maxSchemaVersion)
 		if err != nil {
 			return url, nil
 		}
 		if maxV.LessThan(minV) {
-			return "", fmt.Errorf("max-version cannot be lower than min-version")
+			return "", fmt.Errorf("max-schema-version cannot be lower than min-schema-version")
 		}
 		if maxV.LessThan(minAllowedVersion) || minV.LessThan(minAllowedVersion) {
 			return "", fmt.Errorf("min and/or max version are lower than the minimum allowed version (2.0.0)")
 		}
 
-		return fmt.Sprintf("%s?minSchemaVersion=%s&maxSchemaVersion=%s", url, minVersion, maxVersion), nil
-	} else if minVersion != "" {
-		minV, err := version.NewVersion(minVersion)
+		return fmt.Sprintf("%s?minSchemaVersion=%s&maxSchemaVersion=%s", url, minSchemaVersion, maxSchemaVersion), nil
+	} else if minSchemaVersion != "" {
+		minV, err := version.NewVersion(minSchemaVersion)
 		if err != nil {
 			return "", nil
 		}
 		if minV.LessThan(minAllowedVersion) {
 			return "", fmt.Errorf("min version is lower than the minimum allowed version (2.0.0)")
 		}
-		return fmt.Sprintf("%s?minSchemaVersion=%s", url, minVersion), nil
-	} else if maxVersion != "" {
-		maxV, err := version.NewVersion(maxVersion)
+		return fmt.Sprintf("%s?minSchemaVersion=%s", url, minSchemaVersion), nil
+	} else if maxSchemaVersion != "" {
+		maxV, err := version.NewVersion(maxSchemaVersion)
 		if err != nil {
 			return "", nil
 		}
 		if maxV.LessThan(minAllowedVersion) {
 			return "", fmt.Errorf("max version is lower than the minimum allowed version (2.0.0)")
 		}
-		return fmt.Sprintf("%s?maxSchemaVersion=%s", url, maxVersion), nil
+		return fmt.Sprintf("%s?maxSchemaVersion=%s", url, maxSchemaVersion), nil
 	} else {
 		return url, nil
 	}
@@ -206,7 +206,7 @@ func GetUrlWithVersions(url, minVersion, maxVersion string) (string, error) {
 func downloadDevFileTypesFromRegistry(url string, filter model.DevfileFilter) ([]model.DevFileType, error) {
 	url = adaptUrl(url)
 	tmpUrl := appendIndexPath(url)
-	url, err := GetUrlWithVersions(tmpUrl, filter.MinVersion, filter.MaxVersion)
+	url, err := GetUrlWithVersions(tmpUrl, filter.MinSchemaVersion, filter.MaxSchemaVersion)
 	if err != nil {
 		return nil, err
 	}

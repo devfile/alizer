@@ -45,6 +45,7 @@ type Component struct {
 type Version struct {
 	SchemaVersion string
 	Default       bool
+	Version       string
 }
 
 type DevFileType struct {
@@ -56,8 +57,8 @@ type DevFileType struct {
 }
 
 type DevfileFilter struct {
-	MinVersion string
-	MaxVersion string
+	MinSchemaVersion string
+	MaxSchemaVersion string
 }
 
 type ApplicationFileInfo struct {
