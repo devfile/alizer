@@ -45,7 +45,6 @@ type Component struct {
 type Version struct {
 	SchemaVersion string
 	Default       bool
-	Version       string
 }
 
 type DevFileType struct {
@@ -53,6 +52,7 @@ type DevFileType struct {
 	Language    string
 	ProjectType string
 	Tags        []string
+	Versions    []Version
 }
 
 type DevfileFilter struct {
