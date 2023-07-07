@@ -17,10 +17,10 @@ As mentioned above, there is common ground on the two issues. This means that we
 ## CLI Arguments
 The `alizer devfile` command should have arguments in order to specify which devfiles are acceptable or not.
 
-### max-version
+### max-schema-version
 If this argument is passed in a alizer devfile command then, alizer should match a devfile with **equal or older version** than the one given.
 
-### min-version
+### min-schema-version
 If this argument is passed in a alizer devfile command then, alizer should match a devfile with **equal or newer version** than the one given.
 
 _The results of devfiles have to be sorted from newest to oldest._
@@ -104,10 +104,10 @@ metadata:
 ...
 ```
 
-### Case A - Define only a max-version.
-If we choose `max-version = 2.1.0` we should get a list of 2 devfiles from our devfile command:
+### Case A - Define only a max-schema-version.
+If we choose `max-schema-version = 2.1.0` we should get a list of 2 devfiles from our devfile command:
 ```bash
-$ ./alizer devfile --max-version 2.1.0
+$ ./alizer devfile --max-schema-version 2.1.0
 [
 	{
 		"Name": "devfileB",
@@ -128,10 +128,10 @@ $ ./alizer devfile --max-version 2.1.0
 ]
 ```
 
-### Case B - Define only a min-version.
-If we choose `min-version = 2.1.0` we should get a list of 2 devfiles from our devfile command:
+### Case B - Define only a min-schema-version.
+If we choose `min-schema-version = 2.1.0` we should get a list of 2 devfiles from our devfile command:
 ```bash
-$ ./alizer devfile --min-version 2.1.0
+$ ./alizer devfile --min-schema-version 2.1.0
 [
 	{
 		"Name": "devfileC",
@@ -152,10 +152,10 @@ $ ./alizer devfile --min-version 2.1.0
 ]
 ```
 
-### Case C - Define both min-version and max-version.
-If we choose `min-version = 2.1.0` and `max-version = 2.1.2` we should get a list of 1 devfile from our devfile command:
+### Case C - Define both min-schema-version and max-schema-version.
+If we choose `min-schema-version = 2.1.0` and `max-schema-version = 2.1.2` we should get a list of 1 devfile from our devfile command:
 ```bash
-$ ./alizer devfile --min-version 2.1.0 --max-version 2.1.2
+$ ./alizer devfile --min-schema-version 2.1.0 --max-schema-version 2.1.2
 [
 	{
 		"Name": "devfileB",
@@ -168,7 +168,7 @@ $ ./alizer devfile --min-version 2.1.0 --max-version 2.1.2
 ]
 ```
 
-_An error will be raised if the min-version is greater than the max-version_
+_An error will be raised if the min-schema-version is greater than the max-schema-version_
 
 ## Library
 In order to facilitate these updates we will have to update our library. The main work will focus inside `devfile_recognizer.go`. There, we will have to implement a new function (`MatchDevfiles`) which will handle cases that we want to filter the devfiles list fetched from a registry. Another addition would be to add a new attribute `SchemaVersion` string in the `model.DevFileType` (`SchemaVersion string`).
@@ -181,21 +181,29 @@ _We have to keep the old way of fetching devfiles from library in order to ensur
 This function will take 3 parameters `(path string, devFileTypes []model.DevFileType, filter map[string]interface{})`. If someone wants to filter the selected devfiles for specific version range the have to write:
 ```golang
 import "github.com/devfile/alizer/pkg/apis/recognizer"
-filter := map[string]interface{} {
-        "max-version": "2.1.0",
-        "min-version": "2.0.0",
+import "github.com/devfile/alizer/pkg/apis/model"
+
+devifileFilter := model.DevfileFilter {
+	MinSchemaVersion: "2.0.0",
+	MaxSchemaVersion: "2.2.0",
 }
-devfiles, err := recognizer.MatchDevfiles("myproject", devfiles, filter)
+devfiles, err := recognizer.MatchDevfiles("myproject", devfiles, devifileFilter)
 ```
 
 ### model.DevfileType
 In order to be able to check and compare the version of each devfile with the given attribute we have to create a dedicated attribute inside this model:
 ```golang
+type Version struct {
+	SchemaVersion string
+	Default       bool
+	Version       string
+}
+
 type DevFileType struct {
-	Name        		string
-	Language    		string
-	ProjectType 		string
-	Tags        		[]string
-	SchemaVersion 	      string
+	Name        string
+	Language    string
+	ProjectType string
+	Tags       	[]string
+	Versions 	[]Version
 }
 ```
