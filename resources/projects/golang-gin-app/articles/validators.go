@@ -1,10 +1,10 @@
 package articles
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/gosimple/slug"
 	"github.com/gothinkster/golang-gin-realworld-example-app/common"
 	"github.com/gothinkster/golang-gin-realworld-example-app/users"
-	"github.com/gin-gonic/gin"
 )
 
 type ArticleModelValidator struct {
@@ -44,7 +44,10 @@ func (s *ArticleModelValidator) Bind(c *gin.Context) error {
 	s.articleModel.Description = s.Article.Description
 	s.articleModel.Body = s.Article.Body
 	s.articleModel.Author = GetArticleUserModel(myUserModel)
-	s.articleModel.setTags(s.Article.Tags)
+	err = s.articleModel.setTags(s.Article.Tags)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 

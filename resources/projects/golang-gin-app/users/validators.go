@@ -1,8 +1,8 @@
 package users
 
 import (
-	"github.com/gothinkster/golang-gin-realworld-example-app/common"
 	"github.com/gin-gonic/gin"
+	"github.com/gothinkster/golang-gin-realworld-example-app/common"
 )
 
 // *ModelValidator containing two parts:
@@ -33,7 +33,10 @@ func (self *UserModelValidator) Bind(c *gin.Context) error {
 	self.userModel.Bio = self.User.Bio
 
 	if self.User.Password != common.NBRandomPassword {
-		self.userModel.setPassword(self.User.Password)
+		err := self.userModel.setPassword(self.User.Password)
+		if err != nil {
+			return err
+		}
 	}
 	if self.User.Image != "" {
 		self.userModel.Image = &self.User.Image

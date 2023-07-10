@@ -14,7 +14,6 @@ package enricher
 import (
 	"context"
 	"errors"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -135,7 +134,7 @@ func getServerPortsFromQuarkusPropertiesFile(file string) ([]int, error) {
 }
 
 func getServerPortsFromQuarkusApplicationYamlFile(file string) ([]int, error) {
-	yamlFile, err := ioutil.ReadFile(file)
+	yamlFile, err := os.ReadFile(filepath.Clean(file))
 	if err != nil {
 		return []int{}, err
 	}
