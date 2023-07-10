@@ -53,11 +53,12 @@ type DevFileType struct {
 	Language    string
 	ProjectType string
 	Tags        []string
+	Versions    []Version
 }
 
 type DevfileFilter struct {
-	MinVersion string
-	MaxVersion string
+	MinSchemaVersion string
+	MaxSchemaVersion string
 }
 
 type ApplicationFileInfo struct {
