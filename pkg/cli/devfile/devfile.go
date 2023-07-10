@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var logLevel, registry, minVersion, maxVersion string
+var logLevel, registry, minSchemaVersion, maxSchemaVersion string
 
 func NewCmdDevfile() *cobra.Command {
 	devfileCmd := &cobra.Command{
@@ -18,8 +18,8 @@ func NewCmdDevfile() *cobra.Command {
 		Run:   doSelectDevfile,
 	}
 	devfileCmd.Flags().StringVar(&logLevel, "log", "", "log level for alizer. Default value: error. Accepted values: [debug, info, warning]")
-	devfileCmd.Flags().StringVar(&minVersion, "min-version", "", "minimum version of devfile schemaVersion. Minimum allowed version: 2.0.0")
-	devfileCmd.Flags().StringVar(&maxVersion, "max-version", "", "maximum version of devfile schemaVersion. Minimum allowed version: 2.0.0")
+	devfileCmd.Flags().StringVar(&minSchemaVersion, "min-schema-version", "", "minimum version of devfile schemaVersion. Minimum allowed version: 2.0.0")
+	devfileCmd.Flags().StringVar(&maxSchemaVersion, "max-schema-version", "", "maximum version of devfile schemaVersion. Minimum allowed version: 2.0.0")
 	devfileCmd.Flags().StringVarP(&registry, "registry", "r", "", "registry where to download the devfiles. Default value: https://registry.devfile.io")
 	return devfileCmd
 }
@@ -38,8 +38,8 @@ func doSelectDevfile(cmd *cobra.Command, args []string) {
 		return
 	}
 	filter := model.DevfileFilter{
-		MinVersion: minVersion,
-		MaxVersion: maxVersion,
+		MinSchemaVersion: minSchemaVersion,
+		MaxSchemaVersion: maxSchemaVersion,
 	}
 	utils.PrintPrettifyOutput(recognizer.MatchDevfiles(args[0], registry, filter))
 }
