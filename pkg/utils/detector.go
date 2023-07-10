@@ -19,7 +19,7 @@ import (
 	"encoding/xml"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -83,7 +83,7 @@ func IsPathOfWantedFile(path string, wantedFile string) bool {
 
 // IsTagInFile checks if the file contains the tag.
 func IsTagInFile(file string, tag string) (bool, error) {
-	contentInByte, err := ioutil.ReadFile(file)
+	contentInByte, err := os.ReadFile(filepath.Clean(file))
 	if err != nil {
 		return false, err
 	}
@@ -143,7 +143,7 @@ func GetPomFileContent(pomFilePath string) (schema.Pom, error) {
 	if err != nil {
 		return schema.Pom{}, err
 	}
-	byteValue, _ := ioutil.ReadAll(xmlFile)
+	byteValue, _ := io.ReadAll(xmlFile)
 
 	var pom schema.Pom
 	err = xml.Unmarshal(byteValue, &pom)
@@ -298,7 +298,7 @@ func isFileInRoot(root string, file string) bool {
 
 // GetFilePathsInRoot returns a slice of all files in the root.
 func GetFilePathsInRoot(root string) ([]string, error) {
-	fileInfos, err := ioutil.ReadDir(root)
+	fileInfos, err := os.ReadDir(root)
 	if err != nil {
 		return nil, err
 	}
@@ -310,7 +310,7 @@ func GetFilePathsInRoot(root string) ([]string, error) {
 }
 
 func ConvertPropertiesFileAsPathToMap(path string) (map[string]string, error) {
-	bytes, err := ioutil.ReadFile(path)
+	bytes, err := os.ReadFile(filepath.Clean(path))
 	if err != nil {
 		return nil, err
 	}
@@ -426,7 +426,7 @@ func readAnyApplicationFile(root string, propsFiles []model.ApplicationFileInfo,
 		path = GetAnyApplicationFilePath(root, propsFiles, ctx)
 	}
 	if path != "" {
-		return ioutil.ReadFile(path)
+		return os.ReadFile(filepath.Clean(path))
 	}
 	return nil, errors.New("no file found")
 }

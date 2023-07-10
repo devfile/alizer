@@ -9,8 +9,8 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"gopkg.in/go-playground/validator.v8"
 
-	"github.com/gin-gonic/gin/binding"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
 var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
@@ -19,14 +19,14 @@ var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345
 func RandString(n int) string {
 	b := make([]rune, n)
 	for i := range b {
-		b[i] = letters[rand.Intn(len(letters))]
+		b[i] = letters[rand.Intn(len(letters))] // #nosec G404
 	}
 	return string(b)
 }
 
 // Keep this two config private, it should not expose to open source
-const NBSecretPassword = "A String Very Very Very Strong!!@##$!@#$"
-const NBRandomPassword = "A String Very Very Very Niubilty!!@##$!@#4"
+const NBSecretPassword = "A String Very Very Very Strong!!@##$!@#$"   // #nosec G101
+const NBRandomPassword = "A String Very Very Very Niubilty!!@##$!@#4" // #nosec G101
 
 // A Util function to generate jwt_token which can be used in the request header
 func GenToken(id uint) string {
@@ -42,7 +42,8 @@ func GenToken(id uint) string {
 }
 
 // My own Error type that will help return my customized Error info
-//  {"database": {"hello":"no such table", error: "not_exists"}}
+//
+//	{"database": {"hello":"no such table", error: "not_exists"}}
 type CommonError struct {
 	Errors map[string]interface{} `json:"errors"`
 }

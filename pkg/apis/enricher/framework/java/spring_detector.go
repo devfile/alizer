@@ -14,7 +14,7 @@ package enricher
 import (
 	"context"
 	"errors"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 
 	"github.com/devfile/alizer/pkg/apis/model"
@@ -122,7 +122,7 @@ func getPortFromMap(props map[string]string, key string) int {
 }
 
 func getServerPortsFromYamlFile(file string) ([]int, error) {
-	yamlFile, err := ioutil.ReadFile(file)
+	yamlFile, err := os.ReadFile(filepath.Clean(file))
 	if err != nil {
 		return []int{}, err
 	}

@@ -4,12 +4,22 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"time"
 )
 
 func main() {
 	http.HandleFunc("/", HelloHandler)
 	fmt.Println("Listening on localhost:8080")
-	http.ListenAndServe(":8080", nil)
+
+	server := &http.Server{
+		Addr:              ":8080",
+		ReadHeaderTimeout: 3 * time.Second,
+	}
+
+	err := server.ListenAndServe()
+	if err != nil {
+		panic(err)
+	}
 }
 
 func HelloHandler(w http.ResponseWriter, r *http.Request) {
