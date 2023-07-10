@@ -2,9 +2,9 @@ package articles
 
 import (
 	_ "fmt"
-	"github.com/jinzhu/gorm"
 	"github.com/gothinkster/golang-gin-realworld-example-app/common"
 	"github.com/gothinkster/golang-gin-realworld-example-app/users"
+	"github.com/jinzhu/gorm"
 	"strconv"
 )
 
@@ -184,7 +184,7 @@ func FindManyArticle(tag, author, limit, offset, favorited string) ([]ArticleMod
 			count = tx.Model(&articleUserModel).Association("FavoriteModels").Count()
 			for _, favorite := range favoriteModels {
 				var model ArticleModel
-				tx.Model(&favorite).Related(&model, "Favorite")
+				tx.Model(&favorite).Related(&model, "Favorite") // #nosec G601
 				models = append(models, model)
 			}
 		}
