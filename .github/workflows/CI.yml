@@ -28,6 +28,22 @@ jobs:
       - name: Build binary
         run: make build
 
+      - name: Check test coverage
+        env:
+            TESTCOVERAGE_THRESHOLD: 80
+        run: |
+              echo "Quality Gate: checking test coverage is above threshold ..."
+              echo "Threshold             : $TESTCOVERAGE_THRESHOLD %"
+              totalCoverage=`go tool cover -func=coverage.out | grep total | grep -Eo '[0-9]+\.[0-9]+'`
+              echo "Current test coverage : $totalCoverage %"
+              if (( $(echo "$totalCoverage $TESTCOVERAGE_THRESHOLD" | awk '{print ($1 > $2)}') )); then
+                  echo "OK"
+              else
+                  echo "Current test coverage is below threshold. Please add more unit tests or adjust threshold to a lower value."
+                  echo "Failed"
+                  exit 1
+              fi
+
       - name: Run Go tests
         run: make test
 
@@ -47,19 +63,3 @@ jobs:
         with:
           # Path to SARIF file relative to the root of the repository
           sarif_file: gosec.sarif
-
-  code-coverage-report:
-    runs-on: ubuntu-20.04
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3.5.3
-        with:
-          persist-credentials: false
-      - name: Set up Go 1.x
-        uses: actions/setup-go@v3
-        with:
-          go-version: 1.19
-      - name: Run tests
-        run: make test
-      - name: Codecov
-        uses: codecov/codecov-action@v3.1.4
