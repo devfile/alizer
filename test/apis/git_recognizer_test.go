@@ -2,7 +2,7 @@ package recognizer
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"sort"
 	"strconv"
@@ -18,17 +18,17 @@ import (
 
 const (
 	repoUrl    = "https://github.com/devfile-resources/alizer-test-resources.git"
-	repoCommit = "2f37ba079800f2d6a33237f09153f5699614f9be"
+	repoCommit = "28a60a19f9368c28b57b4645ae2a43d11f1cb6be"
 )
 
 func TestExternalRepos(t *testing.T) {
 	// read git test file to retrieve all test resources and their expected properties
-	jsonFile, err := ioutil.ReadFile("../git_test.json")
+	jsonFile, err := os.ReadFile("../git_test.json")
 	if err != nil {
 		t.Fatal("Unable to fetch git repositories file to run tests to")
 	}
 	var data []test.GitTestProperties
-	err = json.Unmarshal([]byte(jsonFile), &data)
+	err = json.Unmarshal(jsonFile, &data)
 	if err != nil {
 		t.Fatal("Unable to fetch git repositories file to run tests to")
 	}
