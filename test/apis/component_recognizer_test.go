@@ -297,8 +297,20 @@ func TestComponentDetectionOnDoubleComponents(t *testing.T) {
 	isComponentsInProject(t, "double-components", 2, "javascript", "")
 }
 
+func TestComponentDetectionWithDoubleComponentsDockerFile(t *testing.T) {
+	isComponentsInProject(t, "dockerfile-double-components", 2, "python", "")
+}
+
+func TestComponentDetectionWithNestedComponents(t *testing.T) {
+	isComponentsInProject(t, "dockerfile-nested-inner-double-components", 2, "python", "")
+}
+
+func TestComponentDetectionWithNestedComponents2(t *testing.T) {
+	isComponentsInProject(t, "dockerfile-nested-inner", 1, "python", "")
+}
+
 func TestComponentDetectionWithGitIgnoreRule(t *testing.T) {
-	testingProjectPath := GetTestProjectPath("component-wrapped-in-folder")
+	testingProjectPath := getTestProjectPath("component-wrapped-in-folder")
 	settings := model.DetectionSettings{
 		BasePath: testingProjectPath,
 	}
@@ -335,7 +347,7 @@ func TestComponentDetectionWithGitIgnoreRule(t *testing.T) {
 
 func TestComponentDetectionMultiProjects(t *testing.T) {
 	components := getComponentsFromTestProject(t, "")
-	nComps := 50
+	nComps := 54
 	if len(components) != nComps {
 		t.Errorf("Expected " + strconv.Itoa(nComps) + " components but found " + strconv.Itoa(len(components)))
 	}
@@ -360,6 +372,14 @@ func TestPortDetectionWithDockerFile(t *testing.T) {
 
 func TestPortDetectionWithContainerFile(t *testing.T) {
 	testPortDetectionInProject(t, "containerfile", []int{8085})
+}
+
+func TestPortDetectionWithOrphanContainerFile(t *testing.T) {
+	testPortDetectionInProject(t, "containerfile-orphan", []int{8090})
+}
+
+func TestPortDetectionWithOrphanDockerFile(t *testing.T) {
+	testPortDetectionInProject(t, "dockerfile-orphan", []int{8085})
 }
 
 func TestPortDetectionWithSecondLevelDockerFile(t *testing.T) {

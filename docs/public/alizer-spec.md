@@ -156,6 +156,7 @@ Component detection is only enabled for a subset of programming languages
 - Python
 - Rust
 - PHP
+- Dockerfile
 
 To perform component detection Alizer splits the languages in two sets: `languages with a configuration file` (like Java
 which can have a pom.xml or a build.gradle) and `languages without a configuration file` (such as Python which does not have a

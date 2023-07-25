@@ -118,7 +118,7 @@ func TestGetLanguageByName(t *testing.T) {
 		},
 		{
 			name:         "JavaScript",
-			expectedItem: LanguageItem{Name: "JavaScript", Aliases: []string{"js", "node", "nodejs", "TypeScript"}, Kind: "programming", Group: "", ConfigurationFiles: []string{"[^-]package.json"}, ExcludeFolders: []string{"node_modules"}, Component: true, disabled: false},
+			expectedItem: LanguageItem{Name: "JavaScript", Aliases: []string{"js", "node", "nodejs", "TypeScript"}, Kind: "programming", Group: "", ConfigurationFiles: []string{"package.json"}, ExcludeFolders: []string{"node_modules"}, Component: true, disabled: false},
 			expectedErr:  nil,
 		},
 		{
@@ -133,7 +133,12 @@ func TestGetLanguageByName(t *testing.T) {
 		},
 		{
 			name:         "PHP",
-			expectedItem: LanguageItem{Name: "PHP", Aliases: []string{"inc"}, Kind: "programming", Group: "", ConfigurationFiles: []string{"composer.json", "[^-]package.json"}, ExcludeFolders: []string(nil), Component: true, disabled: false},
+			expectedItem: LanguageItem{Name: "PHP", Aliases: []string{"inc"}, Kind: "programming", Group: "", ConfigurationFiles: []string{"composer.json", "package.json"}, ExcludeFolders: []string(nil), Component: true, disabled: false},
+			expectedErr:  nil,
+		},
+		{
+			name:         "Dockerfile",
+			expectedItem: LanguageItem{Name: "Dockerfile", Aliases: []string{"Containerfile"}, Kind: "programming", Group: "", ConfigurationFiles: []string{"[Dd]ockerfile(\\.\\w+)?$", "[Cc]ontainerfile(\\.\\w+)?$"}, ExcludeFolders: []string(nil), Component: false, ContainerComponent: true, disabled: false},
 			expectedErr:  nil,
 		},
 	}
@@ -194,7 +199,7 @@ func TestGetLanguageByAlias(t *testing.T) {
 		{
 			name:         "JavaScript",
 			alias:        "TypeScript",
-			expectedItem: LanguageItem{Name: "JavaScript", Aliases: []string{"js", "node", "nodejs", "TypeScript"}, Kind: "programming", Group: "", ConfigurationFiles: []string{"[^-]package.json"}, ExcludeFolders: []string{"node_modules"}, Component: true, disabled: false},
+			expectedItem: LanguageItem{Name: "JavaScript", Aliases: []string{"js", "node", "nodejs", "TypeScript"}, Kind: "programming", Group: "", ConfigurationFiles: []string{"package.json"}, ExcludeFolders: []string{"node_modules"}, Component: true, disabled: false},
 			expectedErr:  nil,
 		},
 		{
@@ -206,7 +211,13 @@ func TestGetLanguageByAlias(t *testing.T) {
 		{
 			name:         "PHP",
 			alias:        "inc",
-			expectedItem: LanguageItem{Name: "PHP", Aliases: []string{"inc"}, Kind: "programming", Group: "", ConfigurationFiles: []string{"composer.json", "[^-]package.json"}, ExcludeFolders: []string(nil), Component: true, disabled: false},
+			expectedItem: LanguageItem{Name: "PHP", Aliases: []string{"inc"}, Kind: "programming", Group: "", ConfigurationFiles: []string{"composer.json", "package.json"}, ExcludeFolders: []string(nil), Component: true, disabled: false},
+			expectedErr:  nil,
+		},
+		{
+			name:         "Dockerfile",
+			alias:        "Containerfile",
+			expectedItem: LanguageItem{Name: "Dockerfile", Aliases: []string{"Containerfile"}, Kind: "programming", Group: "", ConfigurationFiles: []string{"[Dd]ockerfile(\\.\\w+)?$", "[Cc]ontainerfile(\\.\\w+)?$"}, ExcludeFolders: []string(nil), Component: false, ContainerComponent: true, disabled: false},
 			expectedErr:  nil,
 		},
 	}

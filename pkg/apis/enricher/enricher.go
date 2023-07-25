@@ -93,6 +93,7 @@ func getEnrichers() []Enricher {
 		&DotNetEnricher{},
 		&GoEnricher{},
 		&PHPEnricher{},
+		&DockerEnricher{},
 	}
 }
 

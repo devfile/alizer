@@ -10,7 +10,7 @@
                         "tools": [
                             "NodeJs"
                         ]
-                    }        
+                    }
                 ],
                 "name": "event-handler"
             },
@@ -23,7 +23,7 @@
                         "tools": [
                             "1.14"
                         ]
-                    }      
+                    }
                 ]
             }
         ]
@@ -42,7 +42,7 @@
                         "tools": [
                             "1.14"
                         ]
-                    }  
+                    }
                 ]
             }
         ]
@@ -192,7 +192,7 @@
                 "Ports": null
             }
         ]
-    },    
+    },
     {
         "directory": "jhipster-sample-app-micronaut",
         "components": [
@@ -917,7 +917,7 @@
                 "languages": [
                     {
                         "name": "JavaScript",
-                        "frameworks": [ 
+                        "frameworks": [
                             "Svelte"
                         ],
                         "tools": [
@@ -932,7 +932,7 @@
                 "languages": [
                     {
                         "name": "JavaScript",
-                        "frameworks": [ 
+                        "frameworks": [
                             "Express"
                         ],
                         "tools": [
@@ -950,7 +950,7 @@
                 "languages": [
                     {
                         "name": "JavaScript",
-                        "frameworks": [ 
+                        "frameworks": [
                             "Vue"
                         ],
                         "tools": [
@@ -965,7 +965,7 @@
                 "languages": [
                     {
                         "name": "JavaScript",
-                        "frameworks": [ 
+                        "frameworks": [
                             "Express"
                         ],
                         "tools": [
@@ -988,7 +988,7 @@
                 "languages": [
                     {
                         "name": "JavaScript",
-                        "frameworks": [ 
+                        "frameworks": [
                             "Express"
                         ],
                         "tools": [
@@ -1008,7 +1008,7 @@
                 "languages": [
                     {
                         "name": "JavaScript",
-                        "frameworks": [ 
+                        "frameworks": [
                             "Express"
                         ],
                         "tools": [
@@ -1023,7 +1023,7 @@
                 "languages": [
                     {
                         "name": "JavaScript",
-                        "frameworks": [ 
+                        "frameworks": [
                             "Express"
                         ],
                         "tools": [
@@ -1043,7 +1043,7 @@
                 "languages": [
                     {
                         "name": "JavaScript",
-                        "frameworks": [ 
+                        "frameworks": [
                             "Express"
                         ],
                         "tools": [
@@ -1058,7 +1058,7 @@
                 "languages": [
                     {
                         "name": "JavaScript",
-                        "frameworks": [ 
+                        "frameworks": [
                             "Express"
                         ],
                         "tools": [
@@ -1091,7 +1091,7 @@
                 "languages": [
                     {
                         "name": "JavaScript",
-                        "frameworks": [ 
+                        "frameworks": [
                             "Express"
                         ],
                         "tools": [
@@ -1111,7 +1111,7 @@
                 "languages": [
                     {
                         "name": "Java",
-                        "frameworks": [ 
+                        "frameworks": [
                             "Quarkus"
                         ],
                         "tools": [
@@ -1125,7 +1125,7 @@
                 "languages": [
                     {
                         "name": "JavaScript",
-                        "frameworks": [ 
+                        "frameworks": [
                             "Vue"
                         ],
                         "tools": [
@@ -1145,7 +1145,7 @@
                 "languages": [
                     {
                         "name": "Java",
-                        "frameworks": [ 
+                        "frameworks": [
                             "Micronaut"
                         ],
                         "tools": [
@@ -1159,7 +1159,7 @@
                 "languages": [
                     {
                         "name": "Java",
-                        "frameworks": [ 
+                        "frameworks": [
                             "Quarkus"
                         ],
                         "tools": [
@@ -1173,7 +1173,7 @@
                 "languages": [
                     {
                         "name": "Java",
-                        "frameworks": [ 
+                        "frameworks": [
                             "Spring"
                         ],
                         "tools": [
@@ -1192,7 +1192,7 @@
                 "languages": [
                     {
                         "name": "JavaScript",
-                        "frameworks": [ 
+                        "frameworks": [
                             "Express"
                         ],
                         "tools": [
@@ -1205,6 +1205,63 @@
         ]
     },
     {
+        "directory": "ocparcade",
+        "components": [
+            {
+                "name": "js-dos-template",
+                "languages": [
+                    {
+                        "name": "JavaScript",
+                        "frameworks": [],
+                        "tools": [
+                            "NodeJs",
+                            "Node.js"
+                        ]
+                    }
+                ]
+            },
+            {
+                "name": "js-dos-template",
+                "languages": [
+                    {
+                        "name": "JavaScript",
+                        "frameworks": [],
+                        "tools": [
+                            "NodeJs",
+                            "Node.js"
+                        ]
+                    }
+                ]
+            },
+            {
+                "name": "arkanoid",
+                "languages": [
+                    {
+                        "name": "Dockerfile",
+                        "frameworks": [],
+                        "tools": []
+                    }
+                ],
+                "ports": [
+                    8080
+                ]
+            },
+            {
+                "name": "epicpinball",
+                "languages": [
+                    {
+                        "name": "Dockerfile",
+                        "frameworks": [],
+                        "tools": []
+                    }
+                ],
+                "ports": [
+                    8081
+                ]
+            }
+        ]
+    },
+    {
         "directory": "nodejs-messaging-work-queue",
         "components": [
             {
@@ -1212,7 +1269,7 @@
                 "languages": [
                     {
                         "name": "JavaScript",
-                        "frameworks": [ 
+                        "frameworks": [
                             "Express"
                         ],
                         "tools": [
@@ -1227,7 +1284,7 @@
                 "languages": [
                     {
                         "name": "JavaScript",
-                        "frameworks": [ 
+                        "frameworks": [
                             "Express"
                         ],
                         "tools": [
@@ -1247,7 +1304,7 @@
                 "languages": [
                     {
                         "name": "JavaScript",
-                        "frameworks": [ 
+                        "frameworks": [
                             "Express"
                         ],
                         "tools": [
@@ -1262,7 +1319,7 @@
                 "languages": [
                     {
                         "name": "JavaScript",
-                        "frameworks": [ 
+                        "frameworks": [
                             "Express"
                         ],
                         "tools": [

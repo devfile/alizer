@@ -11,8 +11,6 @@
 package recognizer
 
 import (
-	"path/filepath"
-	"runtime"
 	"strings"
 	"testing"
 
@@ -53,7 +51,7 @@ func TestAnalyzeOnGoGin(t *testing.T) {
 }
 
 func isLanguageInProject(t *testing.T, project string, wantedLanguage string, wantedTools []string, wantedFrameworks []string) {
-	testingProjectPath := GetTestProjectPath(project)
+	testingProjectPath := getTestProjectPath(project)
 
 	languages, err := recognizer.Analyze(testingProjectPath)
 	if err != nil {
@@ -108,10 +106,4 @@ func hasWantedTool(language model.Language, wantedTool string) bool {
 		}
 	}
 	return false
-}
-
-func GetTestProjectPath(folder string) string {
-	_, b, _, _ := runtime.Caller(0)
-	basepath := filepath.Dir(b)
-	return filepath.Join(basepath, "..", "..", "resources/projects", folder)
 }
