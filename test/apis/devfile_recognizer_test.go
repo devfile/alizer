@@ -231,7 +231,7 @@ func getExceptedVersionsUrl(url, minSchemaVersion, maxSchemaVersion string, err 
 
 func detectDevFiles(t *testing.T, projectName string, devFilesName []string) {
 	detectDevFilesFunc := func(devFileTypes []model.DevFileType) ([]int, error) {
-		testingProjectPath := GetTestProjectPath(projectName)
+		testingProjectPath := getTestProjectPath(projectName)
 		return recognizer.SelectDevFilesFromTypes(testingProjectPath, devFileTypes)
 	}
 	detectDevFilesInner(t, devFilesName, detectDevFilesFunc)
@@ -239,7 +239,7 @@ func detectDevFiles(t *testing.T, projectName string, devFilesName []string) {
 
 func detectDevFile(t *testing.T, projectName string, devFilesName []string) {
 	detectDevFilesFunc := func(devFileTypes []model.DevFileType) ([]int, error) {
-		testingProjectPath := GetTestProjectPath(projectName)
+		testingProjectPath := getTestProjectPath(projectName)
 		devfileIndex, err := recognizer.SelectDevFileFromTypes(testingProjectPath, devFileTypes)
 		return []int{devfileIndex}, err
 	}
@@ -248,7 +248,7 @@ func detectDevFile(t *testing.T, projectName string, devFilesName []string) {
 
 func detectDevFilesUsingLanguages(t *testing.T, projectName string, languages []model.Language, devFileName []string) {
 	if projectName != "" {
-		testingProjectPath := GetTestProjectPath(projectName)
+		testingProjectPath := getTestProjectPath(projectName)
 		var err error
 		languages, err = recognizer.Analyze(testingProjectPath)
 		if err != nil {

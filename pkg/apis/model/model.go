@@ -27,12 +27,13 @@ type DetectionSettings struct {
 }
 
 type Language struct {
-	Name           string
-	Aliases        []string
-	Weight         float64
-	Frameworks     []string
-	Tools          []string
-	CanBeComponent bool
+	Name                    string
+	Aliases                 []string
+	Weight                  float64
+	Frameworks              []string
+	Tools                   []string
+	CanBeComponent          bool
+	CanBeContainerComponent bool
 }
 
 type Component struct {

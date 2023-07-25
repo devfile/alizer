@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"path/filepath"
+	"runtime"
 	"strconv"
 	"strings"
 	"testing"
@@ -30,8 +32,7 @@ func updateContent(filePath string, data []byte) error {
 }
 
 func getComponentsFromTestProject(t *testing.T, project string) []model.Component {
-	testingProjectPath := GetTestProjectPath(project)
-
+	testingProjectPath := getTestProjectPath(project)
 	return getComponentsFromProjectInner(t, testingProjectPath)
 }
 
@@ -96,4 +97,10 @@ func testPortDetectionInProject(t *testing.T, project string, ports []int) {
 		}
 		found = false
 	}
+}
+
+func getTestProjectPath(folder string) string {
+	_, b, _, _ := runtime.Caller(0)
+	basepath := filepath.Dir(b)
+	return filepath.Join(basepath, "..", "..", "resources/projects", folder)
 }
