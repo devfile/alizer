@@ -546,5 +546,5 @@ func getDevFileTypes() []model.DevFileType {
 func getTestProjectPath(folder string) string {
 	_, b, _, _ := runtime.Caller(0)
 	basepath := filepath.Dir(b)
-	return filepath.Join(basepath, "..", "..", "resources/projects", folder)
+	return filepath.Join(basepath, "..", "..", "..", "resources/projects", folder)
 }
