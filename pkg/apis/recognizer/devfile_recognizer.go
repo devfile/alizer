@@ -109,7 +109,7 @@ func MatchDevfiles(path string, url string, filter model.DevfileFilter) ([]model
 	alizerLogger := utils.GetOrCreateLogger()
 	alizerLogger.V(0).Info("Starting devfile matching")
 	alizerLogger.V(1).Info(fmt.Sprintf("Downloading devfiles from registry %s", url))
-	devFileTypesFromRegistry, err := downloadDevFileTypesFromRegistry(url, filter)
+	devFileTypesFromRegistry, err := DownloadDevFileTypesFromRegistry(url, filter)
 	if err != nil {
 		return []model.DevFileType{}, err
 	}
@@ -121,7 +121,7 @@ func SelectDevFilesFromRegistry(path string, url string) ([]model.DevFileType, e
 	alizerLogger := utils.GetOrCreateLogger()
 	alizerLogger.V(0).Info("Starting devfile matching")
 	alizerLogger.V(1).Info(fmt.Sprintf("Downloading devfiles from registry %s", url))
-	devFileTypesFromRegistry, err := downloadDevFileTypesFromRegistry(url, model.DevfileFilter{MinSchemaVersion: "", MaxSchemaVersion: ""})
+	devFileTypesFromRegistry, err := DownloadDevFileTypesFromRegistry(url, model.DevfileFilter{MinSchemaVersion: "", MaxSchemaVersion: ""})
 	if err != nil {
 		return []model.DevFileType{}, err
 	}
@@ -145,7 +145,7 @@ func selectDevfiles(path string, devFileTypesFromRegistry []model.DevFileType) (
 }
 
 func SelectDevFileFromRegistry(path string, url string) (model.DevFileType, error) {
-	devFileTypes, err := downloadDevFileTypesFromRegistry(url, model.DevfileFilter{MinSchemaVersion: "", MaxSchemaVersion: ""})
+	devFileTypes, err := DownloadDevFileTypesFromRegistry(url, model.DevfileFilter{MinSchemaVersion: "", MaxSchemaVersion: ""})
 	if err != nil {
 		return model.DevFileType{}, err
 	}
@@ -203,7 +203,7 @@ func GetUrlWithVersions(url, minSchemaVersion, maxSchemaVersion string) (string,
 	}
 }
 
-func downloadDevFileTypesFromRegistry(url string, filter model.DevfileFilter) ([]model.DevFileType, error) {
+func DownloadDevFileTypesFromRegistry(url string, filter model.DevfileFilter) ([]model.DevFileType, error) {
 	url = adaptUrl(url)
 	tmpUrl := appendIndexPath(url)
 	url, err := GetUrlWithVersions(tmpUrl, filter.MinSchemaVersion, filter.MaxSchemaVersion)
