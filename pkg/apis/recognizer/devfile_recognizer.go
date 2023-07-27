@@ -129,7 +129,8 @@ func SelectDevFilesFromRegistry(path string, url string) ([]model.DevFileType, e
 	return selectDevfiles(path, devFileTypesFromRegistry)
 }
 
-func selectDevfiles(path string, devFileTypesFromRegistry []model.DevFileType) ([]model.DevFileType, error) {
+// selectDevfiles is exposed as global var in the purpose of mocking tests
+var selectDevfiles = func(path string, devFileTypesFromRegistry []model.DevFileType) ([]model.DevFileType, error) {
 	indexes, err := SelectDevFilesFromTypes(path, devFileTypesFromRegistry)
 	if err != nil {
 		return []model.DevFileType{}, err
@@ -203,7 +204,8 @@ func GetUrlWithVersions(url, minSchemaVersion, maxSchemaVersion string) (string,
 	}
 }
 
-func DownloadDevFileTypesFromRegistry(url string, filter model.DevfileFilter) ([]model.DevFileType, error) {
+// DownloadDevFileTypesFromRegistry is exposed as a global variable for the purpose of running mock tests
+var DownloadDevFileTypesFromRegistry = func(url string, filter model.DevfileFilter) ([]model.DevFileType, error) {
 	url = adaptUrl(url)
 	tmpUrl := appendIndexPath(url)
 	url, err := GetUrlWithVersions(tmpUrl, filter.MinSchemaVersion, filter.MaxSchemaVersion)
