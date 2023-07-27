@@ -1,6 +1,33 @@
 #!/bin/bash
 
-# Fetch all entries from registries
+# This script runs an E2E check for alizer project and a list
+# of given registries. At the moment we check 2 different registries
+# the devfile community registry and the redhat product registry.
+
+# The steps of this script are:
+#   1. Generates a JSON list for all registries and their entries.
+#   In order to do that it fetches the list of all stacks from the
+#   registry and tries to fetch more info for its starterprojects.
+#   The format of the json list is:
+#    [
+#        {
+#           "Devfile": "name of the stack",
+#           "Repo": "url of the repo",
+#           "Revision": "revision to clone",
+#           "SubDir": "sub-directory inside repo",
+#       },
+#   ]
+
+#   2. After the list of stacks is generated it loops all generated
+#   enries.
+
+#   2a. For each entry it clones the given repo. If a revision is given
+#   it clones a --single-branch for the given revision:
+#        git clone --single-branch <branch> <repoUrl> tmp/<devfile_name>
+
+#   2b. It runs the alizer binary against the cloned project and checks
+#   if the devfile name is inside the list of matched devfiles alizer
+#   returns.
 echo ":: Creating Registry Entries JSON..."
 echo ""
 echo ""
