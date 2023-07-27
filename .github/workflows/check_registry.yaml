@@ -2,7 +2,7 @@ on:
   schedule:
   - cron: "0 3 * * *"
 
-name: Production & Community Registries Check
+name: Product & Community Registries Check
 
 defaults:
   run:
