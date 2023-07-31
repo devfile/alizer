@@ -30,7 +30,6 @@
 #   returns.
 echo ":: Creating Registry Entries JSON..."
 echo ""
-echo ""
 REGISTRY_ENTRIES_OUTPUT=$(go run test/check_registry/check_registry.go)
 ENTRIES_PASSED=0
 ENTRIES_FAILED=0
@@ -49,7 +48,6 @@ do
     # Clone project according to data
     echo ":: Cloning project for entry <$devfile>"
     echo ""
-    echo ""
     
     if [ "$revision" != "" ]; then
         echo "$devfile -> found revision $revision for repo $repo"
@@ -64,9 +62,7 @@ do
 
     # Checking with alizer
     echo ""
-    echo ""
     echo ":: Running alizer against path $path"
-    echo ""
     echo ""
     alizer_output=$(./alizer devfile --registry $registry $path)
     for raw_selected_devfile_name in $(echo $alizer_output | jq -c '.[].Name')
