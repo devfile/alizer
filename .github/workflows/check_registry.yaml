@@ -31,5 +31,5 @@ jobs:
       - name: Run registries check
         id: build
         run: |
-          go build alizer.go
+          make build
           bash test/check_registry/check_registry.sh
