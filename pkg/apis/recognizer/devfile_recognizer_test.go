@@ -12,10 +12,12 @@ package recognizer
  ******************************************************************************/
 import (
 	"fmt"
+	"path/filepath"
+	"reflect"
+	"runtime"
 	"testing"
 
 	"github.com/devfile/alizer/pkg/apis/model"
-	"github.com/devfile/alizer/pkg/apis/recognizer"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -205,11 +207,60 @@ func TestGetUrlWithVersions(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result, err := recognizer.GetUrlWithVersions(tt.testUrl, tt.minSchemaVersion, tt.maxSchemaVersion)
+			result, err := GetUrlWithVersions(tt.testUrl, tt.minSchemaVersion, tt.maxSchemaVersion)
 			if err != nil {
 				assert.EqualValues(t, tt.expectedError, err)
 			} else {
 				assert.EqualValues(t, getExceptedVersionsUrl(tt.testUrl, tt.minSchemaVersion, tt.maxSchemaVersion, tt.expectedError), result)
+			}
+		})
+	}
+}
+
+func TestMatchDevfiles(t *testing.T) {
+	tests := []struct {
+		name                string
+		filter              model.DevfileFilter
+		mockFunc            func()
+		url                 string
+		path                string
+		expectedDevfileType model.DevFileType
+		expectingErr        bool
+	}{
+		{
+			name:   "Match devfile success",
+			filter: model.DevfileFilter{},
+			path:   "some-path",
+			url:    "some-url",
+			expectedDevfileType: model.DevFileType{
+				Name:        "mocked-stack",
+				Language:    "python",
+				ProjectType: "python",
+				Tags:        []string{"python"},
+				Versions:    []model.Version{},
+			},
+			expectingErr: false,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(tt *testing.T) {
+			// mock DownloadDevFileTypesFromRegistry
+			DownloadDevFileTypesFromRegistry = func(url string, filter model.DevfileFilter) ([]model.DevFileType, error) {
+				return []model.DevFileType{tc.expectedDevfileType}, nil
+			}
+			selectDevfiles = func(path string, devFileTypesFromRegistry []model.DevFileType) ([]model.DevFileType, error) {
+				return []model.DevFileType{tc.expectedDevfileType}, nil
+			}
+			devfileType, err := MatchDevfiles("test-path", "some-url", model.DevfileFilter{})
+
+			errExist := err != nil
+			if tc.expectingErr != errExist {
+				tt.Errorf("Error expectation not met, want %v, got %v", tc.expectingErr, errExist)
+			}
+
+			if !reflect.DeepEqual(tc.expectedDevfileType.Name, devfileType[0].Name) {
+				tt.Errorf("Error, user profile expectation not met, want %+v, got %+v", tc.expectedDevfileType, devfileType)
 			}
 		})
 	}
@@ -232,7 +283,7 @@ func getExceptedVersionsUrl(url, minSchemaVersion, maxSchemaVersion string, err 
 func detectDevFiles(t *testing.T, projectName string, devFilesName []string) {
 	detectDevFilesFunc := func(devFileTypes []model.DevFileType) ([]int, error) {
 		testingProjectPath := getTestProjectPath(projectName)
-		return recognizer.SelectDevFilesFromTypes(testingProjectPath, devFileTypes)
+		return SelectDevFilesFromTypes(testingProjectPath, devFileTypes)
 	}
 	detectDevFilesInner(t, devFilesName, detectDevFilesFunc)
 }
@@ -240,7 +291,7 @@ func detectDevFiles(t *testing.T, projectName string, devFilesName []string) {
 func detectDevFile(t *testing.T, projectName string, devFilesName []string) {
 	detectDevFilesFunc := func(devFileTypes []model.DevFileType) ([]int, error) {
 		testingProjectPath := getTestProjectPath(projectName)
-		devfileIndex, err := recognizer.SelectDevFileFromTypes(testingProjectPath, devFileTypes)
+		devfileIndex, err := SelectDevFileFromTypes(testingProjectPath, devFileTypes)
 		return []int{devfileIndex}, err
 	}
 	detectDevFilesInner(t, devFilesName, detectDevFilesFunc)
@@ -250,13 +301,13 @@ func detectDevFilesUsingLanguages(t *testing.T, projectName string, languages []
 	if projectName != "" {
 		testingProjectPath := getTestProjectPath(projectName)
 		var err error
-		languages, err = recognizer.Analyze(testingProjectPath)
+		languages, err = Analyze(testingProjectPath)
 		if err != nil {
 			t.Error(err)
 		}
 	}
 	detectDevFileFunc := func(devFileTypes []model.DevFileType) ([]int, error) {
-		return recognizer.SelectDevFilesUsingLanguagesFromTypes(languages, devFileTypes)
+		return SelectDevFilesUsingLanguagesFromTypes(languages, devFileTypes)
 	}
 	detectDevFilesInner(t, devFileName, detectDevFileFunc)
 }
@@ -490,4 +541,10 @@ func getDevFileTypes() []model.DevFileType {
 			},
 		},
 	}
+}
+
+func getTestProjectPath(folder string) string {
+	_, b, _, _ := runtime.Caller(0)
+	basepath := filepath.Dir(b)
+	return filepath.Join(basepath, "..", "..", "..", "resources/projects", folder)
 }
