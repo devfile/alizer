@@ -22,6 +22,8 @@ type StarterProject struct {
 type ProjectReplacement struct {
 	Devfile         string
 	ReplacementRepo string
+	Revision        string
+	SubDir          string
 }
 
 type RegistryCheckJSONItem struct {
@@ -45,18 +47,32 @@ func getProjectReplacements() []ProjectReplacement {
 		{
 			Devfile:         "java-wildfly",
 			ReplacementRepo: "https://github.com/wildfly-extras/wildfly-devfile-examples.git",
+			SubDir:          "",
+			Revision:        "qs",
+		},
+		{
+			Devfile:         "java-wildfly-bootable-jar",
+			ReplacementRepo: "https://github.com/wildfly-extras/wildfly-devfile-examples.git",
+			SubDir:          "",
+			Revision:        "qs",
 		},
 		{
 			Devfile:         "java-quarkus",
 			ReplacementRepo: "https://github.com/devfile-samples/devfile-sample-code-with-quarkus",
+			SubDir:          "",
+			Revision:        "",
 		},
 		{
 			Devfile:         "java-jboss-eap-xp",
 			ReplacementRepo: "https://github.com/jboss-developer/jboss-eap-quickstarts",
+			SubDir:          "",
+			Revision:        "",
 		},
 		{
 			Devfile:         "java-jboss-eap-xp-bootable-jar",
 			ReplacementRepo: "https://github.com/jboss-developer/jboss-eap-quickstarts",
+			SubDir:          "",
+			Revision:        "",
 		},
 	}
 }
@@ -79,7 +95,7 @@ func getRegistries() []DevfileRegistry {
 
 // getExcludedEntries: Returns a list of excluded stacks from the check
 func getExcludedEntries() []string {
-	return []string{}
+	return []string{"java-maven", "java-websphereliberty", "java-websphereliberty-gradle"}
 }
 
 func getStarterProjects(url string) ([]StarterProject, error) {
@@ -170,10 +186,14 @@ func main() {
 
 			starterProject := starterProjects[0]
 			repo := starterProject.Repo
+			revision := starterProject.Revision
+			subdir := starterProject.SubDir
 			if repo == "" {
 				for _, projectReplacement := range projectReplacements {
 					if devfileType.Name == projectReplacement.Devfile {
 						repo = projectReplacement.ReplacementRepo
+						revision = projectReplacement.Revision
+						subdir = projectReplacement.SubDir
 					}
 				}
 			}
@@ -181,8 +201,8 @@ func main() {
 				Devfile:  devfileType.Name,
 				Repo:     repo,
 				Registry: registry.Url,
-				Revision: starterProject.Revision,
-				SubDir:   starterProject.SubDir,
+				Revision: revision,
+				SubDir:   subdir,
 			}
 			registryEntriesList = appendIfMissing(registryEntriesList, registryEntryItem)
 		}

@@ -39,7 +39,7 @@ do
     # Assign variables for this entry
     devfile=$(jq -r '.Devfile' <<< $entry)
     path="tmp/$devfile"
-    found_matching=1
+    found_matching="0"
     repo=$(jq -r '.Repo' <<< $entry)
     registry=$(jq -r '.Registry' <<< $entry)
     revision=$(jq -r '.Revision' <<< $entry)
@@ -52,12 +52,14 @@ do
     if [ "$revision" != "" ]; then
         echo "$devfile -> found revision $revision for repo $repo"
         git clone --single-branch --branch $revision $repo tmp/$devfile
+        if [ "$devfile" == "java-wildfly-bootable-jar" ]; then
+            echo "revision: $revision repo: $repo path: tmp/$devfile"
+        fi
     else
         git clone $repo tmp/$devfile
-    fi
-    
-    if [ "$subdir" != "" ]; then
+        if [ "$subdir" != "" ]; then
         path="$path/$subdir"
+        fi
     fi
 
     # Checking with alizer
@@ -69,22 +71,26 @@ do
     do
         selected_devfile_name=$(sed -e 's/^"//' -e 's/"$//' <<<"$raw_selected_devfile_name")
         # Loop through the list of proposed devfiles to find the correct one
-        if [[ "$selected_devfile_name" ==  *"$devfile"* ]]; then
+        if [[ "$selected_devfile_name" ==  *"$devfile"* ]] && [ "$found_matching" == "0" ]; then
             # If devfile name is contained inside selected one success
             echo "------------------"
             echo "SUCCESS - Devfile Name: $devfile <> Matched Devfile Name: $selected_devfile_name"
             echo "------------------"
             echo ""
             let ENTRIES_PASSED++
-            found_matching=1
+            found_matching="1"
         fi
+    done
+
     # If the correct devfile is not matched throw error
     if [ "$found_matching" == "0" ]; then
         let ENTRIES_FAILED++
-        echo "[FAIL] Project $repo matched with $selected_devfile_name name. Expected $devfile (PASSED: $ENTRIES_PASSED / FAILED: $ENTRIES_FAILED)"
+        echo "[FAIL] Failed to match project $repo with expected $devfile. Command ./alizer devfile --registry $registry $path"
+        echo "[FAIL] Output: $alizer_output"
+        echo "(PASSED: $ENTRIES_PASSED / FAILED: $ENTRIES_FAILED)"
+        rm -rf tmp/$devfile
         exit 1
     fi
-    done
     rm -rf tmp/$devfile
 done
 echo "[OK] PASSED: $ENTRIES_PASSED / FAILED: $ENTRIES_FAILED"
