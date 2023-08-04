@@ -31,7 +31,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-go@v4
         with:
-          go-version: '1.19.5'
+          go-version: '1.18'
       - name: Get OS and arch info
         run: |
           GOOSARCH=${{matrix.goosarch}}
