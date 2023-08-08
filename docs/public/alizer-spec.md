@@ -7,7 +7,7 @@ This document outlines the features Alizer offers and how they actually work.
 Currently, Alizer provides 3 detection options:
 
 - _Language Detection_ (Language/Tools/Frameworks)
-- _DevFile Detection_
+- _Devfile Detection_
 - _Component Detection_
 
 ## Language Detection
@@ -129,7 +129,7 @@ At this point, it reads its content looking for dependencies to discover framewo
 }
 ```
 
-## DevFile detection
+## Devfile detection
 
 It is possible to select a devfile from a list of devfile metadatas provided by the caller based on information that
 Alizer extracts from the source.
