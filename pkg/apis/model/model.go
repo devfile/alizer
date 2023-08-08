@@ -49,7 +49,7 @@ type Version struct {
 	Version       string
 }
 
-type DevFileType struct {
+type DevfileType struct {
 	Name        string
 	Language    string
 	ProjectType string
@@ -82,7 +82,7 @@ type PortMatchSubRule struct {
 	SubRegex *regexp.Regexp
 }
 
-type DevFileScore struct {
-	DevFileIndex int
+type DevfileScore struct {
+	DevfileIndex int
 	Score        int
 }

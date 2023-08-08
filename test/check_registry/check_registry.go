@@ -166,7 +166,7 @@ func main() {
 	projectReplacements := getProjectReplacements()
 
 	for _, registry := range devfileRegistries {
-		tmpDevfileTypes, err := recognizer.DownloadDevFileTypesFromRegistry(registry.Url, registry.Filter)
+		tmpDevfileTypes, err := recognizer.DownloadDevfileTypesFromRegistry(registry.Url, registry.Filter)
 		if err != nil {
 			continue
 		}
