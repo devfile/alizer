@@ -97,8 +97,19 @@ It selects a devfile from a list of devfiles (from a devfile registry or other s
 
 ```go
 import "github.com/devfile/alizer/pkg/apis/recognizer"
+import "github.com/devfile/alizer/pkg/apis/model"
 
-devfile, err := recognizer.SelectDevFileFromTypes("your/project/path", devfiles)
+// In case you want specific range of schemaVersion for matched devfiles
+devifileFilter := model.DevfileFilter {
+	MinSchemaVersion: "<minimum-schema-version>",
+	MaxSchemaVersion: "<maximum-schema-version>",
+}
+
+// If you don't want a specific range of schemaVersion values
+devfileFilter := model.DevfileFilter{}
+
+// Call match devfiles func
+devfiles, err := recognizer.MatchDevfiles("myproject", devfiles, devifileFilter)
 ```
 
 ## Outputs
