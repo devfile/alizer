@@ -199,7 +199,7 @@ type Version struct {
 	Version       string
 }
 
-type DevFileType struct {
+type DevfileType struct {
 	Name        string
 	Language    string
 	ProjectType string
