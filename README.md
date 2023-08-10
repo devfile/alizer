@@ -44,8 +44,10 @@ $ go build alizer.go
 
 ```sh
   --log {debug|info|warning}    sets the logging level of the CLI. The arg accepts only 3 values [`debug`, `info`, `warning`]. The default value is `warning` and the logging level is `ErrorLevel`.
+  --no-port-detection if this flag exists then no port detection is applied on the given application. If this flag doesn't exist then we are applying port detection as normal. In case we have both --no-port-detection and --port-detection the --no-port-detection overrides everything.
   --port-detection {docker|compose|source}    port detection strategy to use when detecting a port. Currently supported strategies are 'docker', 'compose' and 'source'. You can pass more strategies at the same time. They will be executed in order. By default Alizer will execute docker, compose and source.
 ```
+**Deprecation Warning:** The `--port-detection` flag soon will be deprecated.
 
 #### alizer devfile
 
