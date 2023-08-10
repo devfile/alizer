@@ -86,7 +86,11 @@ It detects all components which are found in the source tree where each componen
 ```go
 import "github.com/devfile/alizer/pkg/apis/recognizer"
 
+// In case port detection is needed.
 components, err := recognizer.DetectComponents("your/project/path")
+
+// If there is no need for port detection
+components, err := recognizer.DetectComponentsWithoutPortDetection("your/project/path")
 ```
 
 For more info about name detection, see the [name detection](docs/public/name_detection.md) doc.

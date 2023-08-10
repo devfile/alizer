@@ -38,6 +38,11 @@ func DetectComponents(path string) ([]model.Component, error) {
 	return detectComponentsWithPathAndPortStartegy(path, []model.PortDetectionAlgorithm{model.DockerFile, model.Compose, model.Source}, &ctx)
 }
 
+func DetectComponentsWithoutPortDetection(path string) ([]model.Component, error) {
+	ctx := context.Background()
+	return detectComponentsWithPathAndPortStartegy(path, []model.PortDetectionAlgorithm{}, &ctx)
+}
+
 func DetectComponentsInRootWithPathAndPortStartegy(path string, portDetectionStrategy []model.PortDetectionAlgorithm) ([]model.Component, error) {
 	ctx := context.Background()
 	return detectComponentsInRootWithPathAndPortStartegy(path, portDetectionStrategy, &ctx)
