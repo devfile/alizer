@@ -60,7 +60,8 @@ func DetectComponentsWithPathAndPortStartegy(path string, portDetectionStrategy 
 	return detectComponentsWithPathAndPortStartegy(path, portDetectionStrategy, &ctx)
 }
 
-func detectComponentsWithPathAndPortStartegy(path string, portDetectionStrategy []model.PortDetectionAlgorithm, ctx *context.Context) ([]model.Component, error) {
+// detectComponentsWithPathAndPortStartegy is exposed as a global variable for the purpose of running mock tests
+var detectComponentsWithPathAndPortStartegy = func(path string, portDetectionStrategy []model.PortDetectionAlgorithm, ctx *context.Context) ([]model.Component, error) {
 	return detectComponentsWithSettings(model.DetectionSettings{
 		BasePath:              path,
 		PortDetectionStrategy: portDetectionStrategy,
