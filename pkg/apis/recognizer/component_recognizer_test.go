@@ -1,10 +1,54 @@
 package recognizer
 
 import (
-	"github.com/devfile/alizer/pkg/apis/model"
+	"context"
 	"reflect"
 	"testing"
+
+	"github.com/devfile/alizer/pkg/apis/model"
+	"github.com/stretchr/testify/assert"
 )
+
+func TestDetectComponentsWithoutPortDetection(t *testing.T) {
+	tests := []struct {
+		name       string
+		path       string
+		components []model.Component
+		want       bool
+	}{
+		{
+			name: "Case 1: Func successful",
+			path: "/testPath",
+			components: []model.Component{{
+				Name: "test_name",
+				Path: "test/path",
+				Languages: []model.Language{{
+					Name:                    "lang",
+					Aliases:                 []string{"alias"},
+					Weight:                  0.59,
+					Frameworks:              []string{"framework"},
+					Tools:                   []string{"tool"},
+					CanBeComponent:          true,
+					CanBeContainerComponent: true,
+				}},
+				Ports: []int{12345},
+			}},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// mock detectComponentsWithPathAndPortStartegy
+			detectComponentsWithPathAndPortStartegy = func(path string, portDetectionStrategy []model.PortDetectionAlgorithm, ctx *context.Context) ([]model.Component, error) {
+				return tt.components, nil
+			}
+			result, err := DetectComponentsWithoutPortDetection("somePath")
+			if err != nil {
+				t.Errorf("Error: %t", err)
+			}
+			assert.EqualValues(t, tt.components, tt.components, result)
+		})
+	}
+}
 
 func Test_isAnyComponentInDirectPath(t *testing.T) {
 	tests := []struct {
