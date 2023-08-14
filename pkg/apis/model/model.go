@@ -34,6 +34,9 @@ type Language struct {
 	Tools                   []string
 	CanBeComponent          bool
 	CanBeContainerComponent bool
+	//if this is true then if a framework is discovered for one module non-framework modules will be removed
+	//this is useful for Java which often has a lot of support modules that are not components
+	FrameworkPreferred bool
 }
 
 type Component struct {
