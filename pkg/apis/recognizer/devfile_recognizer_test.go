@@ -266,6 +266,52 @@ func TestMatchDevfiles(t *testing.T) {
 	}
 }
 
+func TestGetMainLanguage(t *testing.T) {
+	languageOne := model.Language{
+		Name:   "LanguageOne",
+		Weight: 0.60,
+	}
+	languageTwo := model.Language{
+		Name:   "LanguageTwo",
+		Weight: 0.40,
+	}
+	tests := []struct {
+		name             string
+		languages        []model.Language
+		expectedLanguage model.Language
+		expectingErr     bool
+	}{
+		{
+			name:             "Case1: First greater weight than second",
+			languages:        []model.Language{languageOne, languageTwo},
+			expectedLanguage: languageOne,
+			expectingErr:     false,
+		}, {
+			name:             "Case2: First smaller weight than second",
+			languages:        []model.Language{languageTwo, languageOne},
+			expectedLanguage: languageOne,
+			expectingErr:     false,
+		}, {
+			name:             "Case3: EmptyList",
+			languages:        []model.Language{},
+			expectedLanguage: languageOne,
+			expectingErr:     true,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(tt *testing.T) {
+			mainLanguage, err := getMainLanguage(tc.languages)
+			if tc.expectingErr {
+				if err == nil {
+					tt.Errorf("No error raised for case %s", tc.name)
+				}
+			} else {
+				assert.EqualValues(t, tc.expectedLanguage, mainLanguage)
+			}
+		})
+	}
+}
+
 func getExceptedVersionsUrl(url, minSchemaVersion, maxSchemaVersion string, err error) string {
 	if err != nil {
 		return ""
