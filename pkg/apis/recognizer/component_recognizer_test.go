@@ -21,34 +21,25 @@ func TestDetectComponentsWithoutPortDetection(t *testing.T) {
 	}{
 		{
 			name: "Case 1: Func successful",
-			path: "/testPath",
+			path: "../../../resources/projects/beego",
 			components: []model.Component{{
-				Name: "test_name",
-				Path: "test/path",
-				Languages: []model.Language{{
-					Name:                    "lang",
-					Aliases:                 []string{"alias"},
-					Weight:                  0.59,
-					Frameworks:              []string{"framework"},
-					Tools:                   []string{"tool"},
-					CanBeComponent:          true,
-					CanBeContainerComponent: true,
-				}},
-				Ports: []int{12345},
+				Name: "beego",
+				Path: "../../../resources/projects/beego",
 			}},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			// mock detectComponentsWithPathAndPortStartegy
-			detectComponentsWithPathAndPortStartegy = func(path string, portDetectionStrategy []model.PortDetectionAlgorithm, ctx *context.Context) ([]model.Component, error) {
-				return tt.components, nil
-			}
-			result, err := DetectComponentsWithoutPortDetection("somePath")
+			absPath, err := getAbsolutePath(tt.path)
 			if err != nil {
 				t.Errorf("Error: %t", err)
 			}
-			assert.EqualValues(t, tt.components, tt.components, result)
+			result, err := DetectComponentsWithoutPortDetection(absPath)
+			if err != nil {
+				t.Errorf("Error: %t", err)
+			}
+			assert.EqualValues(t, tt.components[0].Name, result[0].Name)
+			assert.EqualValues(t, absPath, result[0].Path)
 		})
 	}
 }
