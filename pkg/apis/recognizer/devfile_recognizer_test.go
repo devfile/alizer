@@ -266,7 +266,69 @@ func TestMatchDevfiles(t *testing.T) {
 	}
 }
 
-func TestGetMainLanguage(t *testing.T) {
+func Test_selectDevfilesByLanguage(t *testing.T) {
+	language := model.Language{
+		Name:       "LanguageOne",
+		Frameworks: []string{"Framework"},
+	}
+	otherLanguage := model.Language{
+		Name:       "otherLanguage",
+		Frameworks: []string{"otherFramework"},
+	}
+	devfileTypeOne := model.DevfileType{
+		Name:        language.Frameworks[0],
+		Language:    language.Name,
+		ProjectType: language.Frameworks[0],
+		Tags:        []string{},
+	}
+	devfileTypeTwo := model.DevfileType{
+		Name:        "LanguageTwo",
+		Language:    language.Name,
+		ProjectType: language.Name,
+		Tags:        []string{},
+	}
+	tests := []struct {
+		name            string
+		language        model.Language
+		devfileTypes    []model.DevfileType
+		expectedIndexes []int
+		expectingErr    bool
+	}{
+		{
+			name:            "Case1: Simple match by language",
+			language:        language,
+			devfileTypes:    []model.DevfileType{devfileTypeOne},
+			expectedIndexes: []int{0},
+			expectingErr:    false,
+		}, {
+			name:            "Case2: Match by framework",
+			language:        language,
+			devfileTypes:    []model.DevfileType{devfileTypeTwo, devfileTypeOne},
+			expectedIndexes: []int{1},
+			expectingErr:    false,
+		}, {
+			name:            "Case3: No Match",
+			language:        otherLanguage,
+			devfileTypes:    []model.DevfileType{devfileTypeTwo, devfileTypeOne},
+			expectedIndexes: []int{},
+			expectingErr:    true,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(tt *testing.T) {
+			result, err := selectDevfilesByLanguage(tc.language, tc.devfileTypes)
+			if tc.expectingErr {
+				if err == nil {
+					tt.Errorf("No error raised for case %s", tc.name)
+				}
+			} else {
+				assert.EqualValues(t, tc.expectedIndexes, result)
+			}
+		})
+	}
+}
+
+func Test_getMainLanguage(t *testing.T) {
 	languageOne := model.Language{
 		Name:   "LanguageOne",
 		Weight: 0.60,
