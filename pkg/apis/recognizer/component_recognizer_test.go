@@ -257,6 +257,112 @@ func Test_detectComponentsInRootWithSettings(t *testing.T) {
 	}
 }
 
+func TestDetectComponentsInRoot(t *testing.T) {
+	tests := []struct {
+		name               string
+		path               string
+		expectedComponents []model.Component
+		expectingError     bool
+	}{
+		{
+			name: "Case 1: detect components",
+			path: "../../../resources/projects/beego",
+			expectedComponents: []model.Component{
+				{
+					Name: "beego",
+					Path: "../../../resources/projects/beego",
+				},
+			},
+			expectingError: false,
+		},
+		{
+			name:               "Case 2: invalid path",
+			path:               "../../../resources/projects/notexisting",
+			expectedComponents: []model.Component{},
+			expectingError:     true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			absPath, err := getAbsolutePath(tt.path)
+			if err != nil {
+				t.Errorf("test failed: Couldn't locate current working directory")
+			}
+			result, err := DetectComponentsInRoot(absPath)
+			if tt.expectingError {
+				if err == nil {
+					t.Errorf("test Failed: Was expecting path not found")
+				}
+				assert.EqualValues(t, 0, len(result))
+			} else {
+				if len(result) != 1 {
+					t.Errorf("expected 1 component for %s dir", tt.path)
+				}
+				expectedPath, err := getAbsolutePath(tt.expectedComponents[0].Path)
+				if err != nil {
+					t.Errorf("test failed: %s", err)
+				}
+				assert.EqualValues(t, tt.expectedComponents[0].Name, result[0].Name)
+				assert.EqualValues(t, expectedPath, result[0].Path)
+			}
+		})
+	}
+}
+
+func TestDetectComponents(t *testing.T) {
+	tests := []struct {
+		name               string
+		path               string
+		expectedComponents []model.Component
+		expectingError     bool
+	}{
+		{
+			name: "Case 1: detect components",
+			path: "../../../resources/projects/beego",
+			expectedComponents: []model.Component{
+				{
+					Name: "beego",
+					Path: "../../../resources/projects/beego",
+				},
+			},
+			expectingError: false,
+		},
+		{
+			name:               "Case 2: invalid path",
+			path:               "../../../resources/projects/notexisting",
+			expectedComponents: []model.Component{},
+			expectingError:     true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			absPath, err := getAbsolutePath(tt.path)
+			if err != nil {
+				t.Errorf("test failed: Couldn't locate current working directory")
+			}
+			result, err := DetectComponents(absPath)
+			if tt.expectingError {
+				if err == nil {
+					t.Errorf("test Failed: Was expecting path not found")
+				}
+				assert.EqualValues(t, 0, len(result))
+			} else {
+				if len(result) != 1 {
+					t.Errorf("expected 1 component for %s dir", tt.path)
+				}
+				expectedPath, err := getAbsolutePath(tt.expectedComponents[0].Path)
+				if err != nil {
+					t.Errorf("test failed: %s", err)
+				}
+				assert.EqualValues(t, tt.expectedComponents[0].Name, result[0].Name)
+				assert.EqualValues(t, expectedPath, result[0].Path)
+			}
+		})
+	}
+}
+
 func TestDetectComponentsInRootWithSettings(t *testing.T) {
 	tests := []struct {
 		name               string
