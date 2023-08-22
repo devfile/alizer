@@ -10,6 +10,7 @@ import (
 var (
 	logLevel                string
 	portDetectionAlgorithms []string
+	noPortDetection         bool
 )
 
 func NewCmdComponent() *cobra.Command {
@@ -23,7 +24,8 @@ Examples of components: API Backend, Web Frontend, Payment Backend`,
 		Example: `  alizer component /your/local/project/path`,
 	}
 	componentCmd.Flags().StringVar(&logLevel, "log", "", "log level for alizer. Default value: error. Accepted values: [debug, info, warning]")
-	componentCmd.Flags().StringSliceVarP(&portDetectionAlgorithms, "port-detection", "p", []string{}, "port detection strategy to use when detecting a port. Currently supported strategies are 'docker', 'compose' and 'source'. You can pass more strategies at the same time. They will be executed in order. By default Alizer will execute docker, compose and source.")
+	componentCmd.Flags().StringSliceVarP(&portDetectionAlgorithms, "port-detection", "p", []string{}, "[DEPRECATED] port detection strategy to use when detecting a port. Currently supported strategies are 'docker', 'compose' and 'source'. You can pass more strategies at the same time. They will be executed in order. By default Alizer will execute docker, compose and source.")
+	componentCmd.Flags().BoolVarP(&noPortDetection, "no-port-detection", "n", false, "Skips the execution of port detection for all detected components. As a result no ports will be returned in the response. If it doesn't exist, alizer will run the port detection for all detected components")
 	return componentCmd
 }
 
@@ -42,6 +44,12 @@ func doDetection(cmd *cobra.Command, args []string) {
 
 func getPortDetectionStrategy() []model.PortDetectionAlgorithm {
 	portDetectionStrategy := []model.PortDetectionAlgorithm{}
+
+	// Return empty strategy if no port detection is defined
+	if noPortDetection {
+		return portDetectionStrategy
+	}
+
 	for _, algo := range portDetectionAlgorithms {
 		if algo == "docker" {
 			portDetectionStrategy = append(portDetectionStrategy, model.DockerFile)

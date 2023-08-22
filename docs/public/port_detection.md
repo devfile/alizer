@@ -2,6 +2,8 @@
 
 Port detection is one of the step included during component detection and it refers to the ports used by the component that should be opened in the container. Because of the different nature of frameworks supported, Alizer tries to use customized ways to detect ports from source code, if necessary. **Only ports with value > 0 and < 65535 are valid**
 
+**Deprecation Warning:** The port detection strategies will be removed in the future releases of alizer.
+
 There are three detection strategies currently available:
 1) Docker file - Alizer looks for a Dockerfile, or Containerfile, in the root folder and tries to extract ports from it.
 2) Compose file - Alizer searches for a docker-compose file in the root folder and tries to extract port of the service from it
