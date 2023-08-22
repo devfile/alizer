@@ -266,6 +266,116 @@ func TestMatchDevfiles(t *testing.T) {
 	}
 }
 
+func TestSelectDevFilesFromTypes(t *testing.T) {
+	tests := []struct {
+		name                    string
+		path                    string
+		expectedDevfileTypeName string
+		expectingErr            bool
+	}{
+		{
+			name:                    "Case 1: Match devfile success",
+			path:                    "../../../resources/projects/beego",
+			expectedDevfileTypeName: "go",
+			expectingErr:            false,
+		}, {
+			name:                    "Case 2: No Match",
+			path:                    "../../../resources/projects/notexisting",
+			expectedDevfileTypeName: "",
+			expectingErr:            true,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(tt *testing.T) {
+			devfileTypes := getDevfileTypes()
+			devfileTypeIndexes, err := SelectDevFilesFromTypes(tc.path, devfileTypes)
+			errExist := err != nil
+			if tc.expectingErr {
+				assert.EqualValues(t, tc.expectingErr, errExist)
+			} else {
+				index := devfileTypeIndexes[0]
+				assert.EqualValues(t, tc.expectedDevfileTypeName, devfileTypes[index].Name)
+			}
+		})
+	}
+}
+
+func Test_selectDevfilesFromComponents(t *testing.T) {
+	tests := []struct {
+		name                    string
+		path                    string
+		components              []model.Component
+		expectedDevfileTypeName string
+	}{
+		{
+			name: "Case 1: Match devfile success",
+			path: "../../../resources/projects/beego",
+			components: []model.Component{
+				{
+					Name: "go",
+					Languages: []model.Language{
+						{
+							Name: "Go",
+						},
+					},
+				},
+			},
+			expectedDevfileTypeName: "go",
+		}, {
+			name:                    "Case 2: No Match",
+			path:                    "../../../resources/projects/notexisting",
+			components:              []model.Component{},
+			expectedDevfileTypeName: "",
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(tt *testing.T) {
+			devfileTypes := getDevfileTypes()
+			devfileTypeIndexes := selectDevfilesFromComponents(tc.components, devfileTypes)
+			if tc.expectedDevfileTypeName == "" {
+				assert.EqualValues(t, 0, len(devfileTypeIndexes))
+			} else {
+				index := devfileTypeIndexes[0]
+				assert.EqualValues(t, tc.expectedDevfileTypeName, devfileTypes[index].Name)
+			}
+		})
+	}
+}
+
+func Test_selectDevfilesFromComponentsDetectedInPath(t *testing.T) {
+	tests := []struct {
+		name                    string
+		path                    string
+		expectedDevfileTypeName string
+		expectingErr            bool
+	}{
+		{
+			name:                    "Case 1: Match devfile success",
+			path:                    "../../../resources/projects/beego",
+			expectedDevfileTypeName: "go",
+		}, {
+			name:                    "Case 2: No Match",
+			path:                    "../../../resources/projects/notexisting",
+			expectedDevfileTypeName: "",
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(tt *testing.T) {
+			devfileTypes := getDevfileTypes()
+			devfileTypeIndexes := selectDevfilesFromComponentsDetectedInPath(tc.path, devfileTypes)
+			if tc.expectedDevfileTypeName == "" {
+				assert.EqualValues(t, 0, len(devfileTypeIndexes))
+			} else {
+				index := devfileTypeIndexes[0]
+				assert.EqualValues(t, tc.expectedDevfileTypeName, devfileTypes[index].Name)
+			}
+		})
+	}
+}
+
 func Test_selectDevfilesByLanguage(t *testing.T) {
 	language := model.Language{
 		Name:       "LanguageOne",
