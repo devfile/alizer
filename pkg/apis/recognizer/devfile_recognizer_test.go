@@ -271,17 +271,30 @@ func TestSelectDevFilesFromTypes(t *testing.T) {
 		name                    string
 		path                    string
 		expectedDevfileTypeName string
+		devfilesToRemove        []model.DevfileType
 		expectingErr            bool
 	}{
 		{
 			name:                    "Case 1: Match devfile success",
 			path:                    "../../../resources/projects/beego",
 			expectedDevfileTypeName: "go",
+			devfilesToRemove:        []model.DevfileType{},
 			expectingErr:            false,
+		}, {
+			name:                    "Case 1: Match devfile with language analysis success",
+			path:                    "../../../resources/projects/beego",
+			expectedDevfileTypeName: "",
+			devfilesToRemove: []model.DevfileType{
+				{
+					Name: "go",
+				},
+			},
+			expectingErr: true,
 		}, {
 			name:                    "Case 2: No Match",
 			path:                    "../../../resources/projects/notexisting",
 			expectedDevfileTypeName: "",
+			devfilesToRemove:        []model.DevfileType{},
 			expectingErr:            true,
 		},
 	}
@@ -289,7 +302,19 @@ func TestSelectDevFilesFromTypes(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(tt *testing.T) {
 			devfileTypes := getDevfileTypes()
-			devfileTypeIndexes, err := SelectDevFilesFromTypes(tc.path, devfileTypes)
+			filteredDevfileTypes := []model.DevfileType{}
+			for _, devfileType := range devfileTypes {
+				removeDevfileType := false
+				for _, typeToRemove := range tc.devfilesToRemove {
+					if devfileType.Name == typeToRemove.Name {
+						removeDevfileType = true
+					}
+				}
+				if !removeDevfileType {
+					filteredDevfileTypes = append(filteredDevfileTypes, devfileType)
+				}
+			}
+			devfileTypeIndexes, err := SelectDevFilesFromTypes(tc.path, filteredDevfileTypes)
 			errExist := err != nil
 			if tc.expectingErr {
 				assert.EqualValues(t, tc.expectingErr, errExist)
