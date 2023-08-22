@@ -45,11 +45,29 @@ func SelectDevFilesFromTypes(path string, devfileTypes []model.DevfileType) ([]i
 	if err != nil {
 		return []int{}, err
 	}
-	devfile, err := SelectDevfileUsingLanguagesFromTypes(languages, devfileTypes)
+	mainLanguage, err := getMainLanguage(languages)
+	if err != nil {
+		return []int{}, err
+	}
+	devfiles, err := selectDevfilesByLanguage(mainLanguage, devfileTypes)
 	if err != nil {
 		return []int{}, errors.New("No valid devfile found for project in " + path)
 	}
-	return []int{devfile}, nil
+	return devfiles, nil
+}
+
+func getMainLanguage(languages []model.Language) (model.Language, error) {
+	if len(languages) == 0 {
+		return model.Language{}, fmt.Errorf("cannot detect main language due to empty languages list")
+	}
+
+	mainLanguage := languages[0]
+	for _, language := range languages {
+		if language.Weight > mainLanguage.Weight {
+			mainLanguage = language
+		}
+	}
+	return mainLanguage, nil
 }
 
 func selectDevfilesFromComponentsDetectedInPath(path string, devfileTypes []model.DevfileType) []int {

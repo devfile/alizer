@@ -266,6 +266,249 @@ func TestMatchDevfiles(t *testing.T) {
 	}
 }
 
+func TestSelectDevFilesFromTypes(t *testing.T) {
+	tests := []struct {
+		name                    string
+		path                    string
+		expectedDevfileTypeName string
+		devfilesToRemove        []model.DevfileType
+		expectingErr            bool
+	}{
+		{
+			name:                    "Case 1: Match devfile success",
+			path:                    "../../../resources/projects/beego",
+			expectedDevfileTypeName: "go",
+			devfilesToRemove:        []model.DevfileType{},
+			expectingErr:            false,
+		}, {
+			name:                    "Case 1: Match devfile with language analysis success",
+			path:                    "../../../resources/projects/beego",
+			expectedDevfileTypeName: "",
+			devfilesToRemove: []model.DevfileType{
+				{
+					Name: "go",
+				},
+			},
+			expectingErr: true,
+		}, {
+			name:                    "Case 2: No Match",
+			path:                    "../../../resources/projects/notexisting",
+			expectedDevfileTypeName: "",
+			devfilesToRemove:        []model.DevfileType{},
+			expectingErr:            true,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(tt *testing.T) {
+			devfileTypes := getDevfileTypes()
+			filteredDevfileTypes := []model.DevfileType{}
+			for _, devfileType := range devfileTypes {
+				removeDevfileType := false
+				for _, typeToRemove := range tc.devfilesToRemove {
+					if devfileType.Name == typeToRemove.Name {
+						removeDevfileType = true
+					}
+				}
+				if !removeDevfileType {
+					filteredDevfileTypes = append(filteredDevfileTypes, devfileType)
+				}
+			}
+			devfileTypeIndexes, err := SelectDevFilesFromTypes(tc.path, filteredDevfileTypes)
+			errExist := err != nil
+			if tc.expectingErr {
+				assert.EqualValues(t, tc.expectingErr, errExist)
+			} else {
+				index := devfileTypeIndexes[0]
+				assert.EqualValues(t, tc.expectedDevfileTypeName, devfileTypes[index].Name)
+			}
+		})
+	}
+}
+
+func Test_selectDevfilesFromComponents(t *testing.T) {
+	tests := []struct {
+		name                    string
+		path                    string
+		components              []model.Component
+		expectedDevfileTypeName string
+	}{
+		{
+			name: "Case 1: Match devfile success",
+			path: "../../../resources/projects/beego",
+			components: []model.Component{
+				{
+					Name: "go",
+					Languages: []model.Language{
+						{
+							Name: "Go",
+						},
+					},
+				},
+			},
+			expectedDevfileTypeName: "go",
+		}, {
+			name:                    "Case 2: No Match",
+			path:                    "../../../resources/projects/notexisting",
+			components:              []model.Component{},
+			expectedDevfileTypeName: "",
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(tt *testing.T) {
+			devfileTypes := getDevfileTypes()
+			devfileTypeIndexes := selectDevfilesFromComponents(tc.components, devfileTypes)
+			if tc.expectedDevfileTypeName == "" {
+				assert.EqualValues(t, 0, len(devfileTypeIndexes))
+			} else {
+				index := devfileTypeIndexes[0]
+				assert.EqualValues(t, tc.expectedDevfileTypeName, devfileTypes[index].Name)
+			}
+		})
+	}
+}
+
+func Test_selectDevfilesFromComponentsDetectedInPath(t *testing.T) {
+	tests := []struct {
+		name                    string
+		path                    string
+		expectedDevfileTypeName string
+		expectingErr            bool
+	}{
+		{
+			name:                    "Case 1: Match devfile success",
+			path:                    "../../../resources/projects/beego",
+			expectedDevfileTypeName: "go",
+		}, {
+			name:                    "Case 2: No Match",
+			path:                    "../../../resources/projects/notexisting",
+			expectedDevfileTypeName: "",
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(tt *testing.T) {
+			devfileTypes := getDevfileTypes()
+			devfileTypeIndexes := selectDevfilesFromComponentsDetectedInPath(tc.path, devfileTypes)
+			if tc.expectedDevfileTypeName == "" {
+				assert.EqualValues(t, 0, len(devfileTypeIndexes))
+			} else {
+				index := devfileTypeIndexes[0]
+				assert.EqualValues(t, tc.expectedDevfileTypeName, devfileTypes[index].Name)
+			}
+		})
+	}
+}
+
+func Test_selectDevfilesByLanguage(t *testing.T) {
+	language := model.Language{
+		Name:       "LanguageOne",
+		Frameworks: []string{"Framework"},
+	}
+	otherLanguage := model.Language{
+		Name:       "otherLanguage",
+		Frameworks: []string{"otherFramework"},
+	}
+	devfileTypeOne := model.DevfileType{
+		Name:        language.Frameworks[0],
+		Language:    language.Name,
+		ProjectType: language.Frameworks[0],
+		Tags:        []string{},
+	}
+	devfileTypeTwo := model.DevfileType{
+		Name:        "LanguageTwo",
+		Language:    language.Name,
+		ProjectType: language.Name,
+		Tags:        []string{},
+	}
+	tests := []struct {
+		name            string
+		language        model.Language
+		devfileTypes    []model.DevfileType
+		expectedIndexes []int
+		expectingErr    bool
+	}{
+		{
+			name:            "Case1: Simple match by language",
+			language:        language,
+			devfileTypes:    []model.DevfileType{devfileTypeOne},
+			expectedIndexes: []int{0},
+			expectingErr:    false,
+		}, {
+			name:            "Case2: Match by framework",
+			language:        language,
+			devfileTypes:    []model.DevfileType{devfileTypeTwo, devfileTypeOne},
+			expectedIndexes: []int{1},
+			expectingErr:    false,
+		}, {
+			name:            "Case3: No Match",
+			language:        otherLanguage,
+			devfileTypes:    []model.DevfileType{devfileTypeTwo, devfileTypeOne},
+			expectedIndexes: []int{},
+			expectingErr:    true,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(tt *testing.T) {
+			result, err := selectDevfilesByLanguage(tc.language, tc.devfileTypes)
+			if tc.expectingErr {
+				if err == nil {
+					tt.Errorf("No error raised for case %s", tc.name)
+				}
+			} else {
+				assert.EqualValues(t, tc.expectedIndexes, result)
+			}
+		})
+	}
+}
+
+func Test_getMainLanguage(t *testing.T) {
+	languageOne := model.Language{
+		Name:   "LanguageOne",
+		Weight: 0.60,
+	}
+	languageTwo := model.Language{
+		Name:   "LanguageTwo",
+		Weight: 0.40,
+	}
+	tests := []struct {
+		name             string
+		languages        []model.Language
+		expectedLanguage model.Language
+		expectingErr     bool
+	}{
+		{
+			name:             "Case1: First greater weight than second",
+			languages:        []model.Language{languageOne, languageTwo},
+			expectedLanguage: languageOne,
+			expectingErr:     false,
+		}, {
+			name:             "Case2: First smaller weight than second",
+			languages:        []model.Language{languageTwo, languageOne},
+			expectedLanguage: languageOne,
+			expectingErr:     false,
+		}, {
+			name:             "Case3: EmptyList",
+			languages:        []model.Language{},
+			expectedLanguage: languageOne,
+			expectingErr:     true,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(tt *testing.T) {
+			mainLanguage, err := getMainLanguage(tc.languages)
+			if tc.expectingErr {
+				if err == nil {
+					tt.Errorf("No error raised for case %s", tc.name)
+				}
+			} else {
+				assert.EqualValues(t, tc.expectedLanguage, mainLanguage)
+			}
+		})
+	}
+}
+
 func getExceptedVersionsUrl(url, minSchemaVersion, maxSchemaVersion string, err error) string {
 	if err != nil {
 		return ""
