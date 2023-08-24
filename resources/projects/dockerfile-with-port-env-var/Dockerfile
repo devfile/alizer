@@ -4,7 +4,7 @@ FROM node:16
 WORKDIR /usr/src/app
 
 ENV PORT 11000
-ENV ANOTHER_VAR another_value
+ENV ANOTHER_VAR=another_value
 ENV PORT 11001
 
 # Install app dependencies
