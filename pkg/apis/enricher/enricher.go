@@ -34,6 +34,11 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+type EnvVar struct {
+	Name  string
+	Value string
+}
+
 type Enricher interface {
 	GetSupportedLanguages() []string
 	DoEnrichLanguage(language *model.Language, files *[]string)
@@ -140,6 +145,11 @@ func GetPortsFromDockerFile(root string) []int {
 		}
 	}
 	return []int{}
+}
+
+// GetEnvVarsFromDockerFile returns a slice of env vars from Dockerfiles in the given directory.
+func GetEnvVarsFromDockerFile(root string) ([]EnvVar, error) {
+	return nil, nil
 }
 
 func getLocations(root string) []string {
