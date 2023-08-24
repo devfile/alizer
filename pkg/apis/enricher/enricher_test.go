@@ -56,7 +56,7 @@ func TestGetEnvVarsFromDockerFile(t *testing.T) {
 		{
 			name: "case 3: not found project",
 			args: args{
-				root: "../../../resources/projects/dockerfile",
+				root: "../../../resources/projects/not-existing",
 			},
 			wantErr: true,
 		},
