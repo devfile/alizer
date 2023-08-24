@@ -149,7 +149,22 @@ func GetPortsFromDockerFile(root string) []int {
 
 // GetEnvVarsFromDockerFile returns a slice of env vars from Dockerfiles in the given directory.
 func GetEnvVarsFromDockerFile(root string) ([]EnvVar, error) {
-	return nil, nil
+	locations := getLocations(root)
+	for _, location := range locations {
+		filePath := filepath.Join(root, location)
+		cleanFilePath := filepath.Clean(filePath)
+		file, err := os.Open(cleanFilePath)
+		if err == nil {
+			defer func() error {
+				if err := file.Close(); err != nil {
+					return fmt.Errorf("error closing file: %s", err)
+				}
+				return nil
+			}()
+			return getEnvVarsFromReader(file)
+		}
+	}
+	return nil, fmt.Errorf("no dockefile found inside dir: %s", root)
 }
 
 func getLocations(root string) []string {
@@ -195,6 +210,52 @@ func getPortsFromReader(file io.Reader) []int {
 		}
 	}
 	return ports
+}
+
+func upsertEnvVar(envVars []EnvVar, envVar EnvVar) []EnvVar {
+	isPresent := false
+	for i := range envVars {
+		if envVars[i].Name == envVar.Name {
+			isPresent = true
+			envVars[i].Value = envVar.Value
+		}
+	}
+	if !isPresent {
+		envVars = append(envVars, envVar)
+	}
+	return envVars
+}
+
+// getEnvVarsFromReader returns a slice of envVars.
+func getEnvVarsFromReader(file io.Reader) ([]EnvVar, error) {
+	var envVars []EnvVar
+	res, err := parser.Parse(file)
+	if err != nil {
+		return envVars, err
+	}
+
+	for _, child := range res.AST.Children {
+		// check for the potential env var in a Dockerfile/Containerfile
+		if strings.ToLower(child.Value) != "env" {
+			continue
+		}
+		firstNode := child.Next
+		var secondNode *parser.Node
+		if firstNode == nil {
+			continue
+		}
+		secondNode = firstNode.Next
+		if secondNode == nil {
+			continue
+		}
+		envVar := EnvVar{
+			Name:  firstNode.Value,
+			Value: secondNode.Value,
+		}
+		envVars = upsertEnvVar(envVars, envVar)
+	}
+
+	return envVars, nil
 }
 
 // GetPortsFromDockerComposeFile returns a slice of port numbers from a compose file.
