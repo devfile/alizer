@@ -177,7 +177,7 @@ func getLocations(root string) []string {
 		if strings.HasPrefix(item.Name(), ".") {
 			continue
 		}
-		tmpPath := fmt.Sprintf("%s%s", root, item.Name())
+		tmpPath := fmt.Sprintf("%s/%s", root, item.Name())
 		fileInfo, err := os.Stat(tmpPath)
 		if err != nil {
 			continue
