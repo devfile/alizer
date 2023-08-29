@@ -54,6 +54,13 @@ func (s SpringDetector) DoPortsDetection(component *model.Component, ctx *contex
 		return
 	}
 
+	// check if port is set on env var of dockerfile
+	ports = getSpringPortsFromEnvDockerfile(component.Path)
+	if len(ports) > 0 {
+		component.Ports = ports
+		return
+	}
+
 	applicationFile := utils.GetAnyApplicationFilePath(component.Path, []model.ApplicationFileInfo{
 		{
 			Dir:  "src/main/resources",
@@ -86,6 +93,15 @@ func (s SpringDetector) DoPortsDetection(component *model.Component, ctx *contex
 
 func getSpringPortsFromEnvs() []int {
 	return utils.GetValidPortsFromEnvs([]string{"SERVER_PORT", "SERVER_HTTP_PORT"})
+}
+
+func getSpringPortsFromEnvDockerfile(path string) []int {
+	envVars, err := utils.GetEnvVarsFromDockerFile(path)
+	if err != nil {
+		return nil
+	}
+	envs := []string{"SERVER_PORT", "SERVER_HTTP_PORT"}
+	return utils.GetValidPortsFromEnvDockerfile(envs, envVars)
 }
 
 func getServerPortsFromPropertiesFile(file string) ([]int, error) {
