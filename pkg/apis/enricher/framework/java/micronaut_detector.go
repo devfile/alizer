@@ -54,6 +54,12 @@ func (m MicronautDetector) DoPortsDetection(component *model.Component, ctx *con
 		return
 	}
 
+	ports = getMicronautPortsFromEnvDockerfile(component.Path)
+	if len(ports) > 0 {
+		component.Ports = ports
+		return
+	}
+
 	bytes, err := utils.ReadAnyApplicationFile(component.Path, []model.ApplicationFileInfo{
 		{
 			Dir:  "src/main/resources",
@@ -96,4 +102,25 @@ func getMicronautPortsFromEnvs() []int {
 		envs = append(envs, "MICRONAUT_SERVER_SSL_PORT")
 	}
 	return utils.GetValidPortsFromEnvs(envs)
+}
+
+func getMicronautPortsFromEnvDockerfile(path string) []int {
+	envVars, err := utils.GetEnvVarsFromDockerFile(path)
+	if err != nil {
+		return nil
+	}
+	sslEnabled := ""
+	envs := []string{"MICRONAUT_SERVER_PORT"}
+	for _, envVar := range envVars {
+		if envVar.Name == "MICRONAUT_SERVER_SSL_ENABLED" {
+			sslEnabled = envVar.Value
+			break
+		}
+	}
+
+	if sslEnabled == "true" {
+		envs = append(envs, "MICRONAUT_SERVER_SSL_PORT")
+	}
+
+	return utils.GetValidPortsFromEnvDockerfile(envs, envVars)
 }
