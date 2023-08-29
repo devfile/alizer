@@ -86,3 +86,8 @@ type DevfileScore struct {
 	DevfileIndex int
 	Score        int
 }
+
+type EnvVar struct {
+	Name  string
+	Value string
+}
