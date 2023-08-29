@@ -13,6 +13,7 @@ package enricher
 
 import (
 	"context"
+
 	"github.com/devfile/alizer/pkg/apis/model"
 	"github.com/devfile/alizer/pkg/utils"
 )
@@ -34,8 +35,17 @@ func (d LaravelDetector) DoFrameworkDetection(language *model.Language, config s
 // configuring the APP_PORT variable which is dedicated to port configuration.
 func (d LaravelDetector) DoPortsDetection(component *model.Component, ctx *context.Context) {
 	regexes := []string{`APP_PORT=(\d*)`}
+	// Case ENV file
 	ports := utils.GetPortValuesFromEnvFile(component.Path, regexes)
 	if len(ports) > 0 {
 		component.Ports = ports
+		return
 	}
+	// Case env var defined inside dockerfile
+	ports, err := utils.GetEnvVarPortValueFromDockerfile(component.Path, []string{"APP_PORT"})
+	if len(ports) > 0 && err != nil {
+		component.Ports = ports
+		return
+	}
+
 }

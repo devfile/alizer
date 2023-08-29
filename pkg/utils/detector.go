@@ -482,6 +482,26 @@ func GetEnvVarsFromReader(file io.Reader) ([]model.EnvVar, error) {
 	return envVars, nil
 }
 
+// GetEnvVarPortValueFromDockerfile gets port value defined as env vars.
+func GetEnvVarPortValueFromDockerfile(path string, portPlaceholders []string) ([]int, error) {
+	envVars, err := GetEnvVarsFromDockerFile(path)
+	ports := []int{}
+	if err != nil {
+		return ports, err
+	}
+	for _, envVar := range envVars {
+		for _, portPlaceholder := range portPlaceholders {
+			if envVar.Name != portPlaceholder {
+				continue
+			}
+			if port, err := GetValidPort(envVar.Value); err == nil {
+				ports = append(ports, port)
+			}
+		}
+	}
+	return ports, nil
+}
+
 // GetValidPorts returns a slice of valid ports.
 func GetValidPorts(ports []string) []int {
 	var validPorts []int
