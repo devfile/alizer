@@ -164,6 +164,27 @@ func TestPortDetectionJavaQuarkus(t *testing.T) {
 	testPortDetectionInProject(t, "quarkus", []int{9898})
 }
 
+func TestPortDetectionJavaQuarkusWithEnv(t *testing.T) {
+	os.Setenv("QUARKUS_HTTP_SSL_PORT", "1456")
+	// Check that only true is accepted as value
+	os.Setenv("QUARKUS_HTTP_INSECURE_REQUESTS", "wrong")
+	testPortDetectionInProject(t, "quarkus", []int{1456})
+	os.Setenv("QUARKUS_HTTP_INSECURE_REQUESTS", "true")
+	os.Setenv("QUARKUS_HTTP_PORT", "1235")
+	testPortDetectionInProject(t, "quarkus", []int{1456, 1235})
+	os.Unsetenv("QUARKUS_HTTP_SSL_PORT")
+	os.Unsetenv("QUARKUS_HTTP_INSECURE_REQUESTS")
+	os.Unsetenv("QUARKUS_HTTP_PORT")
+}
+
+func TestPortDetectionJavaQuarkusDockerfileOnePort(t *testing.T) {
+	testPortDetectionInProject(t, "quarkus-dockerfile-one-port", []int{1345})
+}
+
+func TestPortDetectionJavaQuarkusDockerfileMultiplePorts(t *testing.T) {
+	testPortDetectionInProject(t, "quarkus-dockerfile-multiple-ports", []int{1345, 1456})
+}
+
 func TestPortDetectionSpring(t *testing.T) {
 	testPortDetectionInProject(t, "spring", []int{9012})
 }
@@ -374,7 +395,7 @@ func TestComponentDetectionWithGitIgnoreRule(t *testing.T) {
 
 func TestComponentDetectionMultiProjects(t *testing.T) {
 	components := getComponentsFromTestProject(t, "")
-	nComps := 61
+	nComps := 63
 	if len(components) != nComps {
 		t.Errorf("Expected " + strconv.Itoa(nComps) + " components but found " + strconv.Itoa(len(components)))
 	}
