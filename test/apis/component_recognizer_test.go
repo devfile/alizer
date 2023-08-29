@@ -293,6 +293,10 @@ func TestPortDetectionJavascriptReactEnvFile(t *testing.T) {
 	testPortDetectionInProject(t, "reactjs", []int{1231})
 }
 
+func TestPortDetectionJavascriptReactEnvDockerfile(t *testing.T) {
+	testPortDetectionInProject(t, "reactjs-dockerfile-env", []int{4526})
+}
+
 func TestPortDetectionJavascriptReactScript(t *testing.T) {
 	testPortDetectionInProject(t, "reactjs-script", []int{5353})
 }
@@ -303,6 +307,10 @@ func TestPortDetectionSvelteJsPortInStartScript(t *testing.T) {
 
 func TestPortDetectionVuePortInStartScript(t *testing.T) {
 	testPortDetectionInProject(t, "vue-app", []int{8282})
+}
+
+func TestPortDetectionVuePortEnvDockerfile(t *testing.T) {
+	testPortDetectionInProject(t, "vue-app-dockerfile-simple", []int{4526})
 }
 
 // component detection: php
@@ -403,7 +411,7 @@ func TestComponentDetectionWithGitIgnoreRule(t *testing.T) {
 
 func TestComponentDetectionMultiProjects(t *testing.T) {
 	components := getComponentsFromTestProject(t, "")
-	nComps := 65
+	nComps := 68
 	if len(components) != nComps {
 		t.Errorf("Expected " + strconv.Itoa(nComps) + " components but found " + strconv.Itoa(len(components)))
 	}

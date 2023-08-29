@@ -119,7 +119,6 @@ func TestGetEnvVarsFromDockerfile(t *testing.T) {
 			},
 			wantErr: true,
 		},
-		// TODO: Add test cases.
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -1409,6 +1408,56 @@ func TestNormalizeSplit(t *testing.T) {
 			}
 			if file != tt.expectedFile {
 				t.Errorf("Expected file %q, got %q", tt.expectedFile, file)
+			}
+		})
+	}
+}
+
+func TestGetEnvVarPortValueFromDockerfile(t *testing.T) {
+	type args struct {
+		path             string
+		portPlaceholders []string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    []int
+		wantErr bool
+	}{
+		{
+			name: "case 1: dockerfile project without env var",
+			args: args{
+				path:             "../../resources/projects/dockerfile-simple",
+				portPlaceholders: []string{"PORT"},
+			},
+			want: []int{},
+		},
+		{
+			name: "case 2: dockerfile project with env var",
+			args: args{
+				path:             "../../resources/projects/dockerfile-with-port-env-var",
+				portPlaceholders: []string{"PORT"},
+			},
+			want: []int{11001},
+		},
+		{
+			name: "case 3: not found project",
+			args: args{
+				path: "../../resources/projects/not-existing",
+			},
+			want:    []int{},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := GetEnvVarPortValueFromDockerfile(tt.args.path, tt.args.portPlaceholders)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("GetEnvVarPortValueFromDockerfile() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("GetEnvVarPortValueFromDockerfile() = %v, want %v", got, tt.want)
 			}
 		})
 	}
