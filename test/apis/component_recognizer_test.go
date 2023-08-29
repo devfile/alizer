@@ -149,7 +149,7 @@ func TestPortDetectionJavaMicronautFromEnvsWithSSLEnabled(t *testing.T) {
 }
 
 func TestPortDetectionJavaMicronautFromDockerfile(t *testing.T) {
-	testPortDetectionInProject(t, "micronaut-dockerfile", []int{1234})
+	testPortDetectionInProject(t, "micronaut-dockerfile-one-port", []int{1345})
 }
 
 func TestPortDetectionJavaMicronautFromDockerfileWithSSLEnabled(t *testing.T) {

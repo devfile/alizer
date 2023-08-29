@@ -12,8 +12,6 @@ RUN npm install
 # Bundle app source
 COPY . .
 
-ENV MICRONAUT_SERVER_SSL_ENABLED=true
-ENV MICRONAUT_SERVER_SSL_PORT=1456
 ENV MICRONAUT_SERVER_PORT=1345
 
 CMD [ "node", "server.js" ]
