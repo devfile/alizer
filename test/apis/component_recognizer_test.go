@@ -189,6 +189,10 @@ func TestPortDetectionSpring(t *testing.T) {
 	testPortDetectionInProject(t, "spring", []int{9012})
 }
 
+func TestPortDetectionSpringDockerfileSimple(t *testing.T) {
+	testPortDetectionInProject(t, "spring-dockerfile-simple", []int{1345})
+}
+
 func TestPortDetectionJavaVertxHttpPort(t *testing.T) {
 	testPortDetectionInProject(t, "vertx", []int{2321})
 }
@@ -395,7 +399,7 @@ func TestComponentDetectionWithGitIgnoreRule(t *testing.T) {
 
 func TestComponentDetectionMultiProjects(t *testing.T) {
 	components := getComponentsFromTestProject(t, "")
-	nComps := 63
+	nComps := 64
 	if len(components) != nComps {
 		t.Errorf("Expected " + strconv.Itoa(nComps) + " components but found " + strconv.Itoa(len(components)))
 	}
