@@ -144,8 +144,8 @@ func TestPortDetectionJavaMicronautFromEnvsWithSSLEnabled(t *testing.T) {
 	os.Setenv("MICRONAUT_SERVER_SSL_ENABLED", "true")
 	testPortDetectionInProject(t, "micronaut", []int{1345, 1456})
 	os.Unsetenv("MICRONAUT_SERVER_PORT")
-	os.Unsetenv("MICRONAUT_SERVER_PORT")
-	os.Unsetenv("MICRONAUT_SERVER_PORT")
+	os.Unsetenv("MICRONAUT_SERVER_SSL_PORT")
+	os.Unsetenv("MICRONAUT_SERVER_SSL_ENABLED")
 }
 
 func TestPortDetectionJavaMicronautFromDockerfile(t *testing.T) {
@@ -374,7 +374,7 @@ func TestComponentDetectionWithGitIgnoreRule(t *testing.T) {
 
 func TestComponentDetectionMultiProjects(t *testing.T) {
 	components := getComponentsFromTestProject(t, "")
-	nComps := 57
+	nComps := 61
 	if len(components) != nComps {
 		t.Errorf("Expected " + strconv.Itoa(nComps) + " components but found " + strconv.Itoa(len(components)))
 	}
@@ -394,11 +394,11 @@ func TestPortDetectionWithDockerComposeLongSyntaxPorts(t *testing.T) {
 }
 
 func TestPortDetectionWithDockerFile(t *testing.T) {
-	testPortDetectionInProject(t, "dockerfile", []int{8085})
+	testPortDetectionInProject(t, "dockerfile-simple", []int{8085})
 }
 
 func TestPortDetectionWithContainerFile(t *testing.T) {
-	testPortDetectionInProject(t, "containerfile", []int{8085})
+	testPortDetectionInProject(t, "containerfile-simple", []int{8085})
 }
 
 func TestPortDetectionWithOrphanContainerFile(t *testing.T) {

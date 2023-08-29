@@ -2,14 +2,15 @@ package utils
 
 import (
 	"context"
-	"github.com/devfile/alizer/pkg/apis/model"
-	"github.com/devfile/alizer/pkg/schema"
-	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"
 	"reflect"
 	"regexp"
 	"testing"
+
+	"github.com/devfile/alizer/pkg/apis/model"
+	"github.com/devfile/alizer/pkg/schema"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGetLocations(t *testing.T) {
@@ -23,7 +24,7 @@ func TestGetLocations(t *testing.T) {
 	}{
 		{
 			name: "case 1: one level",
-			args: args{root: "../../resources/projects/dockerfile"},
+			args: args{root: "../../resources/projects/dockerfile-simple"},
 			want: []string{"Dockerfile", "Containerfile", "dockerfile", "containerfile"},
 		}, {
 			name: "case 2: two levels",
@@ -57,7 +58,7 @@ func TestGetPortsFromReader(t *testing.T) {
 	}{
 		{
 			name: "case 1: dockerfile with ports",
-			path: "../../resources/projects/dockerfile/Dockerfile",
+			path: "../../resources/projects/dockerfile-simple/Dockerfile",
 			want: []int{8085},
 		},
 		{
@@ -92,7 +93,7 @@ func TestGetEnvVarsFromDockerfile(t *testing.T) {
 		{
 			name: "case 1: dockerfile project without env var",
 			args: args{
-				root: "../../resources/projects/dockerfile",
+				root: "../../resources/projects/dockerfile-simple",
 			},
 		},
 		{
@@ -199,7 +200,7 @@ func TestGetEnvVarsFromReader(t *testing.T) {
 	}{
 		{
 			name: "case 1: dockerfile project without env var",
-			path: "../../resources/projects/dockerfile/Dockerfile",
+			path: "../../resources/projects/dockerfile-simple/Dockerfile",
 		}, {
 			name: "case 2: dockerfile project with env var",
 			path: "../../resources/projects/dockerfile-with-port-env-var/Dockerfile",
