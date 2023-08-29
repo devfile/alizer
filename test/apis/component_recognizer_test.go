@@ -266,6 +266,10 @@ func TestPortDetectionJavascriptExpressVariable(t *testing.T) {
 	testPortDetectionInProject(t, "expressjs-variable", []int{3000})
 }
 
+func TestPortDetectionJavascriptExpressDockerfileEnvVar(t *testing.T) {
+	testPortDetectionInProject(t, "expressjs-dockerfile-env", []int{1345})
+}
+
 func TestPortDetectionNextJsPortInStartScript(t *testing.T) {
 	testPortDetectionInProject(t, "nextjs-app", []int{8610})
 }
@@ -399,7 +403,7 @@ func TestComponentDetectionWithGitIgnoreRule(t *testing.T) {
 
 func TestComponentDetectionMultiProjects(t *testing.T) {
 	components := getComponentsFromTestProject(t, "")
-	nComps := 64
+	nComps := 65
 	if len(components) != nComps {
 		t.Errorf("Expected " + strconv.Itoa(nComps) + " components but found " + strconv.Itoa(len(components)))
 	}
