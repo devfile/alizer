@@ -52,7 +52,7 @@ func (e ExpressDetector) DoPortsDetection(component *model.Component, ctx *conte
 		content := string(bytes)
 		matchesIndexes := re.FindAllStringSubmatchIndex(content, -1)
 		for _, matchIndexes := range matchesIndexes {
-			port := getPort(content, matchIndexes)
+			port := getPort(content, matchIndexes, component.Path)
 			if port != -1 {
 				ports = append(ports, port)
 			}
@@ -82,7 +82,23 @@ func GetEnvPort(envPlaceholder string) int {
 	return -1
 }
 
-func getPort(content string, matchIndexes []int) int {
+func GetEnvPortFromDockerfile(envPlaceholder string, path string) int {
+	envPlaceholder = strings.Replace(envPlaceholder, "process.env.", "", -1)
+	envVars, err := utils.GetEnvVarsFromDockerFile(path)
+	if err != nil {
+		return -1
+	}
+	for _, envVar := range envVars {
+		if envVar.Name == envPlaceholder {
+			if port, err := utils.GetValidPort(envVar.Value); err == nil {
+				return port
+			}
+		}
+	}
+	return -1
+}
+
+func getPort(content string, matchIndexes []int, path string) int {
 	// Express configures its port with app.listen()
 	portPlaceholder := content[matchIndexes[0]:matchIndexes[1]]
 	portPlaceholder = strings.Replace(portPlaceholder, ".listen(", "", -1)
@@ -120,6 +136,11 @@ func getPort(content string, matchIndexes []int) int {
 		envPlaceholder := envPortValue[envMatchIndexes[0]:envMatchIndexes[1]]
 		port := GetEnvPort(envPlaceholder)
 		// The port will be return only if a value was found for the given env var
+		if port > 0 {
+			return port
+		}
+		// If no env var was found on system try to find one in a root dockerfile
+		port = GetEnvPortFromDockerfile(envPlaceholder, path)
 		if port > 0 {
 			return port
 		}
