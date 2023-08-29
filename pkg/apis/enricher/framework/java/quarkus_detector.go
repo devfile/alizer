@@ -58,6 +58,13 @@ func (q QuarkusDetector) DoPortsDetection(component *model.Component, ctx *conte
 		component.Ports = ports
 		return
 	}
+
+	// check if port is set on env var of a dockerfile
+	ports = getQuarkusPortsFromEnvDockerfile(component.Path)
+	if len(ports) > 0 {
+		component.Ports = ports
+		return
+	}
 	// check if port is set on .env file
 	insecureRequestEnabled := utils.GetStringValueFromEnvFile(component.Path, `QUARKUS_HTTP_INSECURE_REQUESTS=(\w*)`)
 	regexes := []string{`QUARKUS_HTTP_SSL_PORT=(\d*)`}
@@ -107,6 +114,27 @@ func getQuarkusPortsFromEnvs() []int {
 		envs = append(envs, "QUARKUS_HTTP_PORT")
 	}
 	return utils.GetValidPortsFromEnvs(envs)
+}
+
+func getQuarkusPortsFromEnvDockerfile(path string) []int {
+	envVars, err := utils.GetEnvVarsFromDockerFile(path)
+	if err != nil {
+		return nil
+	}
+	insecureRequestEnabled := ""
+	envs := []string{"QUARKUS_HTTP_SSL_PORT"}
+	for _, envVar := range envVars {
+		if envVar.Name == "QUARKUS_HTTP_INSECURE_REQUESTS" {
+			insecureRequestEnabled = envVar.Value
+			break
+		}
+	}
+
+	if insecureRequestEnabled == "true" {
+		envs = append(envs, "QUARKUS_HTTP_PORT")
+	}
+
+	return utils.GetValidPortsFromEnvDockerfile(envs, envVars)
 }
 
 func getServerPortsFromQuarkusPropertiesFile(file string) ([]int, error) {
