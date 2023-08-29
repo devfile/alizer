@@ -2,15 +2,242 @@ package utils
 
 import (
 	"context"
-	"os"
-	"path/filepath"
-	"regexp"
-	"testing"
-
 	"github.com/devfile/alizer/pkg/apis/model"
 	"github.com/devfile/alizer/pkg/schema"
 	"github.com/stretchr/testify/assert"
+	"os"
+	"path/filepath"
+	"reflect"
+	"regexp"
+	"testing"
 )
+
+func TestGetLocations(t *testing.T) {
+	type args struct {
+		root string
+	}
+	tests := []struct {
+		name string
+		args args
+		want []string
+	}{
+		{
+			name: "case 1: one level",
+			args: args{root: "../../resources/projects/dockerfile"},
+			want: []string{"Dockerfile", "Containerfile", "dockerfile", "containerfile"},
+		}, {
+			name: "case 2: two levels",
+			args: args{root: "../../resources/projects/dockerfile-nested"},
+			want: []string{
+				"Dockerfile",
+				"Containerfile",
+				"dockerfile",
+				"containerfile",
+				"docker/Dockerfile",
+				"docker/Containerfile",
+				"docker/dockerfile",
+				"docker/containerfile",
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := GetLocations(tt.args.root); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("GetLocations() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestGetPortsFromReader(t *testing.T) {
+	tests := []struct {
+		name string
+		path string
+		want []int
+	}{
+		{
+			name: "case 1: dockerfile with ports",
+			path: "../../resources/projects/dockerfile/Dockerfile",
+			want: []int{8085},
+		},
+		{
+			name: "case 2: dockerfile without ports",
+			path: "../../resources/projects/dockerfile-no-port/Dockerfile",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cleanFilePath := filepath.Clean(tt.path)
+			file, err := os.Open(cleanFilePath)
+			if err != nil {
+				t.Errorf("error: %s", err)
+			}
+			if got := GetPortsFromReader(file); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("GetPortsFromReader() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestGetEnvVarsFromDockerfile(t *testing.T) {
+	type args struct {
+		root string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    []model.EnvVar
+		wantErr bool
+	}{
+		{
+			name: "case 1: dockerfile project without env var",
+			args: args{
+				root: "../../resources/projects/dockerfile",
+			},
+		},
+		{
+			name: "case 2: dockerfile project with env var",
+			args: args{
+				root: "../../resources/projects/dockerfile-with-port-env-var",
+			},
+			want: []model.EnvVar{
+				{
+					Name:  "PORT",
+					Value: "11001",
+				},
+				{
+					Name:  "ANOTHER_VAR",
+					Value: "another_value",
+				},
+			},
+		},
+		{
+			name: "case 3: not found project",
+			args: args{
+				root: "../../resources/projects/not-existing",
+			},
+			wantErr: true,
+		},
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := GetEnvVarsFromDockerFile(tt.args.root)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("GetEnvVarsFromDockerFile() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("GetEnvVarsFromDockerFile() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_upsertEnvVar(t *testing.T) {
+	testEnvVars := []model.EnvVar{
+		{
+			Name:  "var1",
+			Value: "value1",
+		},
+	}
+	type args struct {
+		envVars []model.EnvVar
+		envVar  model.EnvVar
+	}
+	tests := []struct {
+		name string
+		args args
+		want []model.EnvVar
+	}{
+		{
+			name: "case 1: insert",
+			args: args{
+				envVars: testEnvVars,
+				envVar:  model.EnvVar{Name: "var2", Value: "value2"},
+			},
+			want: []model.EnvVar{
+				{
+					Name:  "var1",
+					Value: "value1",
+				},
+				{
+					Name:  "var2",
+					Value: "value2",
+				},
+			},
+		},
+		{
+			name: "case 2: update",
+			args: args{
+				envVars: testEnvVars,
+				envVar:  model.EnvVar{Name: "var1", Value: "value2"},
+			},
+			want: []model.EnvVar{
+				{
+					Name:  "var1",
+					Value: "value2",
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := upsertEnvVar(tt.args.envVars, tt.args.envVar); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("upsertEnvVar() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestGetEnvVarsFromReader(t *testing.T) {
+	tests := []struct {
+		name    string
+		path    string
+		want    []model.EnvVar
+		wantErr bool
+	}{
+		{
+			name: "case 1: dockerfile project without env var",
+			path: "../../resources/projects/dockerfile/Dockerfile",
+		}, {
+			name: "case 2: dockerfile project with env var",
+			path: "../../resources/projects/dockerfile-with-port-env-var/Dockerfile",
+			want: []model.EnvVar{
+				{
+					Name:  "PORT",
+					Value: "11001",
+				},
+				{
+					Name:  "ANOTHER_VAR",
+					Value: "another_value",
+				},
+			},
+		},
+		{
+			name:    "case 3: not found project",
+			path:    "../../resources/projects/not-existing/Dockerfile",
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cleanFilePath := filepath.Clean(tt.path)
+			file, err := os.Open(cleanFilePath)
+			if err != nil && !tt.wantErr {
+				t.Errorf("error: %s", err)
+			}
+			got, err := GetEnvVarsFromReader(file)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("GetEnvVarsFromReader() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("GetEnvVarsFromReader() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
 
 func TestGetFilesByRegex(t *testing.T) {
 	tests := []struct {

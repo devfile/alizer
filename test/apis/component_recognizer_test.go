@@ -129,6 +129,33 @@ func TestPortDetectionJavaMicronaut(t *testing.T) {
 	testPortDetectionInProject(t, "micronaut", []int{4444})
 }
 
+func TestPortDetectionJavaMicronautFromEnvs(t *testing.T) {
+	os.Setenv("MICRONAUT_SERVER_PORT", "1234")
+	testPortDetectionInProject(t, "micronaut", []int{1234})
+	os.Unsetenv("MICRONAUT_SERVER_PORT")
+}
+
+func TestPortDetectionJavaMicronautFromEnvsWithSSLEnabled(t *testing.T) {
+	os.Setenv("MICRONAUT_SERVER_PORT", "1345")
+	// Case MICRONAUT_SERVER_SSL_ENABLED is set to something else
+	os.Setenv("MICRONAUT_SERVER_SSL_ENABLED", "something else")
+	os.Setenv("MICRONAUT_SERVER_SSL_PORT", "1456")
+	testPortDetectionInProject(t, "micronaut", []int{1345})
+	os.Setenv("MICRONAUT_SERVER_SSL_ENABLED", "true")
+	testPortDetectionInProject(t, "micronaut", []int{1345, 1456})
+	os.Unsetenv("MICRONAUT_SERVER_PORT")
+	os.Unsetenv("MICRONAUT_SERVER_PORT")
+	os.Unsetenv("MICRONAUT_SERVER_PORT")
+}
+
+func TestPortDetectionJavaMicronautFromDockerfile(t *testing.T) {
+	testPortDetectionInProject(t, "micronaut-dockerfile", []int{1234})
+}
+
+func TestPortDetectionJavaMicronautFromDockerfileWithSSLEnabled(t *testing.T) {
+	testPortDetectionInProject(t, "micronaut-dockerfile-ssl-enabled", []int{1456, 1345})
+}
+
 func TestPortDetectionOnOpenLiberty(t *testing.T) {
 	testPortDetectionInProject(t, "open-liberty", []int{9080, 9443})
 }
@@ -347,7 +374,7 @@ func TestComponentDetectionWithGitIgnoreRule(t *testing.T) {
 
 func TestComponentDetectionMultiProjects(t *testing.T) {
 	components := getComponentsFromTestProject(t, "")
-	nComps := 55
+	nComps := 57
 	if len(components) != nComps {
 		t.Errorf("Expected " + strconv.Itoa(nComps) + " components but found " + strconv.Itoa(len(components)))
 	}
