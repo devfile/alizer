@@ -20,6 +20,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -27,6 +28,7 @@ import (
 	"strings"
 
 	"github.com/devfile/alizer/pkg/utils/langfiles"
+	"github.com/moby/buildkit/frontend/dockerfile/parser"
 
 	"github.com/devfile/alizer/pkg/apis/model"
 	"github.com/devfile/alizer/pkg/schema"
@@ -350,6 +352,134 @@ func GetValidPortsFromEnvs(envs []string) []int {
 		}
 	}
 	return validPorts
+}
+
+// GetEnvVarsFromDockerFile returns a slice of env vars from Dockerfiles in the given directory.
+func GetEnvVarsFromDockerFile(root string) ([]model.EnvVar, error) {
+	locations := GetLocations(root)
+	for _, location := range locations {
+		filePath := filepath.Join(root, location)
+		cleanFilePath := filepath.Clean(filePath)
+		file, err := os.Open(cleanFilePath)
+		if err == nil {
+			defer func() error {
+				if err := file.Close(); err != nil {
+					return fmt.Errorf("error closing file: %s", err)
+				}
+				return nil
+			}()
+			return GetEnvVarsFromReader(file)
+		}
+	}
+	return nil, fmt.Errorf("no dockefile found inside dir: %s", root)
+}
+
+// GetValidPortsFromEnvs returns a slice of valid ports from a dockerfile.
+func GetValidPortsFromEnvDockerfile(envs []string, envVars []model.EnvVar) []int {
+	var validPorts []int
+	for _, env := range envs {
+		for _, envVar := range envVars {
+			if envVar.Name == env {
+				if port, err := GetValidPort(envVar.Value); err == nil {
+					validPorts = append(validPorts, port)
+				}
+				break
+			}
+		}
+	}
+	return validPorts
+}
+
+func GetLocations(root string) []string {
+	locations := []string{"Dockerfile", "Containerfile", "dockerfile", "containerfile"}
+	dirItems, err := ioutil.ReadDir(root)
+	if err != nil {
+		return locations
+	}
+	for _, item := range dirItems {
+		if strings.HasPrefix(item.Name(), ".") {
+			continue
+		}
+		tmpPath := fmt.Sprintf("%s/%s", root, item.Name())
+		fileInfo, err := os.Stat(tmpPath)
+		if err != nil {
+			continue
+		}
+		if fileInfo.IsDir() {
+			for _, location := range locations {
+				locations = append(locations, fmt.Sprintf("%s/%s", item.Name(), location))
+			}
+		}
+	}
+	return locations
+}
+
+// GetPortsFromReader returns a slice of port numbers.
+func GetPortsFromReader(file io.Reader) []int {
+	var ports []int
+	res, err := parser.Parse(file)
+	if err != nil {
+		return ports
+	}
+
+	for _, child := range res.AST.Children {
+		// check for the potential port number in a Dockerfile/Containerfile
+		if strings.ToLower(child.Value) == "expose" {
+			for n := child.Next; n != nil; n = n.Next {
+				if port, err := strconv.Atoi(n.Value); err == nil {
+					ports = append(ports, port)
+				}
+
+			}
+		}
+	}
+	return ports
+}
+
+func upsertEnvVar(envVars []model.EnvVar, envVar model.EnvVar) []model.EnvVar {
+	isPresent := false
+	for i := range envVars {
+		if envVars[i].Name == envVar.Name {
+			isPresent = true
+			envVars[i].Value = envVar.Value
+		}
+	}
+	if !isPresent {
+		envVars = append(envVars, envVar)
+	}
+	return envVars
+}
+
+// GetEnvVarsFromReader returns a slice of envVars.
+func GetEnvVarsFromReader(file io.Reader) ([]model.EnvVar, error) {
+	var envVars []model.EnvVar
+	res, err := parser.Parse(file)
+	if err != nil {
+		return envVars, err
+	}
+
+	for _, child := range res.AST.Children {
+		// check for the potential env var in a Dockerfile/Containerfile
+		if strings.ToLower(child.Value) != "env" {
+			continue
+		}
+		firstNode := child.Next
+		var secondNode *parser.Node
+		if firstNode == nil {
+			continue
+		}
+		secondNode = firstNode.Next
+		if secondNode == nil {
+			continue
+		}
+		envVar := model.EnvVar{
+			Name:  firstNode.Value,
+			Value: secondNode.Value,
+		}
+		envVars = upsertEnvVar(envVars, envVar)
+	}
+
+	return envVars, nil
 }
 
 // GetValidPorts returns a slice of valid ports.

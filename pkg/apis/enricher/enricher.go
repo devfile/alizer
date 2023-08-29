@@ -19,25 +19,16 @@ package enricher
 import (
 	"context"
 	"fmt"
-	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"regexp"
-	"strconv"
 	"strings"
 
 	"github.com/devfile/alizer/pkg/apis/model"
 	"github.com/devfile/alizer/pkg/utils"
 	"github.com/devfile/alizer/pkg/utils/langfiles"
-	"github.com/moby/buildkit/frontend/dockerfile/parser"
 	"gopkg.in/yaml.v3"
 )
-
-type EnvVar struct {
-	Name  string
-	Value string
-}
 
 type Enricher interface {
 	GetSupportedLanguages() []string
@@ -129,7 +120,7 @@ func GetDefaultProjectName(path string) string {
 
 // GetPortsFromDockerFile returns a slice of port numbers from Dockerfiles in the given directory.
 func GetPortsFromDockerFile(root string) []int {
-	locations := getLocations(root)
+	locations := utils.GetLocations(root)
 	for _, location := range locations {
 		filePath := filepath.Join(root, location)
 		cleanFilePath := filepath.Clean(filePath)
@@ -141,121 +132,10 @@ func GetPortsFromDockerFile(root string) []int {
 				}
 				return nil
 			}()
-			return getPortsFromReader(file)
+			return utils.GetPortsFromReader(file)
 		}
 	}
 	return []int{}
-}
-
-// GetEnvVarsFromDockerFile returns a slice of env vars from Dockerfiles in the given directory.
-func GetEnvVarsFromDockerFile(root string) ([]EnvVar, error) {
-	locations := getLocations(root)
-	for _, location := range locations {
-		filePath := filepath.Join(root, location)
-		cleanFilePath := filepath.Clean(filePath)
-		file, err := os.Open(cleanFilePath)
-		if err == nil {
-			defer func() error {
-				if err := file.Close(); err != nil {
-					return fmt.Errorf("error closing file: %s", err)
-				}
-				return nil
-			}()
-			return getEnvVarsFromReader(file)
-		}
-	}
-	return nil, fmt.Errorf("no dockefile found inside dir: %s", root)
-}
-
-func getLocations(root string) []string {
-	locations := []string{"Dockerfile", "Containerfile"}
-	dirItems, err := ioutil.ReadDir(root)
-	if err != nil {
-		return locations
-	}
-	for _, item := range dirItems {
-		if strings.HasPrefix(item.Name(), ".") {
-			continue
-		}
-		tmpPath := fmt.Sprintf("%s/%s", root, item.Name())
-		fileInfo, err := os.Stat(tmpPath)
-		if err != nil {
-			continue
-		}
-		if fileInfo.IsDir() {
-			locations = append(locations, fmt.Sprintf("%s/%s", item.Name(), "Dockerfile"))
-			locations = append(locations, fmt.Sprintf("%s/%s", item.Name(), "Containerfile"))
-		}
-	}
-	return locations
-}
-
-// getPortsFromReader returns a slice of port numbers.
-func getPortsFromReader(file io.Reader) []int {
-	var ports []int
-	res, err := parser.Parse(file)
-	if err != nil {
-		return ports
-	}
-
-	for _, child := range res.AST.Children {
-		// check for the potential port number in a Dockerfile/Containerfile
-		if strings.ToLower(child.Value) == "expose" {
-			for n := child.Next; n != nil; n = n.Next {
-				if port, err := strconv.Atoi(n.Value); err == nil {
-					ports = append(ports, port)
-				}
-
-			}
-		}
-	}
-	return ports
-}
-
-func upsertEnvVar(envVars []EnvVar, envVar EnvVar) []EnvVar {
-	isPresent := false
-	for i := range envVars {
-		if envVars[i].Name == envVar.Name {
-			isPresent = true
-			envVars[i].Value = envVar.Value
-		}
-	}
-	if !isPresent {
-		envVars = append(envVars, envVar)
-	}
-	return envVars
-}
-
-// getEnvVarsFromReader returns a slice of envVars.
-func getEnvVarsFromReader(file io.Reader) ([]EnvVar, error) {
-	var envVars []EnvVar
-	res, err := parser.Parse(file)
-	if err != nil {
-		return envVars, err
-	}
-
-	for _, child := range res.AST.Children {
-		// check for the potential env var in a Dockerfile/Containerfile
-		if strings.ToLower(child.Value) != "env" {
-			continue
-		}
-		firstNode := child.Next
-		var secondNode *parser.Node
-		if firstNode == nil {
-			continue
-		}
-		secondNode = firstNode.Next
-		if secondNode == nil {
-			continue
-		}
-		envVar := EnvVar{
-			Name:  firstNode.Value,
-			Value: secondNode.Value,
-		}
-		envVars = upsertEnvVar(envVars, envVar)
-	}
-
-	return envVars, nil
 }
 
 // GetPortsFromDockerComposeFile returns a slice of port numbers from a compose file.
