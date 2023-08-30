@@ -418,7 +418,7 @@ func TestComponentDetectionWithGitIgnoreRule(t *testing.T) {
 
 func TestComponentDetectionMultiProjects(t *testing.T) {
 	components := getComponentsFromTestProject(t, "")
-	nComps := 68
+	nComps := 69
 	if len(components) != nComps {
 		t.Errorf("Expected " + strconv.Itoa(nComps) + " components but found " + strconv.Itoa(len(components)))
 	}
