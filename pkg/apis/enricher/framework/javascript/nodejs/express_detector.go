@@ -52,9 +52,9 @@ func (e ExpressDetector) DoPortsDetection(component *model.Component, ctx *conte
 		content := string(bytes)
 		matchesIndexes := re.FindAllStringSubmatchIndex(content, -1)
 		for _, matchIndexes := range matchesIndexes {
-			port := getPort(content, matchIndexes, component.Path)
-			if port != -1 {
-				ports = append(ports, port)
+			portList := getPorts(content, matchIndexes, component.Path)
+			if len(portList) != 0 {
+				ports = append(ports, portList...)
 			}
 		}
 		if len(ports) > 0 {
@@ -98,14 +98,14 @@ func GetEnvPortFromDockerfile(envPlaceholder string, path string) int {
 	return -1
 }
 
-func getPort(content string, matchIndexes []int, path string) int {
+func getPorts(content string, matchIndexes []int, path string) []int {
 	// Express configures its port with app.listen()
 	portPlaceholder := content[matchIndexes[0]:matchIndexes[1]]
 	portPlaceholder = strings.Replace(portPlaceholder, ".listen(", "", -1)
 
 	// Case: Raw port value -> return it directly
 	if port, err := utils.GetValidPort(portPlaceholder); err == nil {
-		return port
+		return []int{port}
 	}
 
 	// Case: Env var given as value in app.listen -> Get env value
@@ -131,18 +131,20 @@ func getPort(content string, matchIndexes []int, path string) int {
 			}
 		}
 	}
+	var result []int
 	// After double-checking for env vars try to get the value of this port
 	if len(envMatchIndexes) > 1 {
 		envPlaceholder := envPortValue[envMatchIndexes[0]:envMatchIndexes[1]]
 		port := GetEnvPort(envPlaceholder)
 		// The port will be return only if a value was found for the given env var
 		if port > 0 {
-			return port
-		}
-		// If no env var was found on system try to find one in a root dockerfile
-		port = GetEnvPortFromDockerfile(envPlaceholder, path)
-		if port > 0 {
-			return port
+			result = append(result, port)
+		} else {
+			// If no env var was found on system try to find one in a root dockerfile
+			port = GetEnvPortFromDockerfile(envPlaceholder, path)
+			if port > 0 {
+				result = append(result, port)
+			}
 		}
 	}
 	// Case: No env var or raw value found -> check for raw value into a var
@@ -152,9 +154,10 @@ func getPort(content string, matchIndexes []int, path string) int {
 		portValues := strings.Split(potentialPortGroup, " || ")
 		for _, portValue := range portValues {
 			if port, err := utils.GetValidPort(portValue); err == nil {
-				return port
+				result = append(result, port)
+				break
 			}
 		}
 	}
-	return -1
+	return result
 }

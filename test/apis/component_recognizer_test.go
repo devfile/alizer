@@ -255,7 +255,7 @@ func TestPortDetectionJavascriptExpressEnv(t *testing.T) {
 
 func TestPortDetectionJavascriptExpressEnvOROperatorWithEnvVar(t *testing.T) {
 	os.Setenv("TEST_EXPRESS_ENV", "1111")
-	testPortDetectionInProject(t, "expressjs-env-logical-or", []int{1111})
+	testPortDetectionInProject(t, "expressjs-env-logical-or", []int{1111, 8080})
 	os.Unsetenv("TEST_EXPRESS_ENV")
 }
 
