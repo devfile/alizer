@@ -259,6 +259,13 @@ func TestPortDetectionJavascriptExpressEnvOROperatorWithEnvVar(t *testing.T) {
 	os.Unsetenv("TEST_EXPRESS_ENV")
 }
 
+func TestPortDetectionJavascriptExpressDockerfileEnvOROperatorWithEnvVar(t *testing.T) {
+	os.Setenv("TEST_EXPRESS_DOCKERFILE_ENV", "1111")
+	testPortDetectionInProject(t, "expressjs-dockerfile-env-logical-or", []int{1111, 8080})
+	os.Unsetenv("TEST_EXPRESS_DOCKERFILE_ENV")
+	testPortDetectionInProject(t, "expressjs-dockerfile-env-logical-or", []int{1345, 8080})
+}
+
 func TestPortDetectionJavascriptExpressEnvOROperatorWithoutEnvVar(t *testing.T) {
 	testPortDetectionInProject(t, "expressjs-env-logical-or", []int{8080})
 }
