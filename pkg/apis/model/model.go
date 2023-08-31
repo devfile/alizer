@@ -11,7 +11,10 @@
 
 package model
 
-import "regexp"
+import (
+	"context"
+	"regexp"
+)
 
 type PortDetectionAlgorithm int
 
@@ -63,8 +66,10 @@ type DevfileFilter struct {
 }
 
 type ApplicationFileInfo struct {
-	Dir  string
-	File string
+	Context *context.Context
+	Root    string
+	Dir     string
+	File    string
 }
 
 type PortMatchRules struct {

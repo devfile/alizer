@@ -27,11 +27,10 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/devfile/alizer/pkg/utils/langfiles"
-	"github.com/moby/buildkit/frontend/dockerfile/parser"
-
 	"github.com/devfile/alizer/pkg/apis/model"
 	"github.com/devfile/alizer/pkg/schema"
+	"github.com/devfile/alizer/pkg/utils/langfiles"
+	"github.com/moby/buildkit/frontend/dockerfile/parser"
 	ignore "github.com/sabhiram/go-gitignore"
 )
 
@@ -564,9 +563,47 @@ func GetAnyApplicationFilePathExactMatch(root string, propsFiles []model.Applica
 	return ""
 }
 
-// ReadAnyApplicationFile returns a byte slice of a file if it exists in the directory and the given file name is a substring.
-func ReadAnyApplicationFile(root string, propsFiles []model.ApplicationFileInfo, ctx *context.Context) ([]byte, error) {
-	return readAnyApplicationFile(root, propsFiles, false, ctx)
+func GenerateApplicationFileFromFilters(files []string, path string, suffix string, ctx *context.Context) []model.ApplicationFileInfo {
+	applicationFileInfos := []model.ApplicationFileInfo{}
+	for _, file := range files {
+		if strings.HasSuffix(file, ".go") {
+			cleanPath := filepath.Clean(file)
+			filename := filepath.Base(cleanPath)
+			tmpDir := strings.ReplaceAll(file, path, "")
+			dir := strings.ReplaceAll(tmpDir, filename, "")
+			appFileInfo := model.ApplicationFileInfo{
+				Context: ctx,
+				Root:    path,
+				Dir:     dir,
+				File:    filename,
+			}
+			applicationFileInfos = append(applicationFileInfos, appFileInfo)
+		}
+	}
+	return applicationFileInfos
+}
+
+func GetApplicationFileContents(appFileInfos []model.ApplicationFileInfo) ([]string, error) {
+	fileContents := []string{}
+	for _, appFileInfo := range appFileInfos {
+		fileContent, err := ReadAnyApplicationFile(appFileInfo)
+		if err == nil {
+			fileContents = append(fileContents, fileContent)
+		}
+	}
+	if len(fileContents) == 0 {
+		return fileContents, fmt.Errorf("error: no application file found matching given criteria")
+	}
+	return fileContents, nil
+}
+
+// ReadAnyApplicationFile returns a the content of a file if it exists in the directory and the given file name is a substring.
+func ReadAnyApplicationFile(propsFile model.ApplicationFileInfo) (string, error) {
+	bytes, err := readAnyApplicationFile(propsFile.Root, []model.ApplicationFileInfo{propsFile}, false, propsFile.Context)
+	if err != nil {
+		return "", fmt.Errorf("error: %s", err)
+	}
+	return string(bytes), nil
 }
 
 // ReadAnyApplicationFileExactMatch returns a byte slice if the exact given file exists in the directory.
