@@ -400,14 +400,14 @@ func GetLocations(root string) []string {
 		if strings.HasPrefix(item.Name(), ".") {
 			continue
 		}
-		tmpPath := fmt.Sprintf("%s/%s", root, item.Name())
+		tmpPath := filepath.Join(root, item.Name())
 		fileInfo, err := os.Stat(tmpPath)
 		if err != nil {
 			continue
 		}
 		if fileInfo.IsDir() {
 			for _, location := range locations {
-				locations = append(locations, fmt.Sprintf("%s/%s", item.Name(), location))
+				locations = append(locations, filepath.Join(item.Name(), location))
 			}
 		}
 	}
