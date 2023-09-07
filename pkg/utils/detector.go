@@ -390,6 +390,13 @@ func GetValidPortsFromEnvDockerfile(envs []string, envVars []model.EnvVar) []int
 	return validPorts
 }
 
+// GetLocations returns a list of file paths representing common locations where Dockerfiles might be found
+// within the specified 'root' directory and one level down.
+//
+// It starts with a predefined list of common file names for a Dockerfile
+// ('Dockerfile', 'Containerfile', 'dockerfile', 'containerfile'), and appends such file names to the 'root' subdirectories.
+//
+// Note that hidden files and directories (starting with a dot, e.g., '.git') are ignored while traversing the 'root' directory.
 func GetLocations(root string) []string {
 	locations := []string{"Dockerfile", "Containerfile", "dockerfile", "containerfile"}
 	dirItems, err := ioutil.ReadDir(root)

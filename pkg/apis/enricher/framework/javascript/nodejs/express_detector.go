@@ -82,6 +82,15 @@ func GetEnvPort(envPlaceholder string) int {
 	return -1
 }
 
+// GetEnvPortFromDockerfile returns a port value from the Dockerfile (locations provided by the 'utils.GetLocations' function)
+// matching the specified 'envPlaceHolder'.
+// It first extracts the environment variable name to lookup from 'envPlaceholder' by removing any 'process.env.' prefix.
+// It then searches through all environment variables detected from the Dockerfile (as determined by 'utils.GetEnvVarsFromDockerFile').
+// And if the environment variable specified via 'envPlaceholder' is found in the Dockerfile environment variables
+// and its corresponding value is a valid port (as determined by 'utils.GetValidPort'), it returns this valid port value.
+//
+// If there is an error reading the Dockerfile or if the environment variable specified via 'envPlaceholder' is not found among
+// the Dockerfile environment variables, the function returns -1.
 func GetEnvPortFromDockerfile(envPlaceholder string, path string) int {
 	envPlaceholder = strings.Replace(envPlaceholder, "process.env.", "", -1)
 	envVars, err := utils.GetEnvVarsFromDockerFile(path)

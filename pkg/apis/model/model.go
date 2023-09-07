@@ -87,7 +87,11 @@ type DevfileScore struct {
 	Score        int
 }
 
+// EnvVar represents an environment variable with a name and a corresponding value.
 type EnvVar struct {
-	Name  string
+	// Name is the name of the environment variable.
+	Name string
+
+	// Value is the value associated with the environment variable.
 	Value string
 }
