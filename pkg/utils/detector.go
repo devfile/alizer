@@ -368,7 +368,7 @@ func GetEnvVarsFromDockerFile(root string) ([]model.EnvVar, error) {
 				}
 				return nil
 			}()
-			return GetEnvVarsFromReader(file)
+			return readEnvVarsFromDockerfile(file)
 		}
 	}
 	return nil, fmt.Errorf("no dockefile found inside dir: %s", root)
@@ -414,8 +414,8 @@ func GetLocations(root string) []string {
 	return locations
 }
 
-// GetPortsFromReader returns a slice of port numbers.
-func GetPortsFromReader(file io.Reader) []int {
+// GetPortsFromDockerfile returns a slice of port numbers.
+func GetPortsFromDockerfile(file io.Reader) []int {
 	var ports []int
 	res, err := parser.Parse(file)
 	if err != nil {
@@ -450,8 +450,8 @@ func upsertEnvVar(envVars []model.EnvVar, envVar model.EnvVar) []model.EnvVar {
 	return envVars
 }
 
-// GetEnvVarsFromReader returns a slice of envVars.
-func GetEnvVarsFromReader(file io.Reader) ([]model.EnvVar, error) {
+// readEnvVarsFromDockerfile returns a slice of envVars.
+func readEnvVarsFromDockerfile(file io.Reader) ([]model.EnvVar, error) {
 	var envVars []model.EnvVar
 	res, err := parser.Parse(file)
 	if err != nil {

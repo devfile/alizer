@@ -50,7 +50,7 @@ func TestGetLocations(t *testing.T) {
 	}
 }
 
-func TestGetPortsFromReader(t *testing.T) {
+func TestGetPortsFromDockerfile(t *testing.T) {
 	tests := []struct {
 		name string
 		path string
@@ -73,8 +73,8 @@ func TestGetPortsFromReader(t *testing.T) {
 			if err != nil {
 				t.Errorf("error: %s", err)
 			}
-			if got := GetPortsFromReader(file); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("GetPortsFromReader() = %v, want %v", got, tt.want)
+			if got := GetPortsFromDockerfile(file); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("GetPortsFromDockerfile() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -190,7 +190,7 @@ func Test_upsertEnvVar(t *testing.T) {
 	}
 }
 
-func TestGetEnvVarsFromReader(t *testing.T) {
+func Test_readEnvVarsFromDockerfile(t *testing.T) {
 	tests := []struct {
 		name    string
 		path    string
@@ -227,13 +227,13 @@ func TestGetEnvVarsFromReader(t *testing.T) {
 			if err != nil && !tt.wantErr {
 				t.Errorf("error: %s", err)
 			}
-			got, err := GetEnvVarsFromReader(file)
+			got, err := readEnvVarsFromDockerfile(file)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("GetEnvVarsFromReader() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("readEnvVarsFromDockerfile() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("GetEnvVarsFromReader() = %v, want %v", got, tt.want)
+				t.Errorf("readEnvVarsFromDockerfile() = %v, want %v", got, tt.want)
 			}
 		})
 	}
