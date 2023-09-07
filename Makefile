@@ -32,4 +32,4 @@ gosec_install: ## Install gosec utility
 
 .PHONY: gosec
 gosec: ## Run go security checks
-	./run_gosec.sh
+	./scripts/run_gosec.sh
