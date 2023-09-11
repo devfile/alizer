@@ -132,7 +132,7 @@ func GetPortsFromDockerFile(root string) []int {
 				}
 				return nil
 			}()
-			return utils.GetPortsFromDockerfile(file)
+			return utils.ReadPortsFromDockerfile(file)
 		}
 	}
 	return []int{}

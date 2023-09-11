@@ -421,8 +421,8 @@ func GetLocations(root string) []string {
 	return locations
 }
 
-// GetPortsFromDockerfile returns a slice of port numbers.
-func GetPortsFromDockerfile(file io.Reader) []int {
+// ReadPortsFromDockerfile returns a slice of port numbers.
+func ReadPortsFromDockerfile(file io.Reader) []int {
 	var ports []int
 	res, err := parser.Parse(file)
 	if err != nil {

@@ -50,7 +50,7 @@ func TestGetLocations(t *testing.T) {
 	}
 }
 
-func TestGetPortsFromDockerfile(t *testing.T) {
+func TestReadPortsFromDockerfile(t *testing.T) {
 	tests := []struct {
 		name string
 		path string
@@ -73,8 +73,8 @@ func TestGetPortsFromDockerfile(t *testing.T) {
 			if err != nil {
 				t.Errorf("error: %s", err)
 			}
-			if got := GetPortsFromDockerfile(file); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("GetPortsFromDockerfile() = %v, want %v", got, tt.want)
+			if got := ReadPortsFromDockerfile(file); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("ReadPortsFromDockerfile() = %v, want %v", got, tt.want)
 			}
 		})
 	}
