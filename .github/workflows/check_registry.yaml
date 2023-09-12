@@ -32,4 +32,4 @@ jobs:
         id: build
         run: |
           make build
-          bash test/check_registry/check_registry.sh
+          make check_registry
