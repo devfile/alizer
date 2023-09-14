@@ -1,0 +1,15 @@
+# See the OWNERS docs: https://go.k8s.io/owners
+
+approvers:
+- elsony
+- michael-valdron
+- thepetk
+- feloy
+- rm3l
+
+reviewers:
+- elsony
+- michael-valdron
+- thepetk
+- feloy
+- rm3l
