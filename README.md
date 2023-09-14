@@ -180,7 +180,7 @@ For information on getting started, refer to the [CONTRIBUTING instructions](CON
 
 An Alizer release is created each time a PR having updates on code is merged. You can create a new release [here](https://github.com/devfile/alizer/releases/new).
 
-- A _tag_ should be create with the version of the release as name. `Alizer` follows the `v{major}.{minor}.{bugfix}` format (e.g `v0.1.0`)
+- A _tag_ should be created with the version of the release as name. `Alizer` follows the `v{major}.{minor}.{bugfix}` format (e.g `v0.1.0`)
 - The _title_ of the release has to be the equal to the new tag created for the release.
 - The _description_ of the release is optional. You may add a description if there were outstanding updates in the project, not mentioned in the issues or PRs of this release.
 
