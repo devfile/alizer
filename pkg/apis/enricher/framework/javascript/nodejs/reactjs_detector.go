@@ -46,6 +46,14 @@ func (r ReactJsDetector) DoPortsDetection(component *model.Component, ctx *conte
 		component.Ports = []int{port}
 		return
 	}
+
+	// check if port is set on as env var inside a dockerfile
+	ports, err := utils.GetEnvVarPortValueFromDockerfile(component.Path, []string{"PORT"})
+	if err == nil {
+		component.Ports = ports
+		return
+	}
+
 	// check if port is set in start script in package.json
 	port = getPortFromStartScript(component.Path, []string{`PORT=(\d*)`})
 	if utils.IsValidPort(port) {

@@ -129,6 +129,33 @@ func TestPortDetectionJavaMicronaut(t *testing.T) {
 	testPortDetectionInProject(t, "micronaut", []int{4444})
 }
 
+func TestPortDetectionJavaMicronautFromEnvs(t *testing.T) {
+	os.Setenv("MICRONAUT_SERVER_PORT", "1234")
+	testPortDetectionInProject(t, "micronaut", []int{1234})
+	os.Unsetenv("MICRONAUT_SERVER_PORT")
+}
+
+func TestPortDetectionJavaMicronautFromEnvsWithSSLEnabled(t *testing.T) {
+	os.Setenv("MICRONAUT_SERVER_PORT", "1345")
+	// Case MICRONAUT_SERVER_SSL_ENABLED is set to something else
+	os.Setenv("MICRONAUT_SERVER_SSL_ENABLED", "something else")
+	os.Setenv("MICRONAUT_SERVER_SSL_PORT", "1456")
+	testPortDetectionInProject(t, "micronaut", []int{1345})
+	os.Setenv("MICRONAUT_SERVER_SSL_ENABLED", "true")
+	testPortDetectionInProject(t, "micronaut", []int{1345, 1456})
+	os.Unsetenv("MICRONAUT_SERVER_PORT")
+	os.Unsetenv("MICRONAUT_SERVER_SSL_PORT")
+	os.Unsetenv("MICRONAUT_SERVER_SSL_ENABLED")
+}
+
+func TestPortDetectionJavaMicronautFromDockerfile(t *testing.T) {
+	testPortDetectionInProject(t, "micronaut-dockerfile-one-port", []int{1345})
+}
+
+func TestPortDetectionJavaMicronautFromDockerfileWithSSLEnabled(t *testing.T) {
+	testPortDetectionInProject(t, "micronaut-dockerfile-ssl-enabled", []int{1456, 1345})
+}
+
 func TestPortDetectionOnOpenLiberty(t *testing.T) {
 	testPortDetectionInProject(t, "open-liberty", []int{9080, 9443})
 }
@@ -137,8 +164,33 @@ func TestPortDetectionJavaQuarkus(t *testing.T) {
 	testPortDetectionInProject(t, "quarkus", []int{9898})
 }
 
+func TestPortDetectionJavaQuarkusWithEnv(t *testing.T) {
+	os.Setenv("QUARKUS_HTTP_SSL_PORT", "1456")
+	// Check that only true is accepted as value
+	os.Setenv("QUARKUS_HTTP_INSECURE_REQUESTS", "wrong")
+	testPortDetectionInProject(t, "quarkus", []int{1456})
+	os.Setenv("QUARKUS_HTTP_INSECURE_REQUESTS", "true")
+	os.Setenv("QUARKUS_HTTP_PORT", "1235")
+	testPortDetectionInProject(t, "quarkus", []int{1456, 1235})
+	os.Unsetenv("QUARKUS_HTTP_SSL_PORT")
+	os.Unsetenv("QUARKUS_HTTP_INSECURE_REQUESTS")
+	os.Unsetenv("QUARKUS_HTTP_PORT")
+}
+
+func TestPortDetectionJavaQuarkusDockerfileOnePort(t *testing.T) {
+	testPortDetectionInProject(t, "quarkus-dockerfile-one-port", []int{1345})
+}
+
+func TestPortDetectionJavaQuarkusDockerfileMultiplePorts(t *testing.T) {
+	testPortDetectionInProject(t, "quarkus-dockerfile-multiple-ports", []int{1345, 1456})
+}
+
 func TestPortDetectionSpring(t *testing.T) {
 	testPortDetectionInProject(t, "spring", []int{9012})
+}
+
+func TestPortDetectionSpringDockerfileSimple(t *testing.T) {
+	testPortDetectionInProject(t, "spring-dockerfile-simple", []int{1345})
 }
 
 func TestPortDetectionJavaVertxHttpPort(t *testing.T) {
@@ -203,8 +255,15 @@ func TestPortDetectionJavascriptExpressEnv(t *testing.T) {
 
 func TestPortDetectionJavascriptExpressEnvOROperatorWithEnvVar(t *testing.T) {
 	os.Setenv("TEST_EXPRESS_ENV", "1111")
-	testPortDetectionInProject(t, "expressjs-env-logical-or", []int{1111})
+	testPortDetectionInProject(t, "expressjs-env-logical-or", []int{1111, 8080})
 	os.Unsetenv("TEST_EXPRESS_ENV")
+}
+
+func TestPortDetectionJavascriptExpressDockerfileEnvOROperatorWithEnvVar(t *testing.T) {
+	os.Setenv("TEST_EXPRESS_DOCKERFILE_ENV", "1111")
+	testPortDetectionInProject(t, "expressjs-dockerfile-env-logical-or", []int{1111, 8080})
+	os.Unsetenv("TEST_EXPRESS_DOCKERFILE_ENV")
+	testPortDetectionInProject(t, "expressjs-dockerfile-env-logical-or", []int{1345, 8080})
 }
 
 func TestPortDetectionJavascriptExpressEnvOROperatorWithoutEnvVar(t *testing.T) {
@@ -212,6 +271,10 @@ func TestPortDetectionJavascriptExpressEnvOROperatorWithoutEnvVar(t *testing.T) 
 }
 func TestPortDetectionJavascriptExpressVariable(t *testing.T) {
 	testPortDetectionInProject(t, "expressjs-variable", []int{3000})
+}
+
+func TestPortDetectionJavascriptExpressDockerfileEnvVar(t *testing.T) {
+	testPortDetectionInProject(t, "expressjs-dockerfile-env", []int{1345})
 }
 
 func TestPortDetectionNextJsPortInStartScript(t *testing.T) {
@@ -237,6 +300,10 @@ func TestPortDetectionJavascriptReactEnvFile(t *testing.T) {
 	testPortDetectionInProject(t, "reactjs", []int{1231})
 }
 
+func TestPortDetectionJavascriptReactEnvDockerfile(t *testing.T) {
+	testPortDetectionInProject(t, "reactjs-dockerfile-env", []int{4526})
+}
+
 func TestPortDetectionJavascriptReactScript(t *testing.T) {
 	testPortDetectionInProject(t, "reactjs-script", []int{5353})
 }
@@ -247,6 +314,10 @@ func TestPortDetectionSvelteJsPortInStartScript(t *testing.T) {
 
 func TestPortDetectionVuePortInStartScript(t *testing.T) {
 	testPortDetectionInProject(t, "vue-app", []int{8282})
+}
+
+func TestPortDetectionVuePortEnvDockerfile(t *testing.T) {
+	testPortDetectionInProject(t, "vue-app-dockerfile-simple", []int{4526})
 }
 
 // component detection: php
@@ -347,7 +418,7 @@ func TestComponentDetectionWithGitIgnoreRule(t *testing.T) {
 
 func TestComponentDetectionMultiProjects(t *testing.T) {
 	components := getComponentsFromTestProject(t, "")
-	nComps := 54
+	nComps := 69
 	if len(components) != nComps {
 		t.Errorf("Expected " + strconv.Itoa(nComps) + " components but found " + strconv.Itoa(len(components)))
 	}
@@ -367,11 +438,11 @@ func TestPortDetectionWithDockerComposeLongSyntaxPorts(t *testing.T) {
 }
 
 func TestPortDetectionWithDockerFile(t *testing.T) {
-	testPortDetectionInProject(t, "dockerfile", []int{8085})
+	testPortDetectionInProject(t, "dockerfile-simple", []int{8085})
 }
 
 func TestPortDetectionWithContainerFile(t *testing.T) {
-	testPortDetectionInProject(t, "containerfile", []int{8085})
+	testPortDetectionInProject(t, "containerfile-simple", []int{8085})
 }
 
 func TestPortDetectionWithOrphanContainerFile(t *testing.T) {

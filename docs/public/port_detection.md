@@ -76,7 +76,7 @@ services:
 
 #### Micronaut
 
-Alizer checks if the environment variable MICRONAUT_SERVER_SSL_ENABLED is set to true. If so, both MICRONAUT_SERVER_SSL_PORT and MICRONAUT_SERVER_PORT are checked (if false, only the MICRONAUT_SERVER_PORT is used for verification). If they are not set or they do not contain valid port values, Alizer searches for the `application.[yml|yaml]` file in `src/main/resources` folder and verify if one or more ports are set.
+Alizer checks if the environment variable MICRONAUT_SERVER_SSL_ENABLED is set to true. If so, both MICRONAUT_SERVER_SSL_PORT and MICRONAUT_SERVER_PORT are checked (if false, only the MICRONAUT_SERVER_PORT is used for verification). Alizer will first look for if the env vars are set in the system and if it doesn't find them it will also look for a dockerfile. If they are not set or they do not contain valid port values, Alizer searches for the `application.[yml|yaml]` file in `src/main/resources` folder and verify if one or more ports are set.
 
 The known schema is:
 ```yaml
@@ -109,7 +109,8 @@ N.B: If insecure requests are disabled only the HTTP SSL port will be detected
 
 1) It checks if the environment variable `QUARKUS_HTTP_SSL_PORT`, `QUARKUS_HTTP_INSECURE_REQUESTS` and `QUARKUS_HTTP_PORT` are set
 2) It checks for `QUARKUS_HTTP_SSL_PORT`, `QUARKUS_HTTP_INSECURE_REQUESTS` and `QUARKUS_HTTP_PORT` within the `.env` file, if any, located in the root
-3) It searches for any `application.[properties|yaml|yml]` file in `src/main/resources` folder and verify if a port is set.
+3) It checks for `QUARKUS_HTTP_SSL_PORT`, `QUARKUS_HTTP_INSECURE_REQUESTS` and `QUARKUS_HTTP_PORT` within the `dockerfile` file, if any, located under the root level or one level down.
+4) It searches for any `application.[properties|yaml|yml]` file in `src/main/resources` folder and verify if a port is set.
 
 The known schemas for application files are:
 
@@ -135,7 +136,7 @@ quarkus
 
 #### Springboot
 
-Alizer checks if the environment variable SERVER_PORT or SERVER_HTTP_PORT are set. If not or they do not contain valid port values, it searches for the `application.[yml|yaml]` or `application.properties` file in `src/main/resources` folder and verify if a port is set.
+Alizer checks if the environment variable SERVER_PORT or SERVER_HTTP_PORT are set. First, it checks into the operating system and if it doesn't find any, it then checks inside a dockerfile located under the root level or one level down (if any). If not or they do not contain valid port values, it searches for the `application.[yml|yaml]` or `application.properties` file in `src/main/resources` folder and verify if a port is set.
 
 The known schema for `application.[yml|yaml]` is:
 ```
@@ -218,7 +219,7 @@ N.B: `project-name` is the actual app name retrieved within the `package.json`
 Alizer searches for function `listen` calls as Express uses it to define `port` and `host` to be used use. 
 Once all occurrences are found it tries to get the ports in three step:
 1) The port is written in clear within the `listen` function (e.g `.listen(3000)`), Alizer extracts it.
-2) The port argument is an env variable and Alizer tries to look for its value locally.
+2) The port argument is an env variable and Alizer tries to look for its value locally. If there isn't any locally, alizer tries to locate any dockerfile that may sets env values for this port.
 3) The port argument is a variable set within the code and Alizer tries to find it in the code that exists before the `.listen` call
 
 Example of all 3 cases
@@ -243,6 +244,8 @@ app.listen(8080, () => {
 })
 ```
 
+In case we have an OR operator with an environment variable alizer will return both ports, first the env var and then the default one. Again, it will look first locally for env var and if there is none it will check for dockerfile.
+
 ### Next
 
 Alizer searches for any port set within the start and dev scripts when dealing with a Next project
@@ -259,9 +262,9 @@ In a Nuxt project, port detection works by analyzing the `package.json` and the 
 #### React
 
 Alizer follows the general rules by React. The strategy used consists of 3 steps:
-1) It checks if the environment variable PORT is set
-2) It checks for the `port` within the `.env` file, if any, located in the root
-3) It checks if the `start` npm script sets a `port` (e.g. `"start": "PORT=<port> react-scripts start"`)
+1) It checks if the environment variable `PORT` is set
+2) It checks for the `PORT` within the `.env` file, if any, located in the root. If there isn't any, alizer will try to locate a `dockerfile` that might set the `PORT` env var.
+3) It checks if the `start` npm script sets a `PORT` (e.g. `"start": "PORT=<port> react-scripts start"`)
 
 ### Svelte
 
@@ -271,9 +274,9 @@ Alizer searches for any port configured within the `dev` npm script (e.g. `"dev"
 
 Alizer uses four ways to detect ports configuration in a Vue project
 1) It checks if the `start` npm script sets a `port` (e.g. `"start": ".... --port <port>"` or `"start": ".... PORT=<port>"`)
-1) It checks if the `dev` npm script sets a `port` (e.g. `"dev": ".... --port <port>"` or `"dev": ".... PORT=<port>"`)
-2) It checks if the port is configured within the `.env` file, if any, located in the root
-3) It checks if the file `vue.config.js` exists in the root and analyze it to see if a port is set, using the following schema
+2) It checks if the `dev` npm script sets a `port` (e.g. `"dev": ".... --port <port>"` or `"dev": ".... PORT=<port>"`)
+3) It checks if the port is configured within the `.env` file, if any, located in the root. If there isn't any, alizer will try to locate a `dockerfile` that might set the `PORT` env var.
+4) It checks if the file `vue.config.js` exists in the root and analyze it to see if a port is set, using the following schema
 ```
 exports = {
   ...
@@ -392,4 +395,10 @@ log.Fatal(srv.ListenAndServe())
 
 #### Go (Raw)
 
-In case a project doesn't use one of the above frameworks, and no ports have been found, alizer will search for 2 different function calls - `ListenAndServe(:<port>)` and `Start(:<port>)` - or for the initialization of the `Addr` property of Server struct. 
+In case a project doesn't use one of the above frameworks, and no ports have been found, alizer will search for 2 different function calls - `ListenAndServe(:<port>)` and `Start(:<port>)` - or for the initialization of the `Addr` property of Server struct.
+
+### PHP Frameworks
+
+#### Laravel
+
+Alizer will try to detect any ports set as environment variables with `APP_PORT` as name. First, it will try to locate an `.env` file that might exists in the source code. If there isn't any it will also try to locate any `dockerfile` that might sets the `APP_PORT` as environment variable.

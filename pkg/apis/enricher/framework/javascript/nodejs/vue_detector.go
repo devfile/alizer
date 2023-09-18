@@ -54,6 +54,13 @@ func (v VueDetector) DoPortsDetection(component *model.Component, ctx *context.C
 		return
 	}
 
+	// check if port is set on as env var inside a dockerfile
+	ports, err := utils.GetEnvVarPortValueFromDockerfile(component.Path, []string{"PORT"})
+	if err == nil {
+		component.Ports = ports
+		return
+	}
+
 	//check inside the vue.config.js file
 	bytes, err := utils.ReadAnyApplicationFile(component.Path, []model.ApplicationFileInfo{
 		{
