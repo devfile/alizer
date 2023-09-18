@@ -606,6 +606,16 @@ func GetApplicationFileBytes(propsFile model.ApplicationFileInfo) ([]byte, error
 	return bytes, nil
 }
 
+// GetApplicationFileInfo returns an item from a slice of applicationFileInfos if it matches the given filename
+func GetApplicationFileInfo(propsFiles []model.ApplicationFileInfo, filename string) (model.ApplicationFileInfo, error) {
+	for _, propsFile := range propsFiles {
+		if propsFile.File == filename {
+			return propsFile, nil
+		}
+	}
+	return model.ApplicationFileInfo{}, fmt.Errorf("No ApplicationFileInfo found")
+}
+
 // ReadAnyApplicationFileExactMatch returns a byte slice if the exact given file exists in the directory.
 func ReadAnyApplicationFileExactMatch(root string, propsFiles []model.ApplicationFileInfo) ([]byte, error) {
 	return readAnyApplicationFile(root, propsFiles, true, nil)

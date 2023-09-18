@@ -72,6 +72,29 @@ type ApplicationFileInfo struct {
 	File    string
 }
 
+type AngularCliJson struct {
+	Defaults struct {
+		Serve AngularHostPort `json:"serve"`
+	} `json:"defaults"`
+}
+
+type AngularJson struct {
+	Projects map[string]AngularProjectBody `json:"projects"`
+}
+
+type AngularProjectBody struct {
+	Architect struct {
+		Serve struct {
+			Options AngularHostPort `json:"options"`
+		} `json:"serve"`
+	} `json:"architect"`
+}
+
+type AngularHostPort struct {
+	Host string `json:"host"`
+	Port int    `json:"port"`
+}
+
 type SpringApplicationProsServer struct {
 	Server struct {
 		Port int `yaml:"port,omitempty"`
