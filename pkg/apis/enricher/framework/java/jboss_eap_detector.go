@@ -13,8 +13,10 @@ package enricher
 
 import (
 	"context"
+	"encoding/xml"
 
 	"github.com/devfile/alizer/pkg/apis/model"
+	"github.com/devfile/alizer/pkg/schema"
 	"github.com/devfile/alizer/pkg/utils"
 )
 
@@ -22,6 +24,15 @@ type JBossEAPDetector struct{}
 
 func (o JBossEAPDetector) GetSupportedFrameworks() []string {
 	return []string{"JBoss EAP"}
+}
+
+func (o JBossEAPDetector) GetApplicationFileInfos(componentPath string, ctx *context.Context) []model.ApplicationFileInfo {
+	files, err := utils.GetCachedFilePathsFromRoot(componentPath, ctx)
+	if err != nil {
+		return []model.ApplicationFileInfo{}
+	}
+	pomXML := utils.GetFile(&files, "pom.xml")
+	return utils.GenerateApplicationFileFromFilters([]string{pomXML}, componentPath, "", ctx)
 }
 
 // DoFrameworkDetection uses the groupId and artifactId to check for the framework name
@@ -33,13 +44,22 @@ func (o JBossEAPDetector) DoFrameworkDetection(language *model.Language, config 
 
 func (o JBossEAPDetector) DoPortsDetection(component *model.Component, ctx *context.Context) {
 	ports := []int{}
-	// Fetch the content of xml for this component
-	paths, err := utils.GetCachedFilePathsFromRoot(component.Path, ctx)
+	appFileInfos := o.GetApplicationFileInfos(component.Path, ctx)
+	if len(appFileInfos) == 0 {
+		return
+	}
+	fileBytes, err := utils.GetApplicationFileBytes(appFileInfos[0])
 	if err != nil {
 		return
 	}
-	pomXML := utils.GetFile(&paths, "pom.xml")
-	portPlaceholder := GetPortsForJBossFrameworks(pomXML, "eap-maven-plugin", "org.jboss.eap.plugins")
+
+	var pom schema.Pom
+	err = xml.Unmarshal(fileBytes, &pom)
+	if err != nil {
+		return
+	}
+
+	portPlaceholder := GetPortsForJBossFrameworks(pom, "eap-maven-plugin", "org.jboss.eap.plugins")
 	if portPlaceholder == "" {
 		return
 	}
@@ -52,4 +72,5 @@ func (o JBossEAPDetector) DoPortsDetection(component *model.Component, ctx *cont
 		component.Ports = ports
 		return
 	}
+
 }

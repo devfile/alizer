@@ -24,20 +24,6 @@ import (
 
 type QuarkusDetector struct{}
 
-type QuarkusApplicationYaml struct {
-	Quarkus QuarkusHttp `yaml:"quarkus,omitempty"`
-}
-
-type QuarkusHttp struct {
-	Http QuarkusHttpPort `yaml:"http,omitempty"`
-}
-
-type QuarkusHttpPort struct {
-	Port             int    `yaml:"port,omitempty"`
-	InsecureRequests string `yaml:"insecure-requests,omitempty"`
-	SSLPort          int    `yaml:"ssl-port,omitempty"`
-}
-
 func (q QuarkusDetector) GetSupportedFrameworks() []string {
 	return []string{"Quarkus"}
 }
