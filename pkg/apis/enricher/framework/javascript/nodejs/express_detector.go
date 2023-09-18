@@ -14,7 +14,6 @@ package enricher
 import (
 	"context"
 	"os"
-	"path/filepath"
 	"regexp"
 	"strings"
 
@@ -28,6 +27,14 @@ func (e ExpressDetector) GetSupportedFrameworks() []string {
 	return []string{"Express"}
 }
 
+func (e ExpressDetector) GetApplicationFileInfos(componentPath string, ctx *context.Context) []model.ApplicationFileInfo {
+	files, err := utils.GetCachedFilePathsFromRoot(componentPath, ctx)
+	if err != nil {
+		return []model.ApplicationFileInfo{}
+	}
+	return utils.GenerateApplicationFileFromFilters(files, componentPath, ".js", ctx)
+}
+
 // DoFrameworkDetection uses a tag to check for the framework name
 func (e ExpressDetector) DoFrameworkDetection(language *model.Language, config string) {
 	if hasFramework(config, "express") {
@@ -36,20 +43,14 @@ func (e ExpressDetector) DoFrameworkDetection(language *model.Language, config s
 }
 
 func (e ExpressDetector) DoPortsDetection(component *model.Component, ctx *context.Context) {
-	files, err := utils.GetCachedFilePathsFromRoot(component.Path, ctx)
+	fileContents, err := utils.GetApplicationFileContents(e.GetApplicationFileInfos(component.Path, ctx))
 	if err != nil {
 		return
 	}
 
 	re := regexp.MustCompile(`\.listen\([^,)]*`)
 	var ports []int
-	for _, file := range files {
-		cleanFile := filepath.Clean(file)
-		bytes, err := os.ReadFile(cleanFile)
-		if err != nil {
-			continue
-		}
-		content := string(bytes)
+	for _, content := range fileContents {
 		matchesIndexes := re.FindAllStringSubmatchIndex(content, -1)
 		for _, matchIndexes := range matchesIndexes {
 			portList := getPorts(content, matchIndexes, component.Path)
