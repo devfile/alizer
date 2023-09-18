@@ -52,9 +52,9 @@ func getProjectReplacements() []ProjectReplacement {
 		},
 		{
 			Devfile:         "java-wildfly-bootable-jar",
-			ReplacementRepo: "https://github.com/wildfly-extras/wildfly-devfile-examples.git",
-			SubDir:          "",
-			Revision:        "qs",
+			ReplacementRepo: "https://github.com/wildfly-extras/wildfly-jar-maven-plugin.git",
+			SubDir:          "examples/authentication",
+			Revision:        "",
 		},
 		{
 			Devfile:         "java-quarkus",
