@@ -44,6 +44,7 @@ func (o JBossEAPDetector) DoFrameworkDetection(language *model.Language, config 
 
 func (o JBossEAPDetector) DoPortsDetection(component *model.Component, ctx *context.Context) {
 	ports := []int{}
+	// Fetch the content of xml for this component
 	appFileInfos := o.GetApplicationFileInfos(component.Path, ctx)
 	if len(appFileInfos) == 0 {
 		return
