@@ -56,18 +56,21 @@ func (o OpenLibertyDetector) DoPortsDetection(component *model.Component, ctx *c
 		return
 	}
 
-	fileBytes, err := utils.GetApplicationFileBytes(appFileInfos[0])
-	if err != nil {
-		return
-	}
+	for _, appFileInfo := range appFileInfos {
+		fileBytes, err := utils.GetApplicationFileBytes(appFileInfo)
+		if err != nil {
+			continue
+		}
 
-	var data model.OpenLibertyServerXml
-	err = xml.Unmarshal(fileBytes, &data)
-	if err != nil {
-		return
-	}
-	ports := utils.GetValidPorts([]string{data.HttpEndpoint.HttpPort, data.HttpEndpoint.HttpsPort})
-	if len(ports) > 0 {
-		component.Ports = ports
+		var data model.OpenLibertyServerXml
+		err = xml.Unmarshal(fileBytes, &data)
+		if err != nil {
+			continue
+		}
+		ports := utils.GetValidPorts([]string{data.HttpEndpoint.HttpPort, data.HttpEndpoint.HttpsPort})
+		if len(ports) > 0 {
+			component.Ports = ports
+			return
+		}
 	}
 }

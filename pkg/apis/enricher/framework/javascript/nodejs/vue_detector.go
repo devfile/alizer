@@ -46,6 +46,7 @@ func (v VueDetector) DoFrameworkDetection(language *model.Language, config strin
 // DoPortsDetection searches for the port in package.json, .env file, and vue.config.js
 func (v VueDetector) DoPortsDetection(component *model.Component, ctx *context.Context) {
 	regexes := []string{`--port (\d*)`, `PORT=(\d*)`}
+	ports := []int{}
 	// check if --port or PORT is set in start script in package.json
 	port := getPortFromStartScript(component.Path, regexes)
 	if utils.IsValidPort(port) {
@@ -78,11 +79,17 @@ func (v VueDetector) DoPortsDetection(component *model.Component, ctx *context.C
 		return
 	}
 
-	fileBytes, err := utils.GetApplicationFileBytes(appFileInfos[0])
-	if err != nil {
-		return
-	}
+	for _, appFileInfo := range appFileInfos {
+		fileBytes, err := utils.GetApplicationFileBytes(appFileInfo)
+		if err != nil {
+			continue
+		}
 
-	re := regexp.MustCompile(`port:\s*(\d+)*`)
-	component.Ports = utils.FindAllPortsSubmatch(re, string(fileBytes), 1)
+		re := regexp.MustCompile(`port:\s*(\d+)*`)
+		ports = utils.FindAllPortsSubmatch(re, string(fileBytes), 1)
+		if len(ports) > 0 {
+			component.Ports = ports
+			return
+		}
+	}
 }

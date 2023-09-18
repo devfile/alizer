@@ -71,14 +71,18 @@ func (m MicronautDetector) DoPortsDetection(component *model.Component, ctx *con
 	if len(appFileInfos) == 0 {
 		return
 	}
-	fileBytes, err := utils.GetApplicationFileBytes(appFileInfos[0])
-	if err != nil {
-		return
-	}
 
-	ports = getMicronautPortsFromBytes(fileBytes)
-	if len(ports) > 0 {
-		component.Ports = ports
+	for _, appFileInfo := range appFileInfos {
+		fileBytes, err := utils.GetApplicationFileBytes(appFileInfo)
+		if err != nil {
+			continue
+		}
+
+		ports = getMicronautPortsFromBytes(fileBytes)
+		if len(ports) > 0 {
+			component.Ports = ports
+			return
+		}
 	}
 }
 

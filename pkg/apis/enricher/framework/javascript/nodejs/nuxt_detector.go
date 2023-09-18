@@ -45,6 +45,7 @@ func (n NuxtDetector) DoFrameworkDetection(language *model.Language, config stri
 
 // DoPortsDetection searches for the port in package.json, and nuxt.config.js
 func (n NuxtDetector) DoPortsDetection(component *model.Component, ctx *context.Context) {
+	ports := []int{}
 	regexes := []string{`--port=(\d*)`}
 	// check if port is set in start script in package.json
 	port := getPortFromStartScript(component.Path, regexes)
@@ -66,11 +67,17 @@ func (n NuxtDetector) DoPortsDetection(component *model.Component, ctx *context.
 		return
 	}
 
-	fileBytes, err := utils.GetApplicationFileBytes(appFileInfos[0])
-	if err != nil {
-		return
-	}
+	for _, appFileInfo := range appFileInfos {
+		fileBytes, err := utils.GetApplicationFileBytes(appFileInfo)
+		if err != nil {
+			continue
+		}
 
-	re := regexp.MustCompile(`port:\s*(\d+)*`)
-	component.Ports = utils.FindAllPortsSubmatch(re, string(fileBytes), 1)
+		re := regexp.MustCompile(`port:\s*(\d+)*`)
+		ports = utils.FindAllPortsSubmatch(re, string(fileBytes), 1)
+		if len(ports) > 0 {
+			component.Ports = ports
+			return
+		}
+	}
 }

@@ -67,16 +67,24 @@ func (d DjangoDetector) DoFrameworkDetection(language *model.Language, files *[]
 
 // DoPortsDetection searches for the port in /manage.py
 func (d DjangoDetector) DoPortsDetection(component *model.Component, ctx *context.Context) {
+	ports := []int{}
 	appFileInfos := d.GetApplicationFileInfos(component.Path, ctx)
 	if len(appFileInfos) == 0 {
 		return
 	}
 
-	fileBytes, err := utils.GetApplicationFileBytes(appFileInfos[0])
-	if err != nil {
-		return
+	for _, appFileInfo := range appFileInfos {
+		fileBytes, err := utils.GetApplicationFileBytes(appFileInfo)
+		if err != nil {
+			continue
+		}
+
+		re := regexp.MustCompile(`.default_port\s*=\s*"([^"]*)`)
+		component.Ports = utils.FindAllPortsSubmatch(re, string(fileBytes), 1)
+		if len(ports) > 0 {
+			component.Ports = ports
+			return
+		}
 	}
 
-	re := regexp.MustCompile(`.default_port\s*=\s*"([^"]*)`)
-	component.Ports = utils.FindAllPortsSubmatch(re, string(fileBytes), 1)
 }

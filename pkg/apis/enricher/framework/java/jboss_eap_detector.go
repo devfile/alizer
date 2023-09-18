@@ -27,12 +27,14 @@ func (o JBossEAPDetector) GetSupportedFrameworks() []string {
 }
 
 func (o JBossEAPDetector) GetApplicationFileInfos(componentPath string, ctx *context.Context) []model.ApplicationFileInfo {
-	files, err := utils.GetCachedFilePathsFromRoot(componentPath, ctx)
-	if err != nil {
-		return []model.ApplicationFileInfo{}
+	return []model.ApplicationFileInfo{
+		{
+			Context: ctx,
+			Root:    componentPath,
+			Dir:     "",
+			File:    "pom.xml",
+		},
 	}
-	pomXML := utils.GetFile(&files, "pom.xml")
-	return utils.GenerateApplicationFileFromFilters([]string{pomXML}, componentPath, "", ctx)
 }
 
 // DoFrameworkDetection uses the groupId and artifactId to check for the framework name
@@ -49,29 +51,31 @@ func (o JBossEAPDetector) DoPortsDetection(component *model.Component, ctx *cont
 	if len(appFileInfos) == 0 {
 		return
 	}
-	fileBytes, err := utils.GetApplicationFileBytes(appFileInfos[0])
-	if err != nil {
-		return
-	}
 
-	var pom schema.Pom
-	err = xml.Unmarshal(fileBytes, &pom)
-	if err != nil {
-		return
-	}
+	for _, appFileInfo := range appFileInfos {
+		fileBytes, err := utils.GetApplicationFileBytes(appFileInfo)
+		if err != nil {
+			continue
+		}
 
-	portPlaceholder := GetPortsForJBossFrameworks(pom, "eap-maven-plugin", "org.jboss.eap.plugins")
-	if portPlaceholder == "" {
-		return
-	}
+		var pom schema.Pom
+		err = xml.Unmarshal(fileBytes, &pom)
+		if err != nil {
+			continue
+		}
 
-	if port, err := utils.GetValidPort(portPlaceholder); err == nil {
-		ports = append(ports, port)
-	}
+		portPlaceholder := GetPortsForJBossFrameworks(pom, "eap-maven-plugin", "org.jboss.eap.plugins")
+		if portPlaceholder == "" {
+			continue
+		}
 
-	if len(ports) > 0 {
-		component.Ports = ports
-		return
-	}
+		if port, err := utils.GetValidPort(portPlaceholder); err == nil {
+			ports = append(ports, port)
+		}
 
+		if len(ports) > 0 {
+			component.Ports = ports
+			return
+		}
+	}
 }

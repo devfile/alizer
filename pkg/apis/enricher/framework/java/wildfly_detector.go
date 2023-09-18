@@ -51,28 +51,31 @@ func (w WildFlyDetector) DoPortsDetection(component *model.Component, ctx *conte
 	if len(appFileInfos) == 0 {
 		return
 	}
-	fileBytes, err := utils.GetApplicationFileBytes(appFileInfos[0])
-	if err != nil {
-		return
-	}
 
-	var pom schema.Pom
-	err = xml.Unmarshal(fileBytes, &pom)
-	if err != nil {
-		return
-	}
+	for _, appFileInfo := range appFileInfos {
+		fileBytes, err := utils.GetApplicationFileBytes(appFileInfo)
+		if err != nil {
+			continue
+		}
 
-	portPlaceholder := GetPortsForJBossFrameworks(pom, "wildfly-maven-plugin", "org.wildfly.plugins")
-	if portPlaceholder == "" {
-		return
-	}
+		var pom schema.Pom
+		err = xml.Unmarshal(fileBytes, &pom)
+		if err != nil {
+			continue
+		}
 
-	if port, err := utils.GetValidPort(portPlaceholder); err == nil {
-		ports = append(ports, port)
-	}
+		portPlaceholder := GetPortsForJBossFrameworks(pom, "wildfly-maven-plugin", "org.wildfly.plugins")
+		if portPlaceholder == "" {
+			continue
+		}
 
-	if len(ports) > 0 {
-		component.Ports = ports
-		return
+		if port, err := utils.GetValidPort(portPlaceholder); err == nil {
+			ports = append(ports, port)
+		}
+
+		if len(ports) > 0 {
+			component.Ports = ports
+			return
+		}
 	}
 }

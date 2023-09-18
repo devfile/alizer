@@ -56,21 +56,26 @@ func (v VertxDetector) DoPortsDetection(component *model.Component, ctx *context
 		return
 	}
 
-	fileBytes, err := utils.GetApplicationFileBytes(appFileInfos[0])
-	if err != nil {
-		return
-	}
+	for _, appFileInfo := range appFileInfos {
+		fileBytes, err := utils.GetApplicationFileBytes(appFileInfo)
+		if err != nil {
+			continue
+		}
 
-	var data model.VertxConf
-	err = json.Unmarshal(fileBytes, &data)
-	if err != nil {
-		return
-	}
+		var data model.VertxConf
+		err = json.Unmarshal(fileBytes, &data)
+		if err != nil {
+			continue
+		}
 
-	if utils.IsValidPort(data.Port) {
-		component.Ports = []int{data.Port}
-	} else if utils.IsValidPort(data.ServerConfig.Port) {
-		component.Ports = []int{data.ServerConfig.Port}
-	}
+		if utils.IsValidPort(data.Port) {
+			component.Ports = []int{data.Port}
+			return
+		}
 
+		if utils.IsValidPort(data.ServerConfig.Port) {
+			component.Ports = []int{data.ServerConfig.Port}
+			return
+		}
+	}
 }
