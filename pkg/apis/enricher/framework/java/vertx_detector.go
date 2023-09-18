@@ -21,16 +21,25 @@ import (
 
 type VertxDetector struct{}
 
-type VertxConf struct {
-	Port         int          `json:"http.port,omitempty"`
-	ServerConfig ServerConfig `json:"http.server,omitempty"`
-}
-type ServerConfig struct {
-	Port int `json:"http.server.port,omitempty"`
-}
-
 func (v VertxDetector) GetSupportedFrameworks() []string {
 	return []string{"Vertx"}
+}
+
+func (v VertxDetector) GetApplicationFileInfos(componentPath string, ctx *context.Context) []model.ApplicationFileInfo {
+	return []model.ApplicationFileInfo{
+		{
+			Context: ctx,
+			Root:    componentPath,
+			Dir:     "",
+			File:    "server.xml",
+		},
+		{
+			Context: ctx,
+			Root:    componentPath,
+			Dir:     "src/main/liberty/config",
+			File:    "server.xml",
+		},
+	}
 }
 
 // DoFrameworkDetection uses the groupId to check for the framework name
@@ -42,20 +51,22 @@ func (v VertxDetector) DoFrameworkDetection(language *model.Language, config str
 
 // DoPortsDetection searches for the port in json files under src/main/conf/
 func (v VertxDetector) DoPortsDetection(component *model.Component, ctx *context.Context) {
-	bytes, err := utils.ReadAnyApplicationFile(component.Path, []model.ApplicationFileInfo{
-		{
-			Dir:  "src/main/conf",
-			File: ".*.json",
-		},
-	}, ctx)
+	appFileInfos := v.GetApplicationFileInfos(component.Path, ctx)
+	if len(appFileInfos) == 0 {
+		return
+	}
+
+	fileBytes, err := utils.GetApplicationFileBytes(appFileInfos[0])
 	if err != nil {
 		return
 	}
-	var data VertxConf
-	err = json.Unmarshal(bytes, &data)
+
+	var data model.VertxConf
+	err = json.Unmarshal(fileBytes, &data)
 	if err != nil {
 		return
 	}
+
 	if utils.IsValidPort(data.Port) {
 		component.Ports = []int{data.Port}
 	} else if utils.IsValidPort(data.ServerConfig.Port) {
