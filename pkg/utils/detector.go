@@ -566,7 +566,7 @@ func GetAnyApplicationFilePathExactMatch(root string, propsFiles []model.Applica
 func GenerateApplicationFileFromFilters(files []string, path string, suffix string, ctx *context.Context) []model.ApplicationFileInfo {
 	applicationFileInfos := []model.ApplicationFileInfo{}
 	for _, file := range files {
-		if strings.HasSuffix(file, ".go") {
+		if strings.HasSuffix(file, suffix) {
 			cleanPath := filepath.Clean(file)
 			filename := filepath.Base(cleanPath)
 			tmpDir := strings.ReplaceAll(file, path, "")
@@ -586,9 +586,9 @@ func GenerateApplicationFileFromFilters(files []string, path string, suffix stri
 func GetApplicationFileContents(appFileInfos []model.ApplicationFileInfo) ([]string, error) {
 	fileContents := []string{}
 	for _, appFileInfo := range appFileInfos {
-		fileContent, err := ReadAnyApplicationFile(appFileInfo)
+		fileContent, err := GetApplicationFileBytes(appFileInfo)
 		if err == nil {
-			fileContents = append(fileContents, fileContent)
+			fileContents = append(fileContents, string(fileContent))
 		}
 	}
 	if len(fileContents) == 0 {
@@ -597,13 +597,13 @@ func GetApplicationFileContents(appFileInfos []model.ApplicationFileInfo) ([]str
 	return fileContents, nil
 }
 
-// ReadAnyApplicationFile returns a the content of a file if it exists in the directory and the given file name is a substring.
-func ReadAnyApplicationFile(propsFile model.ApplicationFileInfo) (string, error) {
+// GetApplicationFileBytes returns a slice of bytes of a file if it exists in the directory and the given file name is a substring.
+func GetApplicationFileBytes(propsFile model.ApplicationFileInfo) ([]byte, error) {
 	bytes, err := readAnyApplicationFile(propsFile.Root, []model.ApplicationFileInfo{propsFile}, false, propsFile.Context)
 	if err != nil {
-		return "", fmt.Errorf("error: %s", err)
+		return bytes, fmt.Errorf("error: %s", err)
 	}
-	return string(bytes), nil
+	return bytes, nil
 }
 
 // ReadAnyApplicationFileExactMatch returns a byte slice if the exact given file exists in the directory.

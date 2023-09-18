@@ -100,3 +100,36 @@ type EnvVar struct {
 	// Value is the value associated with the environment variable.
 	Value string
 }
+
+type MicronautApplicationProps struct {
+	Micronaut struct {
+		Server struct {
+			Port int `yaml:"port,omitempty"`
+			SSL  struct {
+				Enabled bool `yaml:"enabled,omitempty"`
+				Port    int  `yaml:"port,omitempty"`
+			} `yaml:"ssl,omitempty"`
+		} `yaml:"server,omitempty"`
+	} `yaml:"micronaut,omitempty"`
+}
+
+type ServerXml struct {
+	HttpEndpoint struct {
+		HttpPort  string `xml:"httpPort,attr"`
+		HttpsPort string `xml:"httpsPort,attr"`
+	} `xml:"httpEndpoint"`
+}
+
+type QuarkusApplicationYaml struct {
+	Quarkus QuarkusHttp `yaml:"quarkus,omitempty"`
+}
+
+type QuarkusHttp struct {
+	Http QuarkusHttpPort `yaml:"http,omitempty"`
+}
+
+type QuarkusHttpPort struct {
+	Port             int    `yaml:"port,omitempty"`
+	InsecureRequests string `yaml:"insecure-requests,omitempty"`
+	SSLPort          int    `yaml:"ssl-port,omitempty"`
+}
