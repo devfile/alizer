@@ -30,14 +30,8 @@ func (v VertxDetector) GetApplicationFileInfos(componentPath string, ctx *contex
 		{
 			Context: ctx,
 			Root:    componentPath,
-			Dir:     "",
-			File:    "server.xml",
-		},
-		{
-			Context: ctx,
-			Root:    componentPath,
-			Dir:     "src/main/liberty/config",
-			File:    "server.xml",
+			Dir:     "src/main/conf",
+			File:    ".*.json",
 		},
 	}
 }
