@@ -16,66 +16,23 @@ import (
 	"regexp"
 )
 
-type PortDetectionAlgorithm int
-
 const (
 	DockerFile PortDetectionAlgorithm = 0
 	Compose    PortDetectionAlgorithm = 1
 	Source     PortDetectionAlgorithm = 2
 )
 
-type DetectionSettings struct {
-	BasePath              string
-	PortDetectionStrategy []PortDetectionAlgorithm
-}
-
-type Language struct {
-	Name                    string
-	Aliases                 []string
-	Weight                  float64
-	Frameworks              []string
-	Tools                   []string
-	CanBeComponent          bool
-	CanBeContainerComponent bool
-}
-
-type Component struct {
-	Name      string
-	Path      string
-	Languages []Language
-	Ports     []int
-}
-
-type Version struct {
-	SchemaVersion string
-	Default       bool
-	Version       string
-}
-
-type DevfileType struct {
-	Name        string
-	Language    string
-	ProjectType string
-	Tags        []string
-	Versions    []Version
-}
-
-type DevfileFilter struct {
-	MinSchemaVersion string
-	MaxSchemaVersion string
-}
-
-type ApplicationFileInfo struct {
-	Context *context.Context
-	Root    string
-	Dir     string
-	File    string
-}
+// All models inside model.go are sorted by name A-Z
 
 type AngularCliJson struct {
 	Defaults struct {
 		Serve AngularHostPort `json:"serve"`
 	} `json:"defaults"`
+}
+
+type AngularHostPort struct {
+	Host string `json:"host"`
+	Port int    `json:"port"`
 }
 
 type AngularJson struct {
@@ -90,38 +47,46 @@ type AngularProjectBody struct {
 	} `json:"architect"`
 }
 
-type AngularHostPort struct {
-	Host string `json:"host"`
-	Port int    `json:"port"`
+type ApplicationFileInfo struct {
+	Context *context.Context
+	Root    string
+	Dir     string
+	File    string
 }
 
-type SpringApplicationProsServer struct {
-	Server struct {
-		Port int `yaml:"port,omitempty"`
-		Http struct {
-			Port int `yaml:"port,omitempty"`
-		} `yaml:"http,omitempty"`
-	} `yaml:"server,omitempty"`
+type Component struct {
+	Name      string
+	Path      string
+	Languages []Language
+	Ports     []int
 }
 
-type PortMatchRules struct {
-	MatchIndexRegexes []PortMatchRule
-	MatchRegexes      []PortMatchSubRule
+type DetectionSettings struct {
+	BasePath              string
+	PortDetectionStrategy []PortDetectionAlgorithm
 }
 
-type PortMatchRule struct {
-	Regex     *regexp.Regexp
-	ToReplace string
-}
-
-type PortMatchSubRule struct {
-	Regex    *regexp.Regexp
-	SubRegex *regexp.Regexp
+type DevfileFilter struct {
+	MinSchemaVersion string
+	MaxSchemaVersion string
 }
 
 type DevfileScore struct {
 	DevfileIndex int
 	Score        int
+}
+
+type DevfileType struct {
+	Name        string
+	Language    string
+	ProjectType string
+	Tags        []string
+	Versions    []Version
+}
+
+type DjangoApplicationPropertiesFile struct {
+	Dir  string
+	File string
 }
 
 // EnvVar represents an environment variable with a name and a corresponding value.
@@ -131,6 +96,16 @@ type EnvVar struct {
 
 	// Value is the value associated with the environment variable.
 	Value string
+}
+
+type Language struct {
+	Name                    string
+	Aliases                 []string
+	Weight                  float64
+	Frameworks              []string
+	Tools                   []string
+	CanBeComponent          bool
+	CanBeContainerComponent bool
 }
 
 type MicronautApplicationProps struct {
@@ -152,8 +127,21 @@ type OpenLibertyServerXml struct {
 	} `xml:"httpEndpoint"`
 }
 
-type VertexServerConfig struct {
-	Port int `json:"http.server.port,omitempty"`
+type PortDetectionAlgorithm int
+
+type PortMatchRule struct {
+	Regex     *regexp.Regexp
+	ToReplace string
+}
+
+type PortMatchRules struct {
+	MatchIndexRegexes []PortMatchRule
+	MatchRegexes      []PortMatchSubRule
+}
+
+type PortMatchSubRule struct {
+	Regex    *regexp.Regexp
+	SubRegex *regexp.Regexp
 }
 
 type QuarkusApplicationYaml struct {
@@ -170,7 +158,26 @@ type QuarkusHttpPort struct {
 	SSLPort          int    `yaml:"ssl-port,omitempty"`
 }
 
+type SpringApplicationProsServer struct {
+	Server struct {
+		Port int `yaml:"port,omitempty"`
+		Http struct {
+			Port int `yaml:"port,omitempty"`
+		} `yaml:"http,omitempty"`
+	} `yaml:"server,omitempty"`
+}
+
+type Version struct {
+	SchemaVersion string
+	Default       bool
+	Version       string
+}
+
 type VertxConf struct {
 	Port         int                `json:"http.port,omitempty"`
 	ServerConfig VertexServerConfig `json:"http.server,omitempty"`
+}
+
+type VertexServerConfig struct {
+	Port int `json:"http.server.port,omitempty"`
 }
