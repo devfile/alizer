@@ -150,7 +150,7 @@ func getServerPortsFromYamlFile(file string) ([]int, error) {
 	if err != nil {
 		return []int{}, err
 	}
-	var data ApplicationProsServer
+	var data model.SpringApplicationProsServer
 	err = yaml.Unmarshal(yamlFile, &data)
 	if err != nil {
 		return []int{}, err

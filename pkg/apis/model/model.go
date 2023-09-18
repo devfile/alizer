@@ -72,7 +72,7 @@ type ApplicationFileInfo struct {
 	File    string
 }
 
-type ApplicationProsServer struct {
+type SpringApplicationProsServer struct {
 	Server struct {
 		Port int `yaml:"port,omitempty"`
 		Http struct {
@@ -122,11 +122,15 @@ type MicronautApplicationProps struct {
 	} `yaml:"micronaut,omitempty"`
 }
 
-type ServerXml struct {
+type OpenLibertyServerXml struct {
 	HttpEndpoint struct {
 		HttpPort  string `xml:"httpPort,attr"`
 		HttpsPort string `xml:"httpsPort,attr"`
 	} `xml:"httpEndpoint"`
+}
+
+type VertexServerConfig struct {
+	Port int `json:"http.server.port,omitempty"`
 }
 
 type QuarkusApplicationYaml struct {
@@ -141,4 +145,9 @@ type QuarkusHttpPort struct {
 	Port             int    `yaml:"port,omitempty"`
 	InsecureRequests string `yaml:"insecure-requests,omitempty"`
 	SSLPort          int    `yaml:"ssl-port,omitempty"`
+}
+
+type VertxConf struct {
+	Port         int                `json:"http.port,omitempty"`
+	ServerConfig VertexServerConfig `json:"http.server,omitempty"`
 }

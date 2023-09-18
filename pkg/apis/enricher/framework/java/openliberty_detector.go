@@ -61,7 +61,7 @@ func (o OpenLibertyDetector) DoPortsDetection(component *model.Component, ctx *c
 		return
 	}
 
-	var data model.ServerXml
+	var data model.OpenLibertyServerXml
 	err = xml.Unmarshal(fileBytes, &data)
 	if err != nil {
 		return
