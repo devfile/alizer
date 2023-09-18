@@ -25,6 +25,17 @@ func (v VueDetector) GetSupportedFrameworks() []string {
 	return []string{"Vue"}
 }
 
+func (v VueDetector) GetApplicationFileInfos(componentPath string, ctx *context.Context) []model.ApplicationFileInfo {
+	return []model.ApplicationFileInfo{
+		{
+			Context: ctx,
+			Root:    componentPath,
+			Dir:     "",
+			File:    "vue.config.js",
+		},
+	}
+}
+
 // DoFrameworkDetection uses a tag to check for the framework name
 func (v VueDetector) DoFrameworkDetection(language *model.Language, config string) {
 	if hasFramework(config, "vue") {
@@ -62,15 +73,16 @@ func (v VueDetector) DoPortsDetection(component *model.Component, ctx *context.C
 	}
 
 	//check inside the vue.config.js file
-	bytes, err := utils.ReadAnyApplicationFile(component.Path, []model.ApplicationFileInfo{
-		{
-			Dir:  "",
-			File: "vue.config.js",
-		},
-	}, ctx)
+	appFileInfos := v.GetApplicationFileInfos(component.Path, ctx)
+	if len(appFileInfos) == 0 {
+		return
+	}
+
+	fileBytes, err := utils.GetApplicationFileBytes(appFileInfos[0])
 	if err != nil {
 		return
 	}
+
 	re := regexp.MustCompile(`port:\s*(\d+)*`)
-	component.Ports = utils.FindAllPortsSubmatch(re, string(bytes), 1)
+	component.Ports = utils.FindAllPortsSubmatch(re, string(fileBytes), 1)
 }
