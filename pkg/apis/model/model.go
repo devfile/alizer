@@ -72,6 +72,15 @@ type ApplicationFileInfo struct {
 	File    string
 }
 
+type ApplicationProsServer struct {
+	Server struct {
+		Port int `yaml:"port,omitempty"`
+		Http struct {
+			Port int `yaml:"port,omitempty"`
+		} `yaml:"http,omitempty"`
+	} `yaml:"server,omitempty"`
+}
+
 type PortMatchRules struct {
 	MatchIndexRegexes []PortMatchRule
 	MatchRegexes      []PortMatchSubRule

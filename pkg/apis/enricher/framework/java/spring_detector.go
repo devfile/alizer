@@ -24,17 +24,31 @@ import (
 
 type SpringDetector struct{}
 
-type ApplicationProsServer struct {
-	Server struct {
-		Port int `yaml:"port,omitempty"`
-		Http struct {
-			Port int `yaml:"port,omitempty"`
-		} `yaml:"http,omitempty"`
-	} `yaml:"server,omitempty"`
-}
-
 func (s SpringDetector) GetSupportedFrameworks() []string {
 	return []string{"Spring", "Spring Boot"}
+}
+
+func (s SpringDetector) GetApplicationFileInfos(componentPath string, ctx *context.Context) []model.ApplicationFileInfo {
+	return []model.ApplicationFileInfo{
+		{
+			Context: ctx,
+			Root:    componentPath,
+			Dir:     "src/main/resources",
+			File:    "application.properties",
+		},
+		{
+			Context: ctx,
+			Root:    componentPath,
+			Dir:     "src/main/resources",
+			File:    "application.yml",
+		},
+		{
+			Context: ctx,
+			Root:    componentPath,
+			Dir:     "src/main/resources",
+			File:    "application.yaml",
+		},
+	}
 }
 
 // DoFrameworkDetection uses the groupId to check for the framework name
@@ -47,7 +61,7 @@ func (s SpringDetector) DoFrameworkDetection(language *model.Language, config st
 // DoPortsDetection searches for ports in the env var and
 // src/main/resources/application.properties, or src/main/resources/application.yaml
 func (s SpringDetector) DoPortsDetection(component *model.Component, ctx *context.Context) {
-	// check if port is set on env var
+	// case: port is set on env var
 	ports := getSpringPortsFromEnvs()
 	if len(ports) > 0 {
 		component.Ports = ports
@@ -61,23 +75,17 @@ func (s SpringDetector) DoPortsDetection(component *model.Component, ctx *contex
 		return
 	}
 
-	applicationFile := utils.GetAnyApplicationFilePath(component.Path, []model.ApplicationFileInfo{
-		{
-			Dir:  "src/main/resources",
-			File: "application.properties",
-		},
-		{
-			Dir:  "src/main/resources",
-			File: "application.yml",
-		},
-		{
-			Dir:  "src/main/resources",
-			File: "application.yaml",
-		},
-	}, ctx)
+	// check if port is set inside application file
+	appFileInfos := s.GetApplicationFileInfos(component.Path, ctx)
+	if len(appFileInfos) == 0 {
+		return
+	}
+
+	applicationFile := utils.GetAnyApplicationFilePath(component.Path, appFileInfos, ctx)
 	if applicationFile == "" {
 		return
 	}
+
 	var err error
 	if filepath.Ext(applicationFile) == ".yml" || filepath.Ext(applicationFile) == ".yaml" {
 		ports, err = getServerPortsFromYamlFile(applicationFile)
