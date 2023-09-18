@@ -25,6 +25,17 @@ func (n NuxtDetector) GetSupportedFrameworks() []string {
 	return []string{"Nuxt"}
 }
 
+func (n NuxtDetector) GetApplicationFileInfos(componentPath string, ctx *context.Context) []model.ApplicationFileInfo {
+	return []model.ApplicationFileInfo{
+		{
+			Context: ctx,
+			Root:    componentPath,
+			Dir:     "",
+			File:    "nuxt.config.js",
+		},
+	}
+}
+
 // DoFrameworkDetection uses a tag to check for the framework name
 func (n NuxtDetector) DoFrameworkDetection(language *model.Language, config string) {
 	if hasFramework(config, "nuxt") {
@@ -50,15 +61,16 @@ func (n NuxtDetector) DoPortsDetection(component *model.Component, ctx *context.
 	}
 
 	//check inside the nuxt.config.js file
-	bytes, err := utils.ReadAnyApplicationFile(component.Path, []model.ApplicationFileInfo{
-		{
-			Dir:  "",
-			File: "nuxt.config.js",
-		},
-	}, ctx)
+	appFileInfos := n.GetApplicationFileInfos(component.Path, ctx)
+	if len(appFileInfos) == 0 {
+		return
+	}
+
+	fileBytes, err := utils.GetApplicationFileBytes(appFileInfos[0])
 	if err != nil {
 		return
 	}
+
 	re := regexp.MustCompile(`port:\s*(\d+)*`)
-	component.Ports = utils.FindAllPortsSubmatch(re, string(bytes), 1)
+	component.Ports = utils.FindAllPortsSubmatch(re, string(fileBytes), 1)
 }
