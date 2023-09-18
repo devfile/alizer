@@ -51,7 +51,7 @@ func (o OpenLibertyDetector) DoFrameworkDetection(language *model.Language, conf
 
 // DoPortsDetection searches for the port in src/main/liberty/config/server.xml and /server.xml
 func (o OpenLibertyDetector) DoPortsDetection(component *model.Component, ctx *context.Context) {
-	appFileInfos := m.GetApplicationFileInfos(component.Path, ctx)
+	appFileInfos := o.GetApplicationFileInfos(component.Path, ctx)
 	if len(appFileInfos) == 0 {
 		return
 	}

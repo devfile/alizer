@@ -28,6 +28,29 @@ func (q QuarkusDetector) GetSupportedFrameworks() []string {
 	return []string{"Quarkus"}
 }
 
+func (q QuarkusDetector) GetApplicationFileInfos(componentPath string, ctx *context.Context) []model.ApplicationFileInfo {
+	return []model.ApplicationFileInfo{
+		{
+			Context: ctx,
+			Root:    componentPath,
+			Dir:     "src/main/resources",
+			File:    "application.properties",
+		},
+		{
+			Context: ctx,
+			Root:    componentPath,
+			Dir:     "src/main/resources",
+			File:    "application.yml",
+		},
+		{
+			Context: ctx,
+			Root:    componentPath,
+			Dir:     "src/main/resources",
+			File:    "application.yaml",
+		},
+	}
+}
+
 // DoFrameworkDetection uses the groupId to check for the framework name
 func (q QuarkusDetector) DoFrameworkDetection(language *model.Language, config string) {
 	if hasFwk, _ := hasFramework(config, "io.quarkus", ""); hasFwk {
@@ -51,6 +74,7 @@ func (q QuarkusDetector) DoPortsDetection(component *model.Component, ctx *conte
 		component.Ports = ports
 		return
 	}
+
 	// check if port is set on .env file
 	insecureRequestEnabled := utils.GetStringValueFromEnvFile(component.Path, `QUARKUS_HTTP_INSECURE_REQUESTS=(\w*)`)
 	regexes := []string{`QUARKUS_HTTP_SSL_PORT=(\d*)`}
@@ -63,20 +87,13 @@ func (q QuarkusDetector) DoPortsDetection(component *model.Component, ctx *conte
 		return
 	}
 
-	applicationFile := utils.GetAnyApplicationFilePath(component.Path, []model.ApplicationFileInfo{
-		{
-			Dir:  "src/main/resources",
-			File: "application.properties",
-		},
-		{
-			Dir:  "src/main/resources",
-			File: "application.yml",
-		},
-		{
-			Dir:  "src/main/resources",
-			File: "application.yaml",
-		},
-	}, ctx)
+	appFileInfos := q.GetApplicationFileInfos(component.Path, ctx)
+	if len(appFileInfos) == 0 {
+		return
+	}
+
+	// case: no port found as env var. Look into source code.
+	applicationFile := utils.GetAnyApplicationFilePath(component.Path, appFileInfos, ctx)
 	if applicationFile == "" {
 		return
 	}
@@ -152,7 +169,7 @@ func getServerPortsFromQuarkusApplicationYamlFile(file string) ([]int, error) {
 	if err != nil {
 		return []int{}, err
 	}
-	var data QuarkusApplicationYaml
+	var data model.QuarkusApplicationYaml
 	err = yaml.Unmarshal(yamlFile, &data)
 	if err != nil {
 		return []int{}, err
