@@ -84,11 +84,6 @@ type DevfileType struct {
 	Versions    []Version
 }
 
-type DjangoApplicationPropertiesFile struct {
-	Dir  string
-	File string
-}
-
 // EnvVar represents an environment variable with a name and a corresponding value.
 type EnvVar struct {
 	// Name is the name of the environment variable.
