@@ -610,7 +610,7 @@ func GetApplicationFileInfo(propsFiles []model.ApplicationFileInfo, filename str
 			return propsFile, nil
 		}
 	}
-	return model.ApplicationFileInfo{}, fmt.Errorf("No ApplicationFileInfo found")
+	return model.ApplicationFileInfo{}, fmt.Errorf("no ApplicationFileInfo found")
 }
 
 // ReadAnyApplicationFileExactMatch returns a byte slice if the exact given file exists in the directory.
