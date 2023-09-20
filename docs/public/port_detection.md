@@ -74,6 +74,8 @@ services:
 ### Port detection with frameworks
 ### Java Frameworks
 
+For java frameworks not having a secific application file, alizer will only try to detect ports defined inside `.java` files and not inside the entire component directory.
+
 #### Micronaut
 
 Alizer checks if the environment variable MICRONAUT_SERVER_SSL_ENABLED is set to true. If so, both MICRONAUT_SERVER_SSL_PORT and MICRONAUT_SERVER_PORT are checked (if false, only the MICRONAUT_SERVER_PORT is used for verification). Alizer will first look for if the env vars are set in the system and if it doesn't find them it will also look for a dockerfile. If they are not set or they do not contain valid port values, Alizer searches for the `application.[yml|yaml]` file in `src/main/resources` folder and verify if one or more ports are set.
@@ -178,6 +180,8 @@ Alizer searches inside the `pom.xml` file to find any configuration inside the p
 ```
 
 ### Javascript Frameworks
+
+For javascript frameworks not having a secific application file, alizer will only try to detect ports defined inside `.js` files and not inside the entire component directory.
 
 ### Angular
 
@@ -316,6 +320,8 @@ Example
 ```
 
 ### GoLang Frameworks
+
+For golang frameworks not having a secific application file, alizer will only try to detect ports defined inside `.go` files and not inside the entire component directory.
 
 #### Beego
 
