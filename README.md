@@ -1,5 +1,5 @@
 # Alizer
-![Go](https://img.shields.io/badge/Go-1.18-blue)
+![Go](https://img.shields.io/badge/Go-1.19-blue)
 [![Build status](https://github.com/devfile/alizer/actions/workflows/CI.yml/badge.svg)](https://github.com/devfile/alizer/actions/workflows/CI.yml)
 [![License](https://img.shields.io/badge/License-Apache%202.0-orange.svg)](./LICENSE)
 
@@ -15,7 +15,7 @@ detect components (the concept of component is taken from Odo and its definition
 
 ## 🚨 BACKPORTED VERSION WARNING
 
-This version of Alizer is backported and uses `go 1.18`. For latest version of alizer please use the [main](https://github.com/devfile/alizer) branch.
+This version of Alizer is backported and uses `sigs.k8s.io/controller-runtime v0.14.4`. For latest version of alizer please use the [main](https://github.com/devfile/alizer) branch.
 
 ## Usage
 
