@@ -321,7 +321,7 @@ Example
 
 ### GoLang Frameworks
 
-For golang frameworks not having a secific application file, alizer will only try to detect ports defined inside `.go` files and not inside the entire component directory.
+For Golang frameworks not having a specific application file, Alizer will only try to detect ports defined inside `.go` files and not inside the entire component directory.
 
 #### Beego
 
