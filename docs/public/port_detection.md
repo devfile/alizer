@@ -181,7 +181,7 @@ Alizer searches inside the `pom.xml` file to find any configuration inside the p
 
 ### Javascript Frameworks
 
-For javascript frameworks not having a secific application file, alizer will only try to detect ports defined inside `.js` files and not inside the entire component directory.
+For JavaScript frameworks not having a specific application file, Alizer will only try to detect ports defined inside `.js` files and not inside the entire component directory.
 
 ### Angular
 
