@@ -28,7 +28,7 @@ func (r ReactJsDetector) GetSupportedFrameworks() []string {
 func (r ReactJsDetector) GetApplicationFileInfos(componentPath string, ctx *context.Context) []model.ApplicationFileInfo {
 	// React.js enricher does not apply source code detection.
 	// It only detects ports from start script or env vars
-	return []model.ApplicationFileInfo{}
+	return nil
 }
 
 // DoFrameworkDetection uses a tag to check for the framework name
