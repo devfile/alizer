@@ -74,7 +74,7 @@ services:
 ### Port detection with frameworks
 ### Java Frameworks
 
-For java frameworks not having a secific application file, alizer will only try to detect ports defined inside `.java` files and not inside the entire component directory.
+For Java frameworks not having a specific application file, Alizer will only try to detect ports defined inside `.java` files and not inside the entire component directory.
 
 #### Micronaut
 
