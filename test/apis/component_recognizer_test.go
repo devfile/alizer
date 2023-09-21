@@ -108,6 +108,10 @@ func TestComponentDetectionOnQuarkus(t *testing.T) {
 	isComponentsInProject(t, "quarkus", 1, "java", "code-with-quarkus-maven")
 }
 
+func TestComponentDetectionOnQuarkusMultimodule(t *testing.T) {
+	isComponentsInProject(t, "quarkus-multimodule", 1, "java", "code-with-quarkus-maven-app")
+}
+
 func TestComponentDetectionOnSpring(t *testing.T) {
 	isComponentsInProject(t, "spring", 1, "java", "spring")
 }
@@ -418,7 +422,7 @@ func TestComponentDetectionWithGitIgnoreRule(t *testing.T) {
 
 func TestComponentDetectionMultiProjects(t *testing.T) {
 	components := getComponentsFromTestProject(t, "")
-	nComps := 69
+	nComps := 70
 	if len(components) != nComps {
 		t.Errorf("Expected " + strconv.Itoa(nComps) + " components but found " + strconv.Itoa(len(components)))
 	}
