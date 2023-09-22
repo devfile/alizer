@@ -304,38 +304,6 @@ func TestGetFile(t *testing.T) {
 	}
 }
 
-func TestHasFile(t *testing.T) {
-	tests := []struct {
-		name       string
-		files      []string
-		wantedFile string
-		expected   bool
-	}{
-		{
-			name:       "Case 1: Matching file path",
-			files:      []string{"f1.txt", "f2.txt", "f3.txt"},
-			wantedFile: "f2.txt",
-			expected:   true,
-		},
-		{
-			name:       "Case 2: No matching file path",
-			files:      []string{"f1.txt", "f2.txt", "f3.txt"},
-			wantedFile: "f4.txt",
-			expected:   false,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			result := HasFile(&tt.files, tt.wantedFile)
-
-			if result != tt.expected {
-				t.Errorf("Expected value %v, got %v", tt.expected, result)
-			}
-		})
-	}
-}
-
 func TestIsPathOfWantedFile(t *testing.T) {
 	tests := []struct {
 		name       string
@@ -928,6 +896,42 @@ func TestConvertPropertiesFileToMap(t *testing.T) {
 	}
 }
 
+func TestConvertPropertiesFileAsPathToMap(t *testing.T) {
+	testCases := []struct {
+		name           string
+		filePath       string
+		expectedResult map[string]string
+		expectingError bool
+	}{
+		{
+			name:           "Case 1: Empty file",
+			filePath:       "testdata/test.properties",
+			expectedResult: map[string]string{"key1": "value1", "key2": "value2", "key3": "value3"},
+			expectingError: false,
+		},
+		{
+			name:           "Case 2: Valid properties file",
+			filePath:       "testdata/notExisting.properties",
+			expectedResult: nil,
+			expectingError: true,
+		},
+	}
+	for _, tt := range testCases {
+		t.Run(tt.name, func(t *testing.T) {
+
+			result, err := ConvertPropertiesFileAsPathToMap(tt.filePath)
+
+			if err != nil {
+				if !tt.expectingError {
+					t.Errorf("error raised for not expecting error case: %v", err)
+				}
+			}
+
+			assert.EqualValues(t, tt.expectedResult, result)
+		})
+	}
+}
+
 func TestGetValidPortsFromEnvs(t *testing.T) {
 	tests := []struct {
 		name           string
@@ -1458,6 +1462,407 @@ func TestGetEnvVarPortValueFromDockerfile(t *testing.T) {
 			}
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("GetEnvVarPortValueFromDockerfile() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestAddToArrayIfValueExist(t *testing.T) {
+	type args struct {
+		arr *[]string
+		val string
+	}
+	tests := []struct {
+		name        string
+		args        args
+		expectedLen int
+	}{
+		{
+			name: "case 1: item exists",
+			args: args{
+				arr: &[]string{"something"},
+				val: "somethingelse",
+			},
+			expectedLen: 2,
+		},
+		{
+			name: "case 2: item doesn't exist",
+			args: args{
+				arr: &[]string{"something"},
+				val: "",
+			},
+			expectedLen: 1,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			AddToArrayIfValueExist(tt.args.arr, tt.args.val)
+			assert.EqualValues(t, len(*tt.args.arr), tt.expectedLen)
+		})
+	}
+}
+
+func TestContains(t *testing.T) {
+	type args struct {
+		s   []string
+		str string
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{
+			name: "case 1: contains item",
+			args: args{s: []string{"one"}, str: "one"},
+			want: true,
+		},
+		{
+			name: "case 2: does not contain item",
+			args: args{s: []string{"one"}, str: "two"},
+			want: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := Contains(tt.args.s, tt.args.str); got != tt.want {
+				t.Errorf("Contains() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestGenerateApplicationFileFromFilters(t *testing.T) {
+	ctx := context.Background()
+	type args struct {
+		files  []string
+		path   string
+		suffix string
+		ctx    *context.Context
+	}
+	tests := []struct {
+		name string
+		args args
+		want []model.ApplicationFileInfo
+	}{
+		{
+			name: "case 1: found ApplicationFileInfo",
+			args: args{
+				files: []string{
+					"../../resources/projects/echo/main.go",
+					"../../resources/projects/echo/go.sum",
+				},
+				path:   "../../resources/projects/echo/",
+				suffix: ".go",
+				ctx:    &ctx,
+			},
+			want: []model.ApplicationFileInfo{
+				{
+					Dir:     "",
+					File:    "main.go",
+					Root:    "../../resources/projects/echo/",
+					Context: &ctx,
+				},
+			},
+		},
+		{
+			name: "case 2: not found ApplicationFileInfo",
+			args: args{
+				files: []string{
+					"../../resources/projects/echo/go.mod",
+					"../../resources/projects/echo/go.sum",
+				},
+				path:   "../../resources/projects/echo/",
+				suffix: ".go",
+				ctx:    &ctx,
+			},
+			want: []model.ApplicationFileInfo{},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := GenerateApplicationFileFromFilters(tt.args.files, tt.args.path, tt.args.suffix, tt.args.ctx); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("GenerateApplicationFileFromFilters() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestReadAnyApplicationFileExactMatch(t *testing.T) {
+	ctx := context.Background()
+	cleanFile := filepath.Clean("../../resources/projects/echo/main.go")
+	bytes, err := os.ReadFile(cleanFile)
+	if err != nil {
+		t.Errorf("unexpected error from reader: %v", err)
+	}
+	type args struct {
+		root       string
+		propsFiles []model.ApplicationFileInfo
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    []byte
+		wantErr bool
+	}{
+		{
+			name: "case 1: found file",
+			args: args{
+				root: "../../resources/projects/echo",
+				propsFiles: []model.ApplicationFileInfo{
+					{
+						Dir:     "",
+						File:    "main.go",
+						Root:    "../../resources/projects/echo/",
+						Context: &ctx,
+					},
+				},
+			},
+			want:    bytes,
+			wantErr: false,
+		},
+		{
+			name: "case 1: found file",
+			args: args{
+				root: "../../resources/projects/echo",
+				propsFiles: []model.ApplicationFileInfo{
+					{
+						Dir:     "",
+						File:    "main.js",
+						Root:    "../../resources/projects/echo/",
+						Context: &ctx,
+					},
+				},
+			},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := ReadAnyApplicationFileExactMatch(tt.args.root, tt.args.propsFiles)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("ReadAnyApplicationFileExactMatch() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("ReadAnyApplicationFileExactMatch() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestGetValidPortsFromEnvDockerfile(t *testing.T) {
+	type args struct {
+		envs    []string
+		envVars []model.EnvVar
+	}
+	tests := []struct {
+		name string
+		args args
+		want []int
+	}{
+		{
+			name: "case 1: env var exists",
+			args: args{
+				envs: []string{"ENVVAR", "ENVVAR2"},
+				envVars: []model.EnvVar{
+					{
+						Name:  "ENVVAR",
+						Value: "1234",
+					},
+					{
+						Name:  "ENVVAR2",
+						Value: "1235",
+					},
+				},
+			},
+			want: []int{1234, 1235},
+		},
+		{
+			name: "case 2: env var doesn't exists",
+			args: args{
+				envs: []string{"ENVVAR", "ENVVAR2"},
+				envVars: []model.EnvVar{
+					{
+						Name:  "ENVVAR3",
+						Value: "1234",
+					},
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := GetValidPortsFromEnvDockerfile(tt.args.envs, tt.args.envVars); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("GetValidPortsFromEnvDockerfile() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestGetApplicationFileContents(t *testing.T) {
+	ctx := context.Background()
+	cleanFile := filepath.Clean("../../resources/projects/echo/main.go")
+	bytes, err := os.ReadFile(cleanFile)
+	if err != nil {
+		t.Errorf("unexpected error from reader: %v", err)
+	}
+
+	type args struct {
+		appFileInfos []model.ApplicationFileInfo
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    []string
+		wantErr bool
+	}{
+		{
+			name: "case 1: found contents",
+			args: args{
+				appFileInfos: []model.ApplicationFileInfo{
+					{
+						Dir:     "",
+						File:    "main.go",
+						Root:    "../../resources/projects/echo/",
+						Context: &ctx,
+					},
+				},
+			},
+			want:    []string{string(bytes)},
+			wantErr: false,
+		},
+		{
+			name: "case 2: doesn't find contents",
+			args: args{
+				appFileInfos: []model.ApplicationFileInfo{
+					{
+						Dir:     "",
+						File:    "main.js",
+						Root:    "../../resources/projects/echo/",
+						Context: &ctx,
+					},
+				},
+			},
+			want:    []string{},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := GetApplicationFileContents(tt.args.appFileInfos)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("GetApplicationFileContents() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("GetApplicationFileContents() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestGetApplicationFileBytes(t *testing.T) {
+	ctx := context.Background()
+	cleanFile := filepath.Clean("../../resources/projects/echo/main.go")
+	bytes, err := os.ReadFile(cleanFile)
+	if err != nil {
+		t.Errorf("unexpected error from reader: %v", err)
+	}
+	type args struct {
+		propsFile model.ApplicationFileInfo
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    []byte
+		wantErr bool
+	}{
+		{
+			name: "case 1: found bytes",
+			args: args{
+				propsFile: model.ApplicationFileInfo{
+					Dir:     "",
+					File:    "main.go",
+					Root:    "../../resources/projects/echo/",
+					Context: &ctx,
+				},
+			},
+			want:    bytes,
+			wantErr: false,
+		},
+		{
+			name: "case 2: doesn't find bytes",
+			args: args{
+				propsFile: model.ApplicationFileInfo{
+					Dir:     "",
+					File:    "main.js",
+					Root:    "../../resources/projects/echo/",
+					Context: &ctx,
+				},
+			},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := GetApplicationFileBytes(tt.args.propsFile)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("GetApplicationFileBytes() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("GetApplicationFileBytes() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestGetApplicationFileInfo(t *testing.T) {
+	ctx := context.Background()
+	appFileInfo := model.ApplicationFileInfo{
+		Dir:     "",
+		File:    "main.go",
+		Root:    "../../resources/projects/echo/",
+		Context: &ctx,
+	}
+	type args struct {
+		propsFiles []model.ApplicationFileInfo
+		filename   string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    model.ApplicationFileInfo
+		wantErr bool
+	}{
+		{
+			name: "case 1: finds file",
+			args: args{
+				propsFiles: []model.ApplicationFileInfo{appFileInfo},
+				filename:   "main.go",
+			},
+			want:    appFileInfo,
+			wantErr: false,
+		},
+		{
+			name: "case 2: doesn't find file",
+			args: args{
+				propsFiles: []model.ApplicationFileInfo{appFileInfo},
+				filename:   "main2.go",
+			},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := GetApplicationFileInfo(tt.args.propsFiles, tt.args.filename)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("GetApplicationFileInfo() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("GetApplicationFileInfo() = %v, want %v", got, tt.want)
 			}
 		})
 	}

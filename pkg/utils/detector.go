@@ -27,11 +27,10 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/devfile/alizer/pkg/utils/langfiles"
-	"github.com/moby/buildkit/frontend/dockerfile/parser"
-
 	"github.com/devfile/alizer/pkg/apis/model"
 	"github.com/devfile/alizer/pkg/schema"
+	"github.com/devfile/alizer/pkg/utils/langfiles"
+	"github.com/moby/buildkit/frontend/dockerfile/parser"
 	ignore "github.com/sabhiram/go-gitignore"
 )
 
@@ -65,16 +64,6 @@ func GetFile(filePaths *[]string, wantedFile string) string {
 		}
 	}
 	return ""
-}
-
-// HasFile checks if the file is in a filePaths path.
-func HasFile(files *[]string, wantedFile string) bool {
-	for _, path := range *files {
-		if IsPathOfWantedFile(path, wantedFile) {
-			return true
-		}
-	}
-	return false
 }
 
 // IsPathOfWantedFile checks if the file is in the path.
@@ -311,6 +300,7 @@ func GetFilePathsInRoot(root string) ([]string, error) {
 	return files, nil
 }
 
+// ConvertPropertiesFileAsPathToMap fetches a file from a given path and transforms it into a map
 func ConvertPropertiesFileAsPathToMap(path string) (map[string]string, error) {
 	bytes, err := os.ReadFile(filepath.Clean(path))
 	if err != nil {
@@ -319,6 +309,7 @@ func ConvertPropertiesFileAsPathToMap(path string) (map[string]string, error) {
 	return ConvertPropertiesFileToMap(bytes)
 }
 
+// ConvertPropertiesFileAsPathToMap transforms a slice of bytes it into a map
 func ConvertPropertiesFileToMap(fileInBytes []byte) (map[string]string, error) {
 	config := map[string]string{}
 	scanner := bufio.NewScanner(bytes.NewReader(fileInBytes))
@@ -564,9 +555,62 @@ func GetAnyApplicationFilePathExactMatch(root string, propsFiles []model.Applica
 	return ""
 }
 
-// ReadAnyApplicationFile returns a byte slice of a file if it exists in the directory and the given file name is a substring.
-func ReadAnyApplicationFile(root string, propsFiles []model.ApplicationFileInfo, ctx *context.Context) ([]byte, error) {
-	return readAnyApplicationFile(root, propsFiles, false, ctx)
+// GenerateApplicationFileFromFilters generates a slice of model.ApplicationFileInfo
+// from a given list of files and the root path of a component. If suffix exists
+// it generates items only for files ending with this suffix.
+func GenerateApplicationFileFromFilters(files []string, path string, suffix string, ctx *context.Context) []model.ApplicationFileInfo {
+	applicationFileInfos := []model.ApplicationFileInfo{}
+	for _, file := range files {
+		if strings.HasSuffix(file, suffix) {
+			cleanPath := filepath.Clean(file)
+			filename := filepath.Base(cleanPath)
+			tmpDir := strings.ReplaceAll(file, path, "")
+			dir := strings.ReplaceAll(tmpDir, filename, "")
+			appFileInfo := model.ApplicationFileInfo{
+				Context: ctx,
+				Root:    path,
+				Dir:     dir,
+				File:    filename,
+			}
+			applicationFileInfos = append(applicationFileInfos, appFileInfo)
+		}
+	}
+	return applicationFileInfos
+}
+
+// GetApplicationFileContents returns a slice of strings for all file contents found for a given
+// slice of ApplicationFileInfo.
+func GetApplicationFileContents(appFileInfos []model.ApplicationFileInfo) ([]string, error) {
+	fileContents := []string{}
+	for _, appFileInfo := range appFileInfos {
+		fileContent, err := GetApplicationFileBytes(appFileInfo)
+		if err == nil {
+			fileContents = append(fileContents, string(fileContent))
+		}
+	}
+	if len(fileContents) == 0 {
+		return fileContents, fmt.Errorf("error: no application file found matching given criteria")
+	}
+	return fileContents, nil
+}
+
+// GetApplicationFileBytes returns a slice of bytes of a file if it exists in the directory and the given file name is a substring.
+func GetApplicationFileBytes(propsFile model.ApplicationFileInfo) ([]byte, error) {
+	bytes, err := readAnyApplicationFile(propsFile.Root, []model.ApplicationFileInfo{propsFile}, false, propsFile.Context)
+	if err != nil {
+		return bytes, fmt.Errorf("error: %s", err)
+	}
+	return bytes, nil
+}
+
+// GetApplicationFileInfo returns an item from a slice of applicationFileInfos if it matches the given filename
+func GetApplicationFileInfo(propsFiles []model.ApplicationFileInfo, filename string) (model.ApplicationFileInfo, error) {
+	for _, propsFile := range propsFiles {
+		if propsFile.File == filename {
+			return propsFile, nil
+		}
+	}
+	return model.ApplicationFileInfo{}, fmt.Errorf("no ApplicationFileInfo found")
 }
 
 // ReadAnyApplicationFileExactMatch returns a byte slice if the exact given file exists in the directory.
@@ -588,6 +632,7 @@ func readAnyApplicationFile(root string, propsFiles []model.ApplicationFileInfo,
 	return nil, errors.New("no file found")
 }
 
+// FindPortSubMatch returns a port number in case it finds one for a given regex group
 func FindPortSubmatch(re *regexp.Regexp, text string, group int) int {
 	potentialPortGroup := FindPotentialPortGroup(re, text, group)
 	if potentialPortGroup != "" {
@@ -598,6 +643,7 @@ func FindPortSubmatch(re *regexp.Regexp, text string, group int) int {
 	return -1
 }
 
+// FindPotentialPortGroup returns a placeholder for port if is found
 func FindPotentialPortGroup(re *regexp.Regexp, text string, group int) string {
 	if text != "" {
 		matches := re.FindStringSubmatch(text)
@@ -608,6 +654,7 @@ func FindPotentialPortGroup(re *regexp.Regexp, text string, group int) string {
 	return ""
 }
 
+// FindAllPortsSubmatch returns a slice of port int values, matching a regex inside a given text
 func FindAllPortsSubmatch(re *regexp.Regexp, text string, group int) []int {
 	var ports []int
 	if text != "" {
@@ -624,6 +671,8 @@ func FindAllPortsSubmatch(re *regexp.Regexp, text string, group int) []int {
 	return ports
 }
 
+// GetPortValueFromEnvFile returns the first port value of a slice of port values
+// declared from env var files.
 func GetPortValueFromEnvFile(root string, regex string) int {
 	ports := GetPortValuesFromEnvFile(root, []string{regex})
 	if len(ports) > 0 {
@@ -632,6 +681,7 @@ func GetPortValueFromEnvFile(root string, regex string) int {
 	return -1
 }
 
+// GetPortValuesFromEnvFile returns all port values found inside an env var file
 func GetPortValuesFromEnvFile(root string, regexes []string) []int {
 	var ports []int
 	text, err := getEnvFileContent(root)
@@ -651,6 +701,7 @@ func GetPortValuesFromEnvFile(root string, regexes []string) []int {
 	return ports
 }
 
+// GetStringValueFromEnvFile returns port values as string from env file
 func GetStringValueFromEnvFile(root string, regex string) string {
 	text, err := getEnvFileContent(root)
 	if err != nil {
@@ -680,6 +731,7 @@ var getEnvFileContent = func(root string) (string, error) {
 	return string(bytes), nil
 }
 
+// NormalizeSplit splits a filepath into dir and filename
 func NormalizeSplit(file string) (string, string) {
 	dir, fileName := filepath.Split(file)
 	if dir == "" {
