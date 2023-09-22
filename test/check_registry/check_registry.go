@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	"github.com/devfile/alizer/pkg/apis/model"
@@ -118,7 +118,7 @@ func getStarterProjects(url string) ([]StarterProject, error) {
 		return []StarterProject{}, fmt.Errorf("unable to fetch starter project from registry %s. code: %d", url, resp.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return []StarterProject{}, fmt.Errorf("unable to read body from response - error: %s", err)
 	}
