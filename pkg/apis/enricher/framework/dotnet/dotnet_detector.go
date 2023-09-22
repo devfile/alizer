@@ -15,7 +15,7 @@ import (
 	"context"
 	"encoding/xml"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -66,7 +66,7 @@ func getFrameworks(configFilePath string) string {
 	if err != nil {
 		return ""
 	}
-	byteValue, _ := ioutil.ReadAll(xmlFile)
+	byteValue, _ := io.ReadAll(xmlFile)
 
 	var proj schema.DotNetProject
 	err = xml.Unmarshal(byteValue, &proj)

@@ -20,7 +20,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -390,9 +390,17 @@ func GetValidPortsFromEnvDockerfile(envs []string, envVars []model.EnvVar) []int
 // Note that hidden files and directories (starting with a dot, e.g., '.git') are ignored while traversing the 'root' directory.
 func GetLocations(root string) []string {
 	locations := []string{"Dockerfile", "Containerfile", "dockerfile", "containerfile"}
-	dirItems, err := ioutil.ReadDir(root)
+	entries, err := os.ReadDir(root)
 	if err != nil {
 		return locations
+	}
+	dirItems := make([]fs.FileInfo, 0, len(entries))
+	for _, entry := range entries {
+		info, err := entry.Info()
+		if err != nil {
+			return locations
+		}
+		dirItems = append(dirItems, info)
 	}
 	for _, item := range dirItems {
 		if strings.HasPrefix(item.Name(), ".") {

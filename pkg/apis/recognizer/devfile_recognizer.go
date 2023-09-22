@@ -16,7 +16,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"regexp"
 	"strings"
@@ -254,7 +254,7 @@ var DownloadDevfileTypesFromRegistry = func(url string, filter model.DevfileFilt
 		return []model.DevfileType{}, errors.New("unable to fetch devfiles from the registry")
 	}
 
-	body, err2 := ioutil.ReadAll(resp.Body)
+	body, err2 := io.ReadAll(resp.Body)
 	if err2 != nil {
 		return []model.DevfileType{}, errors.New("unable to fetch devfiles from the registry")
 	}
