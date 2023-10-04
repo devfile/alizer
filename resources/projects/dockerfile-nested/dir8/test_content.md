@@ -1,0 +1,1 @@
+This item is a test resource
