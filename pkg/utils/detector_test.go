@@ -112,6 +112,7 @@ func TestGetLocations(t *testing.T) {
 				"dir8/containerfile",
 				"dir9/Dockerfile",
 				"dir9/Containerfile",
+				"dir9/dockerfile",
 				"dir9/containerfile",
 				"docker/Dockerfile",
 				"docker/Containerfile",
@@ -122,8 +123,9 @@ func TestGetLocations(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := GetLocations(tt.args.root); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("GetLocations() = %v, want %v", got, tt.want)
+			result := GetLocations(tt.args.root)
+			if !reflect.DeepEqual(result, tt.want) {
+				t.Errorf("GetLocations() = %v, want %v", result, tt.want)
 			}
 		})
 	}
