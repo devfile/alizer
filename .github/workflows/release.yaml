@@ -37,7 +37,8 @@ jobs:
           GOOSARCH=${{matrix.goosarch}}
           GOOS=${GOOSARCH%/*}
           GOARCH=${GOOSARCH#*/}
-          BINARY_NAME=alizer-$GOOS-$GOARCH
+          RELEASE_VERSION=${GITHUB_REF#refs/*/}
+          BINARY_NAME=alizer-$RELEASE_VERSION-$GOOS-$GOARCH
           echo "BINARY_NAME=$BINARY_NAME" >> $GITHUB_ENV
           echo "GOOS=$GOOS" >> $GITHUB_ENV
           echo "GOARCH=$GOARCH" >> $GITHUB_ENV
