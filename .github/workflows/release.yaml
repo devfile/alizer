@@ -38,12 +38,7 @@ jobs:
           GOOS=${GOOSARCH%/*}
           GOARCH=${GOOSARCH#*/}
           RELEASE_VERSION=${GITHUB_REF#refs/*/}
-          if [ "$GOOS" == "windows" ]
-          then
-            BINARY_NAME=alizer-$RELEASE_VERSION-$GOOS-$GOARCH.exe
-          else
-            BINARY_NAME=alizer-$RELEASE_VERSION-$GOOS-$GOARCH
-          fi
+          BINARY_NAME=alizer-$RELEASE_VERSION-$GOOS-$GOARCH
           echo "BINARY_NAME=$BINARY_NAME" >> $GITHUB_ENV
           echo "GOOS=$GOOS" >> $GITHUB_ENV
           echo "GOARCH=$GOARCH" >> $GITHUB_ENV
