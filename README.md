@@ -194,7 +194,7 @@ For each release a group of binary files is generated. More detailed we have the
 
 In order to download a binary file:
 * Go to the release you are interested for `https://github.com/devfile/alizer/releases/tag/<release-tag>`
-* In the **Assets** section you will see the list of generated binaries for the release.
+* In the **Assets** section you will see the list of generated binaries for the release. The names of the binaries are following the template `alizer-{version}-{ostype}-{architecture}`.
 
 ## Feedback & Questions
 
