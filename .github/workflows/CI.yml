@@ -31,6 +31,11 @@ jobs:
       - name: Run Go tests
         run: make test
 
+      - name: Lint
+        run: |
+          make lint_install
+          make lint
+
       - name: Run Gosec Security Scanner
         run: |
           make gosec_install

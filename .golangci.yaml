@@ -1,0 +1,44 @@
+# Refer to golangci-lint's reference config file for more options and information:
+# https://github.com/golangci/golangci-lint/blob/master/.golangci.reference.yml
+
+run:
+  # Timeout for analysis, e.g. 30s, 5m.
+  # Default: 1m
+  timeout: 5m
+
+  # Allowed values: readonly|vendor|mod
+  # By default, it isn't set.
+  modules-download-mode: readonly
+
+  skip-dirs:
+    - resources/projects
+
+linters:
+  # Disable all linters.
+  # Default: false
+  # TODO(rm3l): all default linters are disabled in the context of https://github.com/devfile/api/issues/1257 (to just enforce that io/ioutil is not used anymore),
+  #   but we should think about enabling all the default linters and fix the issues reported.
+  disable-all: true
+  enable:
+    # Go linter that checks if package imports are in a list of acceptable packages
+    - depguard
+
+linters-settings:
+  depguard:
+    rules:
+      # Name of a rule.
+      main:
+        deny:
+          - pkg: "io/ioutil"
+            desc: "Deprecated since Go 1.16. Use the implementations from 'io' or 'os' packages instead."
+
+issues:
+  # Maximum issues count per one linter.
+  # Set to 0 to disable.
+  # Default: 50
+  max-issues-per-linter: 0
+
+  # Maximum count of issues with the same text.
+  # Set to 0 to disable.
+  # Default: 3
+  max-same-issues: 0

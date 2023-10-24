@@ -33,3 +33,12 @@ gosec_install: ## Install gosec utility
 .PHONY: gosec
 gosec: ## Run go security checks
 	./scripts/run_gosec.sh
+
+.PHONY: lint
+lint: ## Run golangci-lint linter tool
+	golangci-lint run ./... --timeout 15m
+
+.PHONY: lint_install
+lint_install: ## Install golangci-lint linter tool
+	@# TODO(rm3l): recent versions of golangci-lint require Go >= 1.20. Update when we start using Go 1.20+
+	go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.53.3
