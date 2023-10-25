@@ -20,7 +20,7 @@ For devfile port detection we should follow the same flow with dockerfile:
 
 1. Create a function that will:
     * look for a devfile inside a given component (The `utils.GetLocations` function should be updated to support devfiles too).
-    * It will also find any ports defined inside a devfile.
+    * It will also find all ports defined in `components.kubernetes.endpoints` & `components.container.endpoints`.
 
 ```go
 // GetPortsFromDevfile returns a slice of port numbers from Devfile in the given directory.
