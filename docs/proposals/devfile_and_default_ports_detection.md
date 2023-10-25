@@ -89,3 +89,5 @@ func (d LaravelDetector) GetDefaultPorts() []string {
 ]
 
 ```
+
+_In case the `--add-default-ports` is not set the default value will be `false`_
