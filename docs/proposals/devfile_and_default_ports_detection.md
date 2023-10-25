@@ -5,7 +5,7 @@
 - https://github.com/devfile/api/issues/1154
 
 ## Background
-In order to perform port detection component wise, `alizer` is performing different strategies of port detection per component. Currently, we support 3 different strategies:
+In order to perform port detection component-wise, `alizer` is performing different strategies of port detection per component. Currently, we support 3 different strategies:
 
 * Dockerfile Port Detection
 * Docker Compose Port Detection
