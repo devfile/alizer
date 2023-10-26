@@ -63,7 +63,7 @@ func (d LaravelDetector) GetDefaultPorts() []string {
 }
 ```
 
-3. Upon `DoPortsDetection` the default ports should be added in the end of the `ports array` in alizer's response:
+3. Upon `DoPortsDetection` the default ports should be added in the end of the `ports` array in alizer's response:
 
 ```json
 // default ports = 3000, 3001
