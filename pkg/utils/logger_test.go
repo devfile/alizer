@@ -83,7 +83,10 @@ func TestGetOrCreateLogger(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if tt.activate {
-				GenLogger("info")
+				err := GenLogger("info")
+				if err != nil {
+					t.Errorf("%s", err)
+				}
 			}
 			logger := GetOrCreateLogger()
 			assert.EqualValues(t, true, logger.GetSink().Enabled(int(tt.expectedLevel)))

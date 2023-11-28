@@ -105,11 +105,10 @@ func getStarterProjects(url string) ([]StarterProject, error) {
 	if err != nil {
 		return []StarterProject{}, err
 	}
-	defer func() error {
+	defer func(){
 		if err := resp.Body.Close(); err != nil {
-			return fmt.Errorf("error closing file: %s", err)
+			fmt.Printf("error closing file: %s", err)
 		}
-		return nil
 	}()
 
 	// Check server response
