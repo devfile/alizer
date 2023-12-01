@@ -229,7 +229,7 @@ func TestResponseBodyClosing(t *testing.T) {
 			name: "Successful response body closing",
 			mockServerConfig: func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusOK)
-				w.Write([]byte("response body content"))
+				_, _ = w.Write([]byte("response body content"))
 			},
 		},
 	}
