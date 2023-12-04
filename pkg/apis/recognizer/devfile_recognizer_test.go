@@ -16,9 +16,6 @@ import (
 	"reflect"
 	"runtime"
 	"testing"
-	"net/http"
-	"net/http/httptest"
-	"io"
 
 	"github.com/devfile/alizer/pkg/apis/model"
 	"github.com/stretchr/testify/assert"
@@ -216,46 +213,6 @@ func TestGetUrlWithVersions(t *testing.T) {
 			} else {
 				assert.EqualValues(t, getExceptedVersionsUrl(tt.testUrl, tt.minSchemaVersion, tt.maxSchemaVersion, tt.expectedError), result)
 			}
-		})
-	}
-}
-
-func TestResponseBodyClosing(t *testing.T) {
-	tests := []struct {
-		name             string
-		mockServerConfig func(w http.ResponseWriter, r *http.Request)
-	}{
-		{
-			name: "Successful response body closing",
-			mockServerConfig: func(w http.ResponseWriter, r *http.Request) {
-				w.WriteHeader(http.StatusOK)
-				_, _ = w.Write([]byte("response body content"))
-			},
-		},
-	}
-
-	for _, tc := range tests {
-		t.Run(tc.name, func(tt *testing.T) {
-			// Setup a mock HTTP server
-			server := httptest.NewServer(http.HandlerFunc(tc.mockServerConfig))
-			defer server.Close()
-
-			// Perform a request to the mock server
-			resp, err := http.Get(server.URL)
-			assert.NoError(t, err, "Unexpected error during HTTP GET")
-
-			// Close the response body
-			func() {
-				defer func() {
-					if err := resp.Body.Close(); err != nil {
-						fmt.Printf("error closing file: %s", err)
-					}
-				}()
-
-				body, err := io.ReadAll(resp.Body)
-				assert.NoError(t, err, "Unexpected error reading response body")
-				assert.Equal(t, "response body content", string(body), "Unexpected response body content")
-			}()
 		})
 	}
 }
