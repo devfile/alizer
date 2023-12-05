@@ -26,6 +26,8 @@ GCC Machine Description:
 Go:
   exclude_folders:
     - "vendor"
+    - "mocks"
+    - "migrations"
   configuration_files:
     - "go.mod"
   component: true
