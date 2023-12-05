@@ -105,11 +105,7 @@ func getStarterProjects(url string) ([]StarterProject, error) {
 	if err != nil {
 		return []StarterProject{}, err
 	}
-	defer func(){
-		if err := resp.Body.Close(); err != nil {
-			fmt.Printf("error closing file: %s", err)
-		}
-	}()
+	defer closeHttpResponseBody(resp)
 
 	// Check server response
 	if resp.StatusCode != http.StatusOK {
@@ -138,6 +134,12 @@ func getStarterProjects(url string) ([]StarterProject, error) {
 		})
 	}
 	return starterProjects, nil
+}
+
+func closeHttpResponseBody(resp *http.Response){
+	if err := resp.Body.Close(); err != nil {
+		fmt.Printf("error closing file: %s", err)
+	}
 }
 
 func appendIfMissing(slice []RegistryCheckJSONItem, r RegistryCheckJSONItem) []RegistryCheckJSONItem {
