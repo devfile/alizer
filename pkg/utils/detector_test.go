@@ -591,7 +591,8 @@ func TestIsTagInPomXMLFile(t *testing.T) {
 
 func TestGetPomFileContent(t *testing.T) {
 	missingFileErr := "no such file or directory"
-
+	badXmlFileErr := "XML syntax error on line 1: expected attribute name in element"
+	
 	testCases := []struct {
 		name           string
 		filePath       string
@@ -637,6 +638,12 @@ func TestGetPomFileContent(t *testing.T) {
 			filePath:       "path/to/nonexistent/file.xml",
 			expectedResult: schema.Pom{},
 			expectedError:  &missingFileErr,
+		},
+		{
+			name:           "Case 3: File is unreadable",
+			filePath:       "testdata/bad-xml.xml",
+			expectedResult: schema.Pom{},
+			expectedError:  &badXmlFileErr,
 		},
 	}
 
