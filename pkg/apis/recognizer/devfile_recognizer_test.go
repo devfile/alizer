@@ -17,6 +17,8 @@ import (
 	"runtime"
 	"testing"
 	"net/http"
+	"net/http/httptest"
+	"encoding/json"
 
 	"github.com/devfile/alizer/pkg/apis/model"
 	"github.com/stretchr/testify/assert"
@@ -136,6 +138,69 @@ func TestDetectSpringDevfile(t *testing.T) {
 
 func TestDetectLaravelDevfile(t *testing.T) {
 	detectDevfiles(t, "laravel", []string{"php-laravel"})
+}
+
+func TestDownloadDevfileTypesFromRegistry(t *testing.T){
+
+	server := httptest.NewServer(http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request){
+			//Verify url was set properly
+			if r.URL.Path != "/v2index" {
+				t.Errorf("URL was incorrect, expected /v2index and got %s", r.URL.Path)
+			}
+
+			response := []model.DevfileType{model.DevfileType{
+				Name:        "mocked-stack",
+				Language:    "python",
+				ProjectType: "python",
+				Tags:        []string{"python"},
+				Versions:    []model.Version{},
+			}}
+
+			responseJSON, _ := json.Marshal(response)
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			_, err := w.Write(responseJSON)
+			assert.NoError(t, err)
+		}))
+	defer server.Close()
+
+
+	tests := []struct {
+		name                string
+		filter              model.DevfileFilter
+		expectedDevfileType []model.DevfileType
+		url					string
+		expectingErr 		bool
+	}{
+		{
+			name:   "Successful Download",
+			filter: model.DevfileFilter{},
+			expectedDevfileType: []model.DevfileType{model.DevfileType{
+				Name:        "mocked-stack",
+				Language:    "python",
+				ProjectType: "python",
+				Tags:        []string{"python"},
+				Versions:    []model.Version{},
+			}},
+			url: server.URL,
+			expectingErr: false,
+		},
+		{
+			name:   "Unsuccessful Download",
+			filter: model.DevfileFilter{},
+			expectedDevfileType: []model.DevfileType{},
+			url: "fake-path",
+			expectingErr: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			devfileTypes, _ := DownloadDevfileTypesFromRegistry(tt.url, tt.filter)
+			assert.EqualValues(t, devfileTypes, tt.expectedDevfileType)
+		})
+	}
 }
 
 func TestGetUrlWithVersions(t *testing.T) {
