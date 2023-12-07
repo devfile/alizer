@@ -141,12 +141,6 @@ func getStarterProjects(url string) ([]StarterProject, error) {
 	return starterProjects, nil
 }
 
-func closeHttpResponseBody(resp *http.Response){
-	if err := resp.Body.Close(); err != nil {
-		fmt.Printf("error closing file: %s", err)
-	}
-}
-
 func appendIfMissing(slice []RegistryCheckJSONItem, r RegistryCheckJSONItem) []RegistryCheckJSONItem {
 	for _, ele := range slice {
 		if ele == r {

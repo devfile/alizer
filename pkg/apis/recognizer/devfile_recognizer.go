@@ -268,12 +268,6 @@ var DownloadDevfileTypesFromRegistry = func(url string, filter model.DevfileFilt
 	return devfileTypes, nil
 }
 
-func closeHttpResponseBody(resp *http.Response){
-	if err := resp.Body.Close(); err != nil {
-		fmt.Printf("error closing file: %s", err)
-	}
-}
-
 func appendIndexPath(url string) string {
 	if strings.HasSuffix(url, "/") {
 		return url + "v2index"

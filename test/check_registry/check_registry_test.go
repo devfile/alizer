@@ -2,7 +2,6 @@ package main
 
 import (
 	"net/url"
-	"net/http"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -74,34 +73,6 @@ func TestGetStarterProjects(t *testing.T) {
 			for _, starterProject := range starterProjects {
 				assert.EqualValues(t, starterProject.Repo, tt.expectedUrl)
 			}
-		})
-	}
-}
-
-func TestCloseHttpResponseBody(t *testing.T){
-	tests := []struct {
-		name                string
-		url					string
-	}{
-		{
-			name:   "Closing File",
-			url: "http://www.google.com",
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			resp, err := http.Get(tt.url)
-			if err != nil {
-				t.Errorf("Failed to get url")
-			}else {
-				closeHttpResponseBody(resp)
-				_, err = resp.Body.Read(nil)
-				if err == nil{
-					t.Errorf("Failed to close file")
-				}
-			}
-			
 		})
 	}
 }
