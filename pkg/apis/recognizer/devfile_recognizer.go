@@ -243,7 +243,7 @@ var DownloadDevfileTypesFromRegistry = func(url string, filter model.DevfileFilt
 		return []model.DevfileType{}, err
 	}
 
-	defer closeHttpResponseBody(resp)
+	defer utils.CloseHttpResponseBody(resp)
 
 	// Check server response
 	if resp.StatusCode != http.StatusOK {
@@ -262,12 +262,6 @@ var DownloadDevfileTypesFromRegistry = func(url string, filter model.DevfileFilt
 	}
 
 	return devfileTypes, nil
-}
-
-func closeHttpResponseBody(resp *http.Response){
-	if err := resp.Body.Close(); err != nil {
-		fmt.Printf("error closing file: %s", err)
-	}
 }
 
 func appendIndexPath(url string) string {

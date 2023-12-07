@@ -857,31 +857,3 @@ func getTestProjectPath(folder string) string {
 	basepath := filepath.Dir(b)
 	return filepath.Join(basepath, "..", "..", "..", "resources/projects", folder)
 }
-
-func TestCloseHttpResponseBody(t *testing.T){
-	tests := []struct {
-		name                string
-		url					string
-	}{
-		{
-			name:   "Closing File",
-			url: "http://www.google.com",
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			resp, err := http.Get(tt.url)
-			if err != nil {
-				t.Errorf("Failed to get url")
-			}else {
-				closeHttpResponseBody(resp)
-				_, err = resp.Body.Read(nil)
-				if err == nil{
-					t.Errorf("Failed to close file")
-				}
-			}
-			
-		})
-	}
-}

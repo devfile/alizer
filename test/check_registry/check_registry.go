@@ -9,6 +9,7 @@ import (
 	"github.com/devfile/alizer/pkg/apis/model"
 	recognizer "github.com/devfile/alizer/pkg/apis/recognizer"
 	"github.com/devfile/alizer/pkg/schema"
+	"github.com/devfile/alizer/pkg/utils"
 	"gopkg.in/yaml.v2"
 )
 
@@ -105,7 +106,7 @@ func getStarterProjects(url string) ([]StarterProject, error) {
 	if err != nil {
 		return []StarterProject{}, err
 	}
-	defer closeHttpResponseBody(resp)
+	defer utils.CloseHttpResponseBody(resp)
 
 	// Check server response
 	if resp.StatusCode != http.StatusOK {
@@ -134,12 +135,6 @@ func getStarterProjects(url string) ([]StarterProject, error) {
 		})
 	}
 	return starterProjects, nil
-}
-
-func closeHttpResponseBody(resp *http.Response){
-	if err := resp.Body.Close(); err != nil {
-		fmt.Printf("error closing file: %s", err)
-	}
 }
 
 func appendIfMissing(slice []RegistryCheckJSONItem, r RegistryCheckJSONItem) []RegistryCheckJSONItem {

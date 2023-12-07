@@ -26,6 +26,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"net/http"
 
 	"github.com/devfile/alizer/pkg/apis/model"
 	"github.com/devfile/alizer/pkg/schema"
@@ -751,4 +752,10 @@ func NormalizeSplit(file string) (string, string) {
 		dir = "./"
 	}
 	return dir, fileName
+}
+
+func CloseHttpResponseBody(resp *http.Response){
+	if err := resp.Body.Close(); err != nil {
+		fmt.Printf("error closing file: %s", err)
+	}
 }

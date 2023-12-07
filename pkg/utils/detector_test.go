@@ -7,6 +7,7 @@ import (
 	"reflect"
 	"regexp"
 	"testing"
+	"net/http"
 
 	"github.com/devfile/alizer/pkg/apis/model"
 	"github.com/devfile/alizer/pkg/schema"
@@ -1952,6 +1953,34 @@ func TestGetApplicationFileInfo(t *testing.T) {
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("GetApplicationFileInfo() = %v, want %v", got, tt.want)
 			}
+		})
+	}
+}
+
+func TestCloseHttpResponseBody(t *testing.T){
+	tests := []struct {
+		name                string
+		url					string
+	}{
+		{
+			name:   "Closing File",
+			url: "http://www.google.com",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			resp, err := http.Get(tt.url)
+			if err != nil {
+				t.Errorf("Failed to get url")
+			}else {
+				CloseHttpResponseBody(resp)
+				_, err = resp.Body.Read(nil)
+				if err == nil{
+					t.Errorf("Failed to close file")
+				}
+			}
+			
 		})
 	}
 }
