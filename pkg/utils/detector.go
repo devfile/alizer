@@ -134,20 +134,18 @@ func GetPomFileContent(pomFilePath string) (schema.Pom, error) {
 	if err != nil {
 		return schema.Pom{}, err
 	}
-	byteValue, err := io.ReadAll(xmlFile)
-	if err != nil {
-		return schema.Pom{}, err
-	}
-	
+	byteValue, _ := io.ReadAll(xmlFile)
+
 	var pom schema.Pom
 	err = xml.Unmarshal(byteValue, &pom)
 	if err != nil {
 		return schema.Pom{}, err
 	}
-	defer func(){
+	defer func() error {
 		if err := xmlFile.Close(); err != nil {
-			fmt.Printf("error closing file: %s", err)
+			return fmt.Errorf("error closing file: %s", err)
 		}
+		return nil
 	}()
 	return pom, nil
 }
@@ -355,10 +353,11 @@ func GetEnvVarsFromDockerFile(root string) ([]model.EnvVar, error) {
 		cleanFilePath := filepath.Clean(filePath)
 		file, err := os.Open(cleanFilePath)
 		if err == nil {
-			defer func(){
+			defer func() error {
 				if err := file.Close(); err != nil {
-					fmt.Printf("error closing file: %s", err)
+					return fmt.Errorf("error closing file: %s", err)
 				}
+				return nil
 			}()
 			return readEnvVarsFromDockerfile(file)
 		}

@@ -19,10 +19,11 @@ func updateContent(filePath string, data []byte) error {
 	if err != nil {
 		return err
 	}
-	defer func(){
+	defer func() error {
 		if err := f.Close(); err != nil {
-			fmt.Printf("error closing file: %s", err)
+			return fmt.Errorf("error closing file: %s", err)
 		}
+		return nil
 	}()
 	if _, err := f.Write(data); err != nil {
 		return err

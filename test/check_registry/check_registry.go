@@ -105,7 +105,12 @@ func getStarterProjects(url string) ([]StarterProject, error) {
 	if err != nil {
 		return []StarterProject{}, err
 	}
-	defer closeHttpResponseBody(resp)
+	defer func() error {
+		if err := resp.Body.Close(); err != nil {
+			return fmt.Errorf("error closing file: %s", err)
+		}
+		return nil
+	}()
 
 	// Check server response
 	if resp.StatusCode != http.StatusOK {
