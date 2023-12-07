@@ -1634,7 +1634,7 @@ func TestGenerateApplicationFileFromFilters(t *testing.T) {
 		want []model.ApplicationFileInfo
 	}{
 		{
-			name: "case 1: found ApplicationFileInfo",
+			name: "case 1: found ApplicationFileInfo for Go",
 			args: args{
 				files: []string{
 					"../../resources/projects/echo/main.go",
@@ -1654,7 +1654,34 @@ func TestGenerateApplicationFileFromFilters(t *testing.T) {
 			},
 		},
 		{
-			name: "case 2: not found ApplicationFileInfo",
+			name: "case 2: found ApplicationFileInfo for Js",
+			args: args{
+				files: []string{
+					"../../resources/projects/reactjs/src/index.js",
+					"../../resources/projects/reactjs/src/config.js",
+					"../../resources/projects/reactjs/src/index.scss",
+				},
+				path:   "../../resources/projects/reactjs/src/",
+				suffix: ".js",
+				ctx:    &ctx,
+			},
+			want: []model.ApplicationFileInfo{
+				{
+					Dir:     "",
+					File:    "index.js",
+					Root:    "../../resources/projects/reactjs/src/",
+					Context: &ctx,
+				},
+				{
+					Dir:     "",
+					File:    "config.js",
+					Root:    "../../resources/projects/reactjs/src/",
+					Context: &ctx,
+				},
+			},
+		},
+		{
+			name: "case 3: not found ApplicationFileInfo for Go",
 			args: args{
 				files: []string{
 					"../../resources/projects/echo/go.mod",
@@ -1665,6 +1692,39 @@ func TestGenerateApplicationFileFromFilters(t *testing.T) {
 				ctx:    &ctx,
 			},
 			want: []model.ApplicationFileInfo{},
+		},
+		{
+			name: "case 4: not found ApplicationFileInfo for Js",
+			args: args{
+				files: []string{
+					"../../resources/projects/reactjs/src/index.scss",
+				},
+				path:   "../../resources/projects/reactjs/src/",
+				suffix: ".js",
+				ctx:    &ctx,
+			},
+			want: []model.ApplicationFileInfo{},
+		},
+		{
+			name: "case 5: found ApplicationFileInfo for Go excluding test files",
+			args: args{
+				files: []string{
+					"../../resources/projects/golang-gin-app/common/unit_test.go",
+					"../../resources/projects/golang-gin-app/doc.go",
+					"../../resources/projects/golang-gin-app/go.sum",
+				},
+				path:   "../../resources/projects/golang-gin-app/",
+				suffix: ".go",
+				ctx:    &ctx,
+			},
+			want: []model.ApplicationFileInfo{
+				{
+					Dir:     "",
+					File:    "doc.go",
+					Root:    "../../resources/projects/golang-gin-app/",
+					Context: &ctx,
+				},
+			},
 		},
 	}
 	for _, tt := range tests {
