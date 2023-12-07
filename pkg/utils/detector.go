@@ -576,17 +576,7 @@ func GenerateApplicationFileFromFilters(files []string, path string, suffix stri
 	for _, file := range files {
 		if strings.HasSuffix(file, suffix) && !strings.HasSuffix(file, "_test.go"){
 			applicationFileInfos = append(applicationFileInfos, createAppFileInfo(file, path, ctx))
-		}
-		// switch suffix {
-		// case ".go":
-		// 	if strings.HasSuffix(file, suffix) && !strings.HasSuffix(file, "_test.go"){
-		// 		applicationFileInfos = append(applicationFileInfos, createAppFileInfo(file, path, ctx))
-		// 	}
-		// default:
-		// 	if strings.HasSuffix(file, suffix) {
-		// 		applicationFileInfos = append(applicationFileInfos, createAppFileInfo(file, path, ctx))
-		// 	}
-		// }	
+		}	
 	}
 	return applicationFileInfos
 }
