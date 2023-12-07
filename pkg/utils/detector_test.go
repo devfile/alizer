@@ -8,6 +8,7 @@ import (
 	"regexp"
 	"testing"
 	"net/http"
+	"net/http/httptest"
 
 	"github.com/devfile/alizer/pkg/apis/model"
 	"github.com/devfile/alizer/pkg/schema"
@@ -1958,29 +1959,32 @@ func TestGetApplicationFileInfo(t *testing.T) {
 }
 
 func TestCloseHttpResponseBody(t *testing.T){
+	server := httptest.NewServer(http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request){
+			w.WriteHeader(http.StatusOK)
+			_, err := w.Write([]byte(`{"test": "values"}`))
+			assert.NoError(t, err)
+		}))
+	defer server.Close()
+
 	tests := []struct {
 		name                string
 		url					string
 	}{
 		{
 			name:   "Closing File",
-			url: "http://www.google.com",
+			url: server.URL,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			resp, err := http.Get(tt.url)
-			if err != nil {
-				t.Errorf("Failed to get url")
-			}else {
-				CloseHttpResponseBody(resp)
-				_, err = resp.Body.Read(nil)
-				if err == nil{
-					t.Errorf("Failed to close file")
-				}
-			}
-			
+			assert.Empty(t, err)
+			CloseHttpResponseBody(resp)
+			_, err = resp.Body.Read(nil)
+			assert.Error(t, err)
+
 		})
 	}
 }
