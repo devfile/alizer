@@ -574,16 +574,19 @@ func GetAnyApplicationFilePathExactMatch(root string, propsFiles []model.Applica
 func GenerateApplicationFileFromFilters(files []string, path string, suffix string, ctx *context.Context) []model.ApplicationFileInfo {
 	applicationFileInfos := []model.ApplicationFileInfo{}
 	for _, file := range files {
-		switch suffix {
-		case ".go":
-			if strings.HasSuffix(file, suffix) && !strings.HasSuffix(file, "_test.go"){
-				applicationFileInfos = append(applicationFileInfos, createAppFileInfo(file, path, ctx))
-			}
-		default:
-			if strings.HasSuffix(file, suffix) {
-				applicationFileInfos = append(applicationFileInfos, createAppFileInfo(file, path, ctx))
-			}
-		}	
+		if strings.HasSuffix(file, suffix) && !strings.HasSuffix(file, "_test.go"){
+			applicationFileInfos = append(applicationFileInfos, createAppFileInfo(file, path, ctx))
+		}
+		// switch suffix {
+		// case ".go":
+		// 	if strings.HasSuffix(file, suffix) && !strings.HasSuffix(file, "_test.go"){
+		// 		applicationFileInfos = append(applicationFileInfos, createAppFileInfo(file, path, ctx))
+		// 	}
+		// default:
+		// 	if strings.HasSuffix(file, suffix) {
+		// 		applicationFileInfos = append(applicationFileInfos, createAppFileInfo(file, path, ctx))
+		// 	}
+		// }	
 	}
 	return applicationFileInfos
 }
