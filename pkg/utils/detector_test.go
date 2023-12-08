@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"io"
+	"fmt"
 
 	"github.com/devfile/alizer/pkg/apis/model"
 	"github.com/devfile/alizer/pkg/schema"
@@ -1959,6 +1960,14 @@ func TestGetApplicationFileInfo(t *testing.T) {
 	}
 }
 
+type errorBodyCloser struct {
+	io.Reader
+}
+
+func (ebc *errorBodyCloser) Close() error {
+	return fmt.Errorf("mocked error closing body")
+}
+
 func TestCloseHttpResponseBody(t *testing.T){
 	server := httptest.NewServer(http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request){
@@ -1977,7 +1986,14 @@ func TestCloseHttpResponseBody(t *testing.T){
 		{
 			name:   "Case 1: Successful Closing of File",
 			url: server.URL,
+			expectErr: false,
 			expectedOut: "",
+		},
+		{
+			name:   "Case 2: Failure Closing File",
+			url: server.URL,
+			expectErr: true,
+			expectedOut: "error closing file: mocked error closing body",
 		},
 	}
 
@@ -1990,11 +2006,16 @@ func TestCloseHttpResponseBody(t *testing.T){
 			captureStdout := os.Stdout
 			r, w, _ := os.Pipe()
 			os.Stdout = w
+			if tt.expectErr {
+				resp = &http.Response{
+					Body: &errorBodyCloser{},
+				}
+			}
 			CloseHttpResponseBody(resp)
 			w.Close()
 			out, _ := io.ReadAll(r)
 			os.Stdout = captureStdout
-			assert.EqualValues(t, tt.expectedOut, out)
+			assert.EqualValues(t, tt.expectedOut, string(out))
 
 		})
 	}
