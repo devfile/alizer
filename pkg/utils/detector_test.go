@@ -2008,3 +2008,34 @@ func TestGetApplicationFileInfo(t *testing.T) {
 		})
 	}
 }
+
+func TestCreateAppFileInfo(t *testing.T) {
+	ctx := context.Background()
+	tests := []struct {
+		name 		string
+		file  		string
+		path   		string
+		ctx    		*context.Context
+		want		model.ApplicationFileInfo
+	}{
+		{
+			name: "case 1: created app file info",
+			file: "../../resources/projects/echo/main.go",
+			path: "../../resources/projects/echo/",
+			ctx:    &ctx,
+			want: model.ApplicationFileInfo{
+					Dir:     "",
+					File:    "main.go",
+					Root:    "../../resources/projects/echo/",
+					Context: &ctx,
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T){
+			appFileInfo := createAppFileInfo(tt.file, tt.path, tt.ctx)
+			assert.EqualValues(t, appFileInfo, tt.want)
+		})
+	}
+}
