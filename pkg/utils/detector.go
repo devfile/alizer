@@ -748,7 +748,9 @@ func NormalizeSplit(file string) (string, string) {
 }
 
 func CloseHttpResponseBody(resp *http.Response){
-	resp.Body.Close()
+	if err := resp.Body.Close(); err != nil {
+		fmt.Printf("error closing file: %s", err)
+	}
 }
 
 func CloseFile(file *os.File){
