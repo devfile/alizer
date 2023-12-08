@@ -145,11 +145,8 @@ func GetPomFileContent(pomFilePath string) (schema.Pom, error) {
 	if err != nil {
 		return schema.Pom{}, err
 	}
-	defer func(){
-		if err := xmlFile.Close(); err != nil {
-			fmt.Printf("error closing file: %s", err)
-		}
-	}()
+
+	defer CloseFile(xmlFile)
 	return pom, nil
 }
 
@@ -356,11 +353,7 @@ func GetEnvVarsFromDockerFile(root string) ([]model.EnvVar, error) {
 		cleanFilePath := filepath.Clean(filePath)
 		file, err := os.Open(cleanFilePath)
 		if err == nil {
-			defer func(){
-				if err := file.Close(); err != nil {
-					fmt.Printf("error closing file: %s", err)
-				}
-			}()
+			defer CloseFile(file)
 			return readEnvVarsFromDockerfile(file)
 		}
 	}
@@ -755,7 +748,11 @@ func NormalizeSplit(file string) (string, string) {
 }
 
 func CloseHttpResponseBody(resp *http.Response){
-	if err := resp.Body.Close(); err != nil {
+	resp.Body.Close()
+}
+
+func CloseFile(file *os.File){
+	if err := file.Close(); err != nil {
 		fmt.Printf("error closing file: %s", err)
 	}
 }
