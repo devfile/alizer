@@ -9,6 +9,7 @@ import (
 	"github.com/devfile/alizer/pkg/apis/model"
 	recognizer "github.com/devfile/alizer/pkg/apis/recognizer"
 	"github.com/devfile/alizer/pkg/schema"
+	"github.com/devfile/alizer/pkg/utils"
 	"gopkg.in/yaml.v2"
 )
 
@@ -105,12 +106,7 @@ func getStarterProjects(url string) ([]StarterProject, error) {
 	if err != nil {
 		return []StarterProject{}, err
 	}
-	defer func() error {
-		if err := resp.Body.Close(); err != nil {
-			return fmt.Errorf("error closing file: %s", err)
-		}
-		return nil
-	}()
+	defer utils.CloseHttpResponseBody(resp)
 
 	// Check server response
 	if resp.StatusCode != http.StatusOK {
