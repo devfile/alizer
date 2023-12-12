@@ -34,7 +34,7 @@ As a result, `alizer` can be used both as a cli tool and imported as a package i
 
 #### Building locally
 
-More information for building & running locally the project can be found [here](./README.md#usage)
+More information for building & running locally the project can be found [here](./README.md#usage).
 
 #### Testing
 
