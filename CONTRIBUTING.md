@@ -30,7 +30,7 @@ The `alizer` repository includes different components:
 - [CLI](./README.md#cli)
 - [Alizer Library](./README.md#library-package)
 
-As a result `alizer` can be used both as a cli tool and imported as a package inside other projects. More information for the repository can be found [here](./docs/public/alizer-spec.md)
+As a result, `alizer` can be used both as a cli tool and imported as a package inside other projects. More information for the repository can be found [here](./docs/public/alizer-spec.md).
 
 #### Building locally
 
