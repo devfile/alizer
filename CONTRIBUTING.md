@@ -60,4 +60,4 @@ After addressing review comments, don't forget to add a comment in the PR afterw
 
 # Contact us
 
-If you have questions, please visit us on `#devfile` in the [Kubernetes Slack](https://slack.k8s.io).
+If you have any questions, please visit us the `#devfile` channel under the [Kubernetes Slack](https://slack.k8s.io) workspace.
