@@ -52,7 +52,7 @@ You can easily add this footer to your commits by adding `-s` when running `git 
 
 Owners of the repository will watch out for new PRs and provide reviews to them.
 
-By default for each change in the PR, GitHub Actions and OpenShift CI will run checks against your changes (linting, unit testing, and integration tests).
+For each change in the PR, GitHub Actions will run by default checks against your changes (linting, unit testing and code coverage).
 
 If comments have been given in a review, they have to be addressed before merging.
 
