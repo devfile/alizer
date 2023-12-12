@@ -23,6 +23,7 @@ jobs:
           - 'linux/amd64'
           - 'linux/ppc64le'
           - 'linux/s390x'
+          - 'linux/arm64'
           - 'windows/amd64'
     steps:
       - name: Checkout code
