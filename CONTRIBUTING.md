@@ -17,7 +17,7 @@ contribution. See the [DCO](DCO) file for details.
 
 ### Issues
 
-If you spot a problem with devfile alizer, [search if an issue already exists](https://github.com/devfile/api/issues). If a related issue doesn't exist, you can open a new issue using a relevant [issue form](https://github.com/devfile/api/issues/new/choose).
+If you spot a problem with devfile alizer, [search if an issue already exists](https://github.com/devfile/api/issues?q=is%3Aissue+is%3Aopen+label%3Aarea%2Falizer). If a related issue doesn't exist, you can open a new issue using a relevant [issue form](https://github.com/devfile/api/issues/new/choose).
 
 You can tag Alizer related issues with the `/area alizer` text in your issue.
 
