@@ -50,7 +50,7 @@ Signed-off-by: First Lastname <email@email.com>
 
 You can easily add this footer to your commits by adding `-s` when running `git commit`. When you think the code is ready for review, create a pull request and link the issue associated with it.
 
-Owners of the repository will watch out for and review new PRs.
+Owners of the repository will watch out for new PRs and provide reviews to them.
 
 By default for each change in the PR, GitHub Actions and OpenShift CI will run checks against your changes (linting, unit testing, and integration tests).
 
