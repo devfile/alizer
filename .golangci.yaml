@@ -18,7 +18,7 @@ linters:
   # Default: false
   # TODO(rm3l): all default linters are disabled in the context of https://github.com/devfile/api/issues/1257 (to just enforce that io/ioutil is not used anymore),
   #   but we should think about enabling all the default linters and fix the issues reported.
-  disable-all: true
+  disable-all: false
   enable:
     # Go linter that checks if package imports are in a list of acceptable packages
     - depguard

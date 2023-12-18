@@ -7,6 +7,10 @@ import (
 	"reflect"
 	"regexp"
 	"testing"
+	"net/http"
+	"net/http/httptest"
+	"io"
+	"fmt"
 
 	"github.com/devfile/alizer/pkg/apis/model"
 	"github.com/devfile/alizer/pkg/schema"
@@ -591,7 +595,8 @@ func TestIsTagInPomXMLFile(t *testing.T) {
 
 func TestGetPomFileContent(t *testing.T) {
 	missingFileErr := "no such file or directory"
-
+	badXmlFileErr := "XML syntax error on line 1: expected attribute name in element"
+	
 	testCases := []struct {
 		name           string
 		filePath       string
@@ -637,6 +642,12 @@ func TestGetPomFileContent(t *testing.T) {
 			filePath:       "path/to/nonexistent/file.xml",
 			expectedResult: schema.Pom{},
 			expectedError:  &missingFileErr,
+		},
+		{
+			name:           "Case 3: File is unreadable (cannot unmarshal)",
+			filePath:       "testdata/bad-xml.xml",
+			expectedResult: schema.Pom{},
+			expectedError:  &badXmlFileErr,
 		},
 	}
 
@@ -2009,6 +2020,106 @@ func TestGetApplicationFileInfo(t *testing.T) {
 	}
 }
 
+type errorBodyCloser struct {
+	io.Reader
+}
+
+func (ebc *errorBodyCloser) Close() error {
+	return fmt.Errorf("mocked error closing body")
+}
+
+func TestCloseHttpResponseBody(t *testing.T){
+	server := httptest.NewServer(http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request){
+			w.WriteHeader(http.StatusOK)
+			_, err := w.Write([]byte(`{"test": "values"}`))
+			assert.NoError(t, err)
+		}))
+	defer server.Close()
+
+	tests := []struct {
+		name                string
+		url					string
+		expectErr			bool
+		expectedOut			string
+	}{
+		{
+			name:   "Case 1: Successful Closing of File",
+			url: server.URL,
+			expectErr: false,
+			expectedOut: "",
+		},
+		{
+			name:   "Case 2: Failure Closing File",
+			url: server.URL,
+			expectErr: true,
+			expectedOut: "error closing file: mocked error closing body",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			resp, err := http.Get(tt.url)
+			assert.Empty(t, err)
+
+			// Below section handles the capturing of the fmt.Printf in the func being tested
+			captureStdout := os.Stdout
+			r, w, _ := os.Pipe()
+			os.Stdout = w
+			if tt.expectErr {
+				resp = &http.Response{
+					Body: &errorBodyCloser{},
+				}
+			}
+			CloseHttpResponseBody(resp)
+			w.Close()
+			out, _ := io.ReadAll(r)
+			os.Stdout = captureStdout
+			assert.EqualValues(t, tt.expectedOut, string(out))
+
+		})
+	}
+}
+
+func TestCloseFile(t *testing.T){
+	tests := []struct {
+		name                string
+		expectErr			bool
+		expectedOut			string
+	}{
+		{
+			name:   "Case 1: Filed closed",
+			expectErr: false,
+			expectedOut: "",
+		},
+		{
+			name: "Case 2: File not closed",
+			expectErr: true,
+			expectedOut: "error closing file: close testdata/pom-dependency.xml: file already closed",
+		},
+	}
+
+	file_path := "testdata/pom-dependency.xml"
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			open_file, _ := os.Open(file_path)
+			// Below section handles the capturing of the fmt.Printf in the func being tested
+			captureStdout := os.Stdout
+			r, w, _ := os.Pipe()
+			os.Stdout = w
+			// Mocking the hit of a close failure by preclosing the file
+			if tt.expectErr {
+				open_file.Close()
+			}
+			CloseFile(open_file)
+			w.Close()
+			out, _ := io.ReadAll(r)
+			os.Stdout = captureStdout
+			assert.EqualValues(t, tt.expectedOut, string(out))
+		})
+	}
+}
 func TestCreateAppFileInfo(t *testing.T) {
 	ctx := context.Background()
 	tests := []struct {
