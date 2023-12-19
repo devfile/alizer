@@ -93,7 +93,7 @@ func TestGetLanguageByName(t *testing.T) {
 		},
 		{
 			name:         "Go",
-			expectedItem: LanguageItem{Name: "Go", Aliases: []string{"golang"}, Kind: "programming", Group: "", ConfigurationFiles: []string{"go.mod"}, ExcludeFolders: []string{"vendor"}, Component: true, disabled: false},
+			expectedItem: LanguageItem{Name: "Go", Aliases: []string{"golang"}, Kind: "programming", Group: "", ConfigurationFiles: []string{"go.mod"}, ExcludeFolders: []string{"vendor", "mocks", "migrations"}, Component: true, disabled: false},
 			expectedErr:  nil,
 		},
 		{
@@ -175,7 +175,7 @@ func TestGetLanguageByAlias(t *testing.T) {
 		{
 			name:         "Go",
 			alias:        "golang",
-			expectedItem: LanguageItem{Name: "Go", Aliases: []string{"golang"}, Kind: "programming", Group: "", ConfigurationFiles: []string{"go.mod"}, ExcludeFolders: []string{"vendor"}, Component: true, disabled: false},
+			expectedItem: LanguageItem{Name: "Go", Aliases: []string{"golang"}, Kind: "programming", Group: "", ConfigurationFiles: []string{"go.mod"}, ExcludeFolders: []string{"vendor", "mocks", "migrations"}, Component: true, disabled: false},
 			expectedErr:  nil,
 		},
 		{
@@ -239,7 +239,7 @@ func TestGetLanguageByAlias(t *testing.T) {
 
 func TestGetExcludedFolders(t *testing.T) {
 	languageFile := Get()
-	expectedFolders := []string{"node_modules", "vendor"}
+	expectedFolders := []string{"node_modules", "vendor", "mocks", "migrations"}
 	excludedFolders := languageFile.GetExcludedFolders()
 	assert.ElementsMatch(t, excludedFolders, expectedFolders)
 }

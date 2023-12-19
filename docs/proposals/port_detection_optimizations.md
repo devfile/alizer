@@ -16,6 +16,8 @@ The main idea of the proposal will be to introduce 2 different optimizations reg
 * [Add specific port detection paths to each detector](#detector-port-detection-paths).
 * [Define no-port-detection CLI arg](#define-no-port-detection-cli-arg).
 
+Note that, due to performance reasons, the port detection process for Go files/projects ignores any testing file with the suffix `_test.go`. Additionally, it also ignores `mocks` and `migrations` labelled directories.
+
 ## Detector Port Detection Paths
 As a first step for better performance during port detection we can define certain paths and files for port detection and each detector. So, upon port detection process the detector will only check for configured ports inside these paths. We can apply this to all of the detectors in order to have a consistent file read process for each `DoPortDetection` function.
 

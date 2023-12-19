@@ -568,21 +568,25 @@ func GetAnyApplicationFilePathExactMatch(root string, propsFiles []model.Applica
 func GenerateApplicationFileFromFilters(files []string, path string, suffix string, ctx *context.Context) []model.ApplicationFileInfo {
 	applicationFileInfos := []model.ApplicationFileInfo{}
 	for _, file := range files {
-		if strings.HasSuffix(file, suffix) {
-			cleanPath := filepath.Clean(file)
-			filename := filepath.Base(cleanPath)
-			tmpDir := strings.ReplaceAll(file, path, "")
-			dir := strings.ReplaceAll(tmpDir, filename, "")
-			appFileInfo := model.ApplicationFileInfo{
-				Context: ctx,
-				Root:    path,
-				Dir:     dir,
-				File:    filename,
-			}
-			applicationFileInfos = append(applicationFileInfos, appFileInfo)
-		}
+		if strings.HasSuffix(file, suffix) && !strings.HasSuffix(file, "_test.go"){
+			applicationFileInfos = append(applicationFileInfos, createAppFileInfo(file, path, ctx))
+		}	
 	}
 	return applicationFileInfos
+}
+
+func createAppFileInfo(file string, path string, ctx *context.Context) model.ApplicationFileInfo {
+	cleanPath := filepath.Clean(file)
+	filename := filepath.Base(cleanPath)
+	tmpDir := strings.ReplaceAll(file, path, "")
+	dir := strings.ReplaceAll(tmpDir, filename, "")
+	appFileInfo := model.ApplicationFileInfo{
+		Context: ctx,
+		Root:    path,
+		Dir:     dir,
+		File:    filename,
+	}
+	return appFileInfo
 }
 
 // GetApplicationFileContents returns a slice of strings for all file contents found for a given
