@@ -4,6 +4,7 @@
 [![Build status](https://github.com/devfile/alizer/actions/workflows/CI.yml/badge.svg)](https://github.com/devfile/alizer/actions/workflows/CI.yml)
 [![License](https://img.shields.io/badge/License-Apache%202.0-orange.svg)](./LICENSE)
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/8254/badge)](https://www.bestpractices.dev/projects/8254)
+[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/devfile/alizer/badge)](https://securityscorecards.dev/viewer/?uri=github.com/devfile/alizer)
 
 Alizer (which stands for Application Analyzer) is a utility whose goal is to extract information about an application source code.
 Such information are:
