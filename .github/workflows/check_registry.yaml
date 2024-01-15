@@ -1,6 +1,6 @@
 on:
   schedule:
-  - cron: "0 3 * * *"
+    - cron: "0 3 * * *"
 
 name: Product & Community Registries Check
 
@@ -14,7 +14,7 @@ permissions:
 jobs:
   check-registry:
     name: Check registry entries
-    runs-on: 'ubuntu-latest'
+    runs-on: "ubuntu-latest"
     outputs:
       matrix: ${{ steps.get-stacks.outputs.matrix }}
     steps:
@@ -27,9 +27,43 @@ jobs:
         id: setup-go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.19.5'
+          go-version: "1.19.5"
       - name: Run registries check
         id: build
         run: |
           make build
           make check_registry
+      - name: Send slack notification
+        if: ${{ failure() }}
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
+          payload: |
+            {
+              "text": "GitHub Action failed",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Status:* :red_circle: failure\n*Severity:* medium\n*Title:* Product & Community Registries Nightly Run"
+                  }
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "text": {
+                        "type": "plain_text",
+                        "text": ":github: Failed action"
+                      },
+                      "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                    }
+                  ]
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_NOTIFICATIONS_TOKEN }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
