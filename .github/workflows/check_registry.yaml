@@ -34,7 +34,7 @@ jobs:
           make build
           make check_registry
       - name: Send slack notification
-        if: ${{ failure() }}
+        if: ${{ failure() &&  github.event_name == 'schedule' }}
         uses: slackapi/slack-github-action@e28cf165c92ffef168d23c5c9000cffc8a25e117 # v1.24.0
         with:
           channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
