@@ -46,7 +46,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*Status:* :red_circle: failure\n*Severity:* medium\n*Title:* Alizer's product & community registries nightly run\n*Description:* run failed for HEAD_REF ${{ github.head_ref }}"
+                    "text": "*Status:* :red_circle: failure\n*Severity:* medium\n*Title:* Alizer's product & community registries nightly run\n*Description:* run failed for HEAD_REF ${{ github.ref }}"
                   }
                 },
                 {
