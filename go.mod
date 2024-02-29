@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/go-git/go-git/v5 v5.7.0
-	github.com/go-logr/logr v1.2.4
+	github.com/go-logr/logr v1.4.1
 	github.com/hashicorp/go-version v1.6.0
 	github.com/moby/buildkit v0.11.6
 	github.com/pkg/errors v0.9.1
