@@ -44,6 +44,10 @@ func TestDetectDotNet60Devfile(t *testing.T) {
 	detectDevfile(t, "dotnet6.0", []string{"dotnet60"})
 }
 
+func TestDetectDotNet60Devfile(t *testing.T) {
+	detectDevfile(t, "dotnet8.0", []string{"dotnet80"})
+}
+
 func TestDetectDotNetCore31Devfile(t *testing.T) {
 	detectDevfile(t, "dotnetcore3.1", []string{"dotnetcore31"})
 }
@@ -684,6 +688,15 @@ func getDevfileTypes() []model.DevfileType {
 			Tags: []string{
 				".Net",
 				".Net 6.0",
+			},
+		},
+		{
+			Name:        "dotnet80",
+			Language:    ".NET",
+			ProjectType: "dotnet",
+			Tags: []string{
+				".Net",
+				".Net 8.0",
 			},
 		},
 		{
