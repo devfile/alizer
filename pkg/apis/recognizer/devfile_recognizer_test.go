@@ -44,7 +44,7 @@ func TestDetectDotNet60Devfile(t *testing.T) {
 	detectDevfile(t, "dotnet6.0", []string{"dotnet60"})
 }
 
-func TestDetectDotNet60Devfile(t *testing.T) {
+func TestDetectDotNet80Devfile(t *testing.T) {
 	detectDevfile(t, "dotnet8.0", []string{"dotnet80"})
 }
 
