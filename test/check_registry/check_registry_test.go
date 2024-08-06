@@ -60,7 +60,7 @@ func TestGetStarterProjects(t *testing.T) {
 		{
 			name:        "Case 1: Validated registries urls",
 			devfileUrl:  "https://registry.devfile.io/devfiles/java-maven",
-			expectedUrl: "https://github.com/odo-devfiles/springboot-ex.git",
+			expectedUrl: "https://github.com/devfile-samples/springboot-ex.git",
 		},
 	}
 
