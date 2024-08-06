@@ -35,7 +35,7 @@ func TestAnalyzeOnDjango(t *testing.T) {
 }
 
 func TestAnalyzeOnCSharp(t *testing.T) {
-	isLanguageInProject(t, "s2i-dotnetcore-ex", "c#", []string{}, []string{"net6.0"})
+	isLanguageInProject(t, "s2i-dotnetcore-ex", "c#", []string{}, []string{"net8.0"})
 }
 
 func TestAnalyzeOnFSharp(t *testing.T) {
