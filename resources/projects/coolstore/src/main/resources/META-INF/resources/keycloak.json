@@ -1,0 +1,8 @@
+{
+    "realm": "eap",
+    "auth-server-url": "http://localhost:8081/",
+    "ssl-required": "external",
+    "resource": "eap-app",
+    "public-client": true,
+    "confidential-port": 0
+  }
