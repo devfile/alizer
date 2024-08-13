@@ -143,7 +143,7 @@ func AnalyzeFile(configFile string, targetLanguage string) (model.Language, erro
 }
 
 func isStaticFileExtension(path string) bool {
-	staticDirs := [2]string{"static/", "templates/"}
+	staticDirs := [4]string{"static/", "templates/", "META-INF/resources/", "public/"}
 	for _, dir := range staticDirs {
 		if strings.Contains(path, dir) {
 			return true
