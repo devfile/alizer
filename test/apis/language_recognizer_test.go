@@ -50,8 +50,8 @@ func TestAnalyzeOnGoGin(t *testing.T) {
 	isLanguageInProject(t, "golang-gin-app", "go", []string{"1.15"}, []string{"gin"})
 }
 
-func TestAnalyzeCoolStore(t *testing.T) {
-	isLanguageInProject(t, "coolstore", "java", []string{}, []string{})
+func TestAnalyzeJSStaticFilesInJavaApp(t *testing.T) {
+	isLanguageInProject(t, "js-static-files-in-java-app", "java", []string{}, []string{})
 }
 
 func isLanguageInProject(t *testing.T, project string, wantedLanguage string, wantedTools []string, wantedFrameworks []string) {
