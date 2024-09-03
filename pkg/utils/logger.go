@@ -4,8 +4,9 @@ import (
 	"fmt"
 
 	"github.com/go-logr/logr"
+	"github.com/go-logr/zapr"
+	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 )
 
 type CLILogger struct {
@@ -48,12 +49,17 @@ func GenLogger(logLevel string) error {
 	if err != nil {
 		return err
 	}
+
+	cfg := zap.NewDevelopmentConfig()
+	cfg.Level = zap.NewAtomicLevelAt(level)
+	cfg.EncoderConfig.CallerKey = ""
+	logger, err := cfg.Build()
+	if err != nil {
+		return err
+	}
+
 	CliLogger = CLILogger{
-		Logger: zap.New(zap.UseFlagOptions(&zap.Options{
-			Development: true,
-			TimeEncoder: zapcore.ISO8601TimeEncoder,
-			Level:       level,
-		})),
+		Logger:    zapr.NewLogger(logger),
 		Activated: true,
 	}
 	return nil
