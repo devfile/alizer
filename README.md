@@ -198,6 +198,10 @@ In order to download a binary file:
 * Go to the release you are interested for `https://github.com/devfile/alizer/releases/tag/<release-tag>`
 * In the **Assets** section you will see the list of generated binaries for the release. The names of the binaries are following the template `alizer-{version}-{ostype}-{architecture}`.
 
+## Security
+
+Further information for the devfile organization security policy can be found [here](https://github.com/devfile/api/blob/main/SECURITY.md)
+
 ## Feedback & Questions
 
 If you discover an issue please file a bug, and we will fix it as soon as possible.
