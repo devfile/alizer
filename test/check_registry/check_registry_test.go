@@ -60,7 +60,7 @@ func TestGetStarterProjects(t *testing.T) {
 		{
 			name:        "Case 1: Validated registries urls",
 			devfileUrl:  "https://registry.devfile.io/devfiles/python",
-			expectedUrl: "https://github.com/devfile-samples/python-ex.git",
+			expectedUrl: "https://github.com/devfile-samples/python-ex",
 		},
 	}
 
