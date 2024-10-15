@@ -180,6 +180,10 @@ type OpenLibertyServerXml struct {
 		HttpPort  string `xml:"httpPort,attr"`
 		HttpsPort string `xml:"httpsPort,attr"`
 	} `xml:"httpEndpoint"`
+	Variables []struct {
+		Name         string `xml:"name,attr"`
+		DefaultValue string `xml:"defaultValue,attr"`
+	} `xml:"variable"`
 }
 
 // PortDetectionAlgorithm represents one of port detection algorithm values
