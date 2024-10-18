@@ -158,6 +158,7 @@ func TestPortDetectionJavaMicronautFromDockerfileWithSSLEnabled(t *testing.T) {
 
 func TestPortDetectionOnOpenLiberty(t *testing.T) {
 	testPortDetectionInProject(t, "open-liberty", []int{9080, 9443})
+	testOpenLibertyDetector_DoPortsDetection(t, "open-liberty", []int{9080, 9443})
 }
 
 func TestPortDetectionJavaQuarkus(t *testing.T) {
