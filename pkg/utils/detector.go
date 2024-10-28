@@ -21,12 +21,12 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
+	"net/http"
 	"os"
 	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
-	"net/http"
 
 	"github.com/devfile/alizer/pkg/apis/model"
 	"github.com/devfile/alizer/pkg/schema"
@@ -139,7 +139,7 @@ func GetPomFileContent(pomFilePath string) (schema.Pom, error) {
 	if err != nil {
 		return schema.Pom{}, err
 	}
-	
+
 	var pom schema.Pom
 	err = xml.Unmarshal(byteValue, &pom)
 	if err != nil {
@@ -568,9 +568,9 @@ func GetAnyApplicationFilePathExactMatch(root string, propsFiles []model.Applica
 func GenerateApplicationFileFromFilters(files []string, path string, suffix string, ctx *context.Context) []model.ApplicationFileInfo {
 	applicationFileInfos := []model.ApplicationFileInfo{}
 	for _, file := range files {
-		if strings.HasSuffix(file, suffix) && !strings.HasSuffix(file, "_test.go"){
+		if strings.HasSuffix(file, suffix) && !strings.HasSuffix(file, "_test.go") {
 			applicationFileInfos = append(applicationFileInfos, createAppFileInfo(file, path, ctx))
-		}	
+		}
 	}
 	return applicationFileInfos
 }
@@ -751,13 +751,13 @@ func NormalizeSplit(file string) (string, string) {
 	return dir, fileName
 }
 
-func CloseHttpResponseBody(resp *http.Response){
+func CloseHttpResponseBody(resp *http.Response) {
 	if err := resp.Body.Close(); err != nil {
 		fmt.Printf("error closing file: %s", err)
 	}
 }
 
-func CloseFile(file *os.File){
+func CloseFile(file *os.File) {
 	if err := file.Close(); err != nil {
 		fmt.Printf("error closing file: %s", err)
 	}

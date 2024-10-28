@@ -14,6 +14,7 @@ package enricher
 import (
 	"context"
 	"encoding/xml"
+	"strings"
 
 	"github.com/devfile/alizer/pkg/apis/model"
 	"github.com/devfile/alizer/pkg/utils"
@@ -67,10 +68,30 @@ func (o OpenLibertyDetector) DoPortsDetection(component *model.Component, ctx *c
 		if err != nil {
 			continue
 		}
-		ports := utils.GetValidPorts([]string{data.HttpEndpoint.HttpPort, data.HttpEndpoint.HttpsPort})
+
+		variables := make(map[string]string)
+		for _, v := range data.Variables {
+			variables[v.Name] = v.DefaultValue
+		}
+
+		httpPort := resolvePort(data.HttpEndpoint.HttpPort, variables)
+		httpsPort := resolvePort(data.HttpEndpoint.HttpsPort, variables)
+
+		ports := utils.GetValidPorts([]string{httpPort, httpsPort})
 		if len(ports) > 0 {
 			component.Ports = ports
 			return
 		}
 	}
+}
+
+// resolvePort resolves the port value by checking if it is a variable and if it is, it returns the value of the variable
+func resolvePort(portValue string, variables map[string]string) string {
+	if strings.HasPrefix(portValue, "${") && strings.HasSuffix(portValue, "}") {
+		varName := strings.Trim(portValue, "${}")
+		if value, exists := variables[varName]; exists {
+			return value
+		}
+	}
+	return portValue
 }
