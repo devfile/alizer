@@ -63,7 +63,7 @@ func isLanguageInProject(t *testing.T, project string, wantedLanguage string, wa
 	}
 
 	if !hasWantedLanguage(languages, wantedLanguage, wantedTools, wantedFrameworks) {
-		t.Errorf("Project does not use " + wantedLanguage + " language")
+		t.Errorf("Project does not use %v language", wantedLanguage)
 	}
 }
 

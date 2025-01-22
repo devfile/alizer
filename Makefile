@@ -40,5 +40,4 @@ lint: ## Run golangci-lint linter tool
 
 .PHONY: lint_install
 lint_install: ## Install golangci-lint linter tool
-	@# TODO(rm3l): recent versions of golangci-lint require Go >= 1.20. Update when we start using Go 1.20+
-	go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.53.3
+	go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.63.4
