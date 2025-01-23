@@ -1,6 +1,6 @@
 # Alizer
 
-![Go](https://img.shields.io/badge/Go-1.21-blue)
+![Go](https://img.shields.io/badge/Go-1.23-blue)
 [![Build status](https://github.com/devfile/alizer/actions/workflows/CI.yml/badge.svg)](https://github.com/devfile/alizer/actions/workflows/CI.yml)
 [![License](https://img.shields.io/badge/License-Apache%202.0-orange.svg)](./LICENSE)
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/8254/badge)](https://www.bestpractices.dev/projects/8254)
@@ -49,6 +49,7 @@ $ go build alizer.go
   --no-port-detection if this flag exists then no port detection is applied on the given application. If this flag doesn't exist then we are applying port detection as normal. In case we have both --no-port-detection and --port-detection the --no-port-detection overrides everything.
   --port-detection {docker|compose|source}    port detection strategy to use when detecting a port. Currently supported strategies are 'docker', 'compose' and 'source'. You can pass more strategies at the same time. They will be executed in order. By default Alizer will execute docker, compose and source.
 ```
+
 **Deprecation Warning:** The `--port-detection` flag soon will be deprecated.
 
 #### alizer devfile
@@ -187,7 +188,9 @@ An Alizer release is created each time a PR having updates on code is merged. Yo
 - The _description_ of the release is optional. You may add a description if there were outstanding updates in the project, not mentioned in the issues or PRs of this release.
 
 ### Release Binaries
+
 For each release a group of binary files is generated. More detailed we have the following types:
+
 - `linux/amd64`
 - `linux/ppc65le`
 - `linux/s390x`
@@ -195,8 +198,9 @@ For each release a group of binary files is generated. More detailed we have the
 - `darwin/amd64`
 
 In order to download a binary file:
-* Go to the release you are interested for `https://github.com/devfile/alizer/releases/tag/<release-tag>`
-* In the **Assets** section you will see the list of generated binaries for the release. The names of the binaries are following the template `alizer-{version}-{ostype}-{architecture}`.
+
+- Go to the release you are interested for `https://github.com/devfile/alizer/releases/tag/<release-tag>`
+- In the **Assets** section you will see the list of generated binaries for the release. The names of the binaries are following the template `alizer-{version}-{ostype}-{architecture}`.
 
 ## Security
 
