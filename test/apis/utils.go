@@ -61,16 +61,16 @@ func verifyComponents(t *testing.T, components []model.Component, expectedNumber
 	if hasComponents {
 		isExpectedComponent := strings.EqualFold(expectedLanguage, components[0].Languages[0].Name)
 		if !isExpectedComponent {
-			t.Errorf("Project does not use " + expectedLanguage + " language")
+			t.Errorf("Project does not use %v language ", expectedLanguage)
 		}
 		if expectedProjectName != "" {
 			isExpectedProjectName := strings.EqualFold(expectedProjectName, components[0].Name)
 			if !isExpectedProjectName {
-				t.Errorf("Main component has a different project name. Expected " + expectedProjectName + " but it was " + components[0].Name)
+				t.Errorf("Main component has a different project name. Expected %v but it was %v", expectedProjectName, components[0].Name)
 			}
 		}
 	} else {
-		t.Errorf("Expected " + strconv.Itoa(expectedNumber) + " of components but it was " + strconv.Itoa(len(components)))
+		t.Errorf("Expected %v of components but it was %v", strconv.Itoa(expectedNumber), strconv.Itoa(len(components)))
 	}
 }
 
@@ -94,7 +94,7 @@ func testPortDetectionInProject(t *testing.T, project string, ports []int) {
 			}
 		}
 		if !found {
-			t.Errorf("Port " + strconv.Itoa(port) + " have not been detected")
+			t.Errorf("Port %v have not been detected", strconv.Itoa(port))
 		}
 		found = false
 	}

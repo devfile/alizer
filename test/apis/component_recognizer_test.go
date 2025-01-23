@@ -361,7 +361,7 @@ func TestPortDetectionFlaskStringValue(t *testing.T) {
 func TestComponentDetectionNoResult(t *testing.T) {
 	components := getComponentsFromTestProject(t, "simple")
 	if len(components) > 0 {
-		t.Errorf("Expected 0 components but found " + strconv.Itoa(len(components)))
+		t.Errorf("Expected 0 components but found %v", strconv.Itoa(len(components)))
 	}
 }
 
@@ -395,7 +395,7 @@ func TestComponentDetectionWithGitIgnoreRule(t *testing.T) {
 	components := getComponentsFromFiles(t, files, settings)
 
 	if len(components) != 1 {
-		t.Errorf("Expected 1 components but found " + strconv.Itoa(len(components)))
+		t.Errorf("Expected 1 components but found %v", strconv.Itoa(len(components)))
 	}
 
 	//now add a gitIgnore with a rule to exclude the only component found
@@ -413,7 +413,7 @@ func TestComponentDetectionWithGitIgnoreRule(t *testing.T) {
 	os.Remove(gitIgnorePath)
 
 	if len(componentsWithUpdatedGitIgnore) != 0 {
-		t.Errorf("Expected 0 components but found " + strconv.Itoa(len(componentsWithUpdatedGitIgnore)))
+		t.Errorf("Expected 0 components but found %v", strconv.Itoa(len(componentsWithUpdatedGitIgnore)))
 	}
 }
 
@@ -421,7 +421,7 @@ func TestComponentDetectionMultiProjects(t *testing.T) {
 	components := getComponentsFromTestProject(t, "")
 	nComps := 70
 	if len(components) != nComps {
-		t.Errorf("Expected " + strconv.Itoa(nComps) + " components but found " + strconv.Itoa(len(components)))
+		t.Errorf("Expected %v components but found %v", strconv.Itoa(nComps), strconv.Itoa(len(components)))
 	}
 }
 
