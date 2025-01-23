@@ -28,7 +28,7 @@ check_registry: ## Run registry checks
 
 .PHONY: gosec_install
 gosec_install: ## Install gosec utility
-	go install github.com/securego/gosec/v2/cmd/gosec@v2.14.0
+	go install github.com/securego/gosec/v2/cmd/gosec@v2.22.0
 
 .PHONY: gosec
 gosec: ## Run go security checks
