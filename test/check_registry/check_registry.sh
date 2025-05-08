@@ -85,8 +85,8 @@ do
     # If the correct devfile is not matched throw error
     if [ "$found_matching" == "0" ]; then
         # nodejs-mongodb similar to nodejs
-        if [[ "$repo" == "https://github.com/che-samples/nodejs-mongodb-sample" && "$devfile" == "nodejs-mongodb" ]]; then
-            echo "[WARNING] $repo matched with $devfile. Will not raise error."
+        if [[ "$repo" == "https://github.com/che-samples/nodejs-mongodb-sample" && "$selected_devfile_name" == "nodejs" ]]; then
+            echo "[WARNING] $repo matched with $selected_devfile_name instead of $devfile. Will not raise error."
         else
             let ENTRIES_FAILED++
             echo "[FAIL] Failed to match project $repo with expected $devfile. Command ./alizer devfile --registry $registry $path"
