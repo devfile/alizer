@@ -1,6 +1,6 @@
 # Alizer
 
-![Go](https://img.shields.io/badge/Go-1.23-blue)
+![Go](https://img.shields.io/badge/Go-1.24-blue)
 [![Build status](https://github.com/devfile/alizer/actions/workflows/CI.yml/badge.svg)](https://github.com/devfile/alizer/actions/workflows/CI.yml)
 [![License](https://img.shields.io/badge/License-Apache%202.0-orange.svg)](./LICENSE)
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/8254/badge)](https://www.bestpractices.dev/projects/8254)
