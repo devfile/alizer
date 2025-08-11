@@ -25,7 +25,7 @@ import (
 type SpringDetector struct{}
 
 func (s SpringDetector) GetSupportedFrameworks() []string {
-	return []string{"Spring", "Spring Boot"}
+	return []string{"Spring"}
 }
 
 func (s SpringDetector) GetApplicationFileInfos(componentPath string, ctx *context.Context) []model.ApplicationFileInfo {
