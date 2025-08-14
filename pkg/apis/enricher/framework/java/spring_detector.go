@@ -25,7 +25,7 @@ import (
 type SpringDetector struct{}
 
 func (s SpringDetector) GetSupportedFrameworks() []string {
-	return []string{"Spring"}
+	return []string{"Spring", "Spring Boot", "Spring Cloud"}
 }
 
 func (s SpringDetector) GetApplicationFileInfos(componentPath string, ctx *context.Context) []model.ApplicationFileInfo {
@@ -53,8 +53,14 @@ func (s SpringDetector) GetApplicationFileInfos(componentPath string, ctx *conte
 
 // DoFrameworkDetection uses the groupId to check for the framework name
 func (s SpringDetector) DoFrameworkDetection(language *model.Language, config string) {
+	if hasFwk, _ := hasFramework(config, "org.springframework.boot", ""); hasFwk {
+		language.Frameworks = append(language.Frameworks, "Spring Boot")
+	}
+	if hasFwk, _ := hasFramework(config, "org.springframework.cloud", ""); hasFwk {
+		language.Frameworks = append(language.Frameworks, "Spring Cloud")
+	}
 	if hasFwk, _ := hasFramework(config, "org.springframework", ""); hasFwk {
-		language.Frameworks = append(language.Frameworks, s.GetSupportedFrameworks()...)
+		language.Frameworks = append(language.Frameworks, "Spring")
 	}
 }
 
