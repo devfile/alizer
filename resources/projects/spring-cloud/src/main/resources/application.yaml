@@ -1,0 +1,19 @@
+server:
+  http:
+    port: 9012
+spring:
+  application:
+    name: spring-cloud-sample
+  cloud:
+    config:
+      uri: http://localhost:8888
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+

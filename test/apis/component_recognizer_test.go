@@ -112,6 +112,10 @@ func TestComponentDetectionOnSpring(t *testing.T) {
 	isComponentsInProject(t, "spring", 1, "java", "spring")
 }
 
+func TestComponentDetectionOnSpringCloud(t *testing.T) {
+	isComponentsInProject(t, "spring-cloud", 1, "java", "spring-cloud")
+}
+
 func TestComponentDetectionOnVertx(t *testing.T) {
 	isComponentsInProject(t, "vertx", 1, "java", "http-vertx")
 }
@@ -419,7 +423,7 @@ func TestComponentDetectionWithGitIgnoreRule(t *testing.T) {
 
 func TestComponentDetectionMultiProjects(t *testing.T) {
 	components := getComponentsFromTestProject(t, "")
-	nComps := 70
+	nComps := 71
 	if len(components) != nComps {
 		t.Errorf("Expected %v components but found %v", strconv.Itoa(nComps), strconv.Itoa(len(components)))
 	}
