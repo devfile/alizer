@@ -14,6 +14,7 @@ package enricher
 import (
 	"context"
 	"encoding/json"
+	"path/filepath"
 
 	"github.com/devfile/alizer/pkg/apis/model"
 	"github.com/devfile/alizer/pkg/utils"
@@ -30,7 +31,7 @@ func (v VertxDetector) GetApplicationFileInfos(componentPath string, ctx *contex
 		{
 			Context: ctx,
 			Root:    componentPath,
-			Dir:     "src/main/conf",
+			Dir:     filepath.FromSlash("src/main/conf"),
 			File:    ".*.json",
 		},
 	}
