@@ -3,7 +3,7 @@ module github.com/devfile/alizer
 go 1.24
 
 require (
-	github.com/go-git/go-git/v5 v5.16.2
+	github.com/go-git/go-git/v5 v5.16.3
 	github.com/go-logr/logr v1.4.3
 	github.com/go-logr/zapr v1.3.0
 	github.com/hashicorp/go-version v1.7.0
