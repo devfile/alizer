@@ -33,19 +33,19 @@ func (q QuarkusDetector) GetApplicationFileInfos(componentPath string, ctx *cont
 		{
 			Context: ctx,
 			Root:    componentPath,
-			Dir:     "src/main/resources",
+			Dir:     filepath.FromSlash("src/main/resources"),
 			File:    "application.properties",
 		},
 		{
 			Context: ctx,
 			Root:    componentPath,
-			Dir:     "src/main/resources",
+			Dir:     filepath.FromSlash("src/main/resources"),
 			File:    "application.yml",
 		},
 		{
 			Context: ctx,
 			Root:    componentPath,
-			Dir:     "src/main/resources",
+			Dir:     filepath.FromSlash("src/main/resources"),
 			File:    "application.yaml",
 		},
 	}

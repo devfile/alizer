@@ -14,6 +14,7 @@ package enricher
 import (
 	"context"
 	"os"
+	"path/filepath"
 
 	"github.com/devfile/alizer/pkg/apis/model"
 	"github.com/devfile/alizer/pkg/utils"
@@ -31,13 +32,13 @@ func (m MicronautDetector) GetApplicationFileInfos(componentPath string, ctx *co
 		{
 			Context: ctx,
 			Root:    componentPath,
-			Dir:     "src/main/resources",
+			Dir:     filepath.FromSlash("src/main/resources"),
 			File:    "application.yml",
 		},
 		{
 			Context: ctx,
 			Root:    componentPath,
-			Dir:     "src/main/resources",
+			Dir:     filepath.FromSlash("src/main/resources"),
 			File:    "application.yaml",
 		},
 	}
