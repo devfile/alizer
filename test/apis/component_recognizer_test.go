@@ -92,8 +92,28 @@ func TestPortDetectionGoFiber(t *testing.T) {
 }
 
 // component detection: java
-func TestComponentDetectionOnJBossEAP(t *testing.T) {
-	isComponentsInProject(t, "jboss-eap", 1, "java", "jboss-eap")
+func TestComponentDetectionOnJBossEAPByEAPMavenPlugin(t *testing.T) {
+	isComponentsInProject(t, "jboss-eap-by-eap-maven-plugin", 1, "java", "jboss-eap-by-eap-maven-plugin")
+}
+
+func TestComponentDetectionOnJBossEAPByEAPRuntimeArtifacts(t *testing.T) {
+	isComponentsInProject(t, "jboss-eap-by-eap-runtime-artifacts", 1, "java", "jboss-eap-by-eap-runtime-artifacts")
+}
+
+func TestComponentDetectionOnJBossEAPByJBossEAPJakartaee8(t *testing.T) {
+	isComponentsInProject(t, "jboss-eap-by-jboss-eap-jakartaee8", 1, "java", "jboss-eap-by-jboss-eap-jakartaee8")
+}
+
+func TestComponentDetectionOnJBossEAPByJBossEAPJavaee8(t *testing.T) {
+	isComponentsInProject(t, "jboss-eap-by-jboss-eap-javaee8", 1, "java", "jboss-eap-by-jboss-eap-javaee8")
+}
+
+func TestComponentDetectionOnJBossEAPByJBossEAPJavaee7(t *testing.T) {
+	isComponentsInProject(t, "jboss-eap-by-jboss-eap-javaee7", 1, "java", "jboss-eap-by-jboss-eap-javaee7")
+}
+
+func TestComponentDetectionOnJBossEAPByJBossJavaee6(t *testing.T) {
+	isComponentsInProject(t, "jboss-eap-by-jboss-javaee-6.0", 1, "java", "jboss-eap-by-jboss-javaee-6.0")
 }
 
 func TestComponentDetectionOnMicronaut(t *testing.T) {
@@ -122,7 +142,7 @@ func TestComponentDetectionOnWildFly(t *testing.T) {
 
 // port detection: java
 func TestPortDetectionJavaJBossEAP(t *testing.T) {
-	testPortDetectionInProject(t, "jboss-eap", []int{8380})
+	testPortDetectionInProject(t, "jboss-eap-by-eap-maven-plugin", []int{8380})
 }
 
 func TestPortDetectionJavaMicronaut(t *testing.T) {
@@ -419,7 +439,7 @@ func TestComponentDetectionWithGitIgnoreRule(t *testing.T) {
 
 func TestComponentDetectionMultiProjects(t *testing.T) {
 	components := getComponentsFromTestProject(t, "")
-	nComps := 70
+	nComps := 76
 	if len(components) != nComps {
 		t.Errorf("Expected %v components but found %v", strconv.Itoa(nComps), strconv.Itoa(len(components)))
 	}
