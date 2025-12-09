@@ -273,7 +273,8 @@
                     {
                         "name": "Java",
                         "frameworks": [
-                            "Spring"
+                            "Spring",
+                            "Spring Boot"
                         ],
                         "tools": [
                             "Maven"
@@ -531,7 +532,8 @@
                     {
                         "name": "Java",
                         "frameworks": [
-                            "Spring"
+                            "Spring",
+                            "Spring Boot"
                         ],
                         "tools": [
                             "Maven"
@@ -548,7 +550,8 @@
                     {
                         "name": "Java",
                         "frameworks": [
-                            "Spring"
+                            "Spring",
+                            "Spring Boot"
                         ],
                         "tools": [
                             "Maven"
@@ -565,7 +568,8 @@
                     {
                         "name": "Java",
                         "frameworks": [
-                            "Spring"
+                            "Spring",
+                            "Spring Boot"
                         ],
                         "tools": [
                             "Maven"
@@ -587,7 +591,8 @@
                     {
                         "name": "Java",
                         "frameworks": [
-                            "Spring"
+                            "Spring",
+                            "Spring Boot"
                         ],
                         "tools": [
                             "Maven"
@@ -643,7 +648,8 @@
                     {
                         "name": "Java",
                         "frameworks": [
-                            "Spring"
+                            "Spring",
+                            "Spring Boot"
                         ],
                         "tools": [
                             "Gradle"
@@ -662,7 +668,8 @@
                     {
                         "name": "Java",
                         "frameworks": [
-                            "Spring"
+                            "Spring",
+                            "Spring Boot"
                         ],
                         "tools": [
                             "Gradle"
@@ -676,7 +683,8 @@
                     {
                         "name": "Java",
                         "frameworks": [
-                            "Spring"
+                            "Spring",
+                            "Spring Boot"
                         ],
                         "tools": [
                             "Gradle"
@@ -1174,7 +1182,8 @@
                     {
                         "name": "Java",
                         "frameworks": [
-                            "Spring"
+                            "Spring",
+                            "Spring Boot"
                         ],
                         "tools": [
                             "Maven"
