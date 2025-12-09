@@ -132,6 +132,10 @@ func TestComponentDetectionOnSpring(t *testing.T) {
 	isComponentsInProject(t, "spring", 1, "java", "spring")
 }
 
+func TestComponentDetectionOnSpringCloud(t *testing.T) {
+	isComponentsInProject(t, "spring-cloud", 1, "java", "spring-cloud")
+}
+
 func TestComponentDetectionOnVertx(t *testing.T) {
 	isComponentsInProject(t, "vertx", 1, "java", "http-vertx")
 }
