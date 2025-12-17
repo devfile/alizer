@@ -104,6 +104,14 @@ func TestComponentDetectionOnOpenLiberty(t *testing.T) {
 	isComponentsInProject(t, "open-liberty", 1, "java", "openliberty")
 }
 
+func TestComponentDetectionOnWebSphere(t *testing.T) {
+	isComponentsInProject(t, "websphere-app", 1, "java", "websphere-app")
+}
+
+func TestComponentDetectionOnWebLogic(t *testing.T) {
+	isComponentsInProject(t, "weblogic-app", 1, "java", "weblogic-app")
+}
+
 func TestComponentDetectionOnQuarkus(t *testing.T) {
 	isComponentsInProject(t, "quarkus", 1, "java", "code-with-quarkus-maven")
 }
@@ -423,7 +431,7 @@ func TestComponentDetectionWithGitIgnoreRule(t *testing.T) {
 
 func TestComponentDetectionMultiProjects(t *testing.T) {
 	components := getComponentsFromTestProject(t, "")
-	nComps := 71
+	nComps := 73
 	if len(components) != nComps {
 		t.Errorf("Expected %v components but found %v", strconv.Itoa(nComps), strconv.Itoa(len(components)))
 	}
