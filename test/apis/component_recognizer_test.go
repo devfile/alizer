@@ -124,6 +124,10 @@ func TestComponentDetectionOnWildFly(t *testing.T) {
 	isComponentsInProject(t, "wildfly", 1, "java", "wildfly")
 }
 
+func TestComponentDetectionOnJakartaEE(t *testing.T) {
+	isComponentsInProject(t, "jakartaee", 1, "java", "jakartaee-app")
+}
+
 // port detection: java
 func TestPortDetectionJavaJBossEAP(t *testing.T) {
 	testPortDetectionInProject(t, "jboss-eap", []int{8380})
@@ -423,7 +427,7 @@ func TestComponentDetectionWithGitIgnoreRule(t *testing.T) {
 
 func TestComponentDetectionMultiProjects(t *testing.T) {
 	components := getComponentsFromTestProject(t, "")
-	nComps := 71
+	nComps := 72
 	if len(components) != nComps {
 		t.Errorf("Expected %v components but found %v", strconv.Itoa(nComps), strconv.Itoa(len(components)))
 	}
