@@ -42,6 +42,10 @@ frameworks. Currently, it recognizes:
 - Quarkus
 - SpringBoot
 - Vertx
+- WildFly
+- JBoss EAP
+- WebSphere
+- WebLogic
 
 ```
 {
