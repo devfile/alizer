@@ -124,6 +124,14 @@ func TestComponentDetectionOnOpenLiberty(t *testing.T) {
 	isComponentsInProject(t, "open-liberty", 1, "java", "openliberty")
 }
 
+func TestComponentDetectionOnWebSphere(t *testing.T) {
+	isComponentsInProject(t, "websphere-app", 1, "java", "websphere-app")
+}
+
+func TestComponentDetectionOnWebLogic(t *testing.T) {
+	isComponentsInProject(t, "weblogic-app", 1, "java", "weblogic-app")
+}
+
 func TestComponentDetectionOnQuarkus(t *testing.T) {
 	isComponentsInProject(t, "quarkus", 1, "java", "code-with-quarkus-maven")
 }
