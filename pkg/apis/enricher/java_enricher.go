@@ -35,6 +35,8 @@ func getJavaFrameworkDetectors() []FrameworkDetectorWithConfigFile {
 		&framework.WildFlyDetector{},
 		&framework.JBossEAPDetector{},
 		&framework.JakartaEEDetector{},
+		&framework.WebSphereDetector{},
+		&framework.WebLogicDetector{},
 	}
 }
 
