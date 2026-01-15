@@ -37,6 +37,7 @@ NOTE: Maven, Gradle and Ant are saved as Tools inside the data structure returne
 By reading the content of its configuration file and mainly its dependencies section, Alizer is also able to detect
 frameworks. Currently, it recognizes:
 
+- JakartaEE
 - Micronaut
 - OpenLiberty
 - Quarkus
