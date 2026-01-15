@@ -1,0 +1,6 @@
+# Snyk (https://snyk.io) policy file
+# Exclude test resources from vulnerability scanning
+version: v1.25.0
+exclude:
+  global:
+    - resources/**
