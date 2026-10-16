@@ -1,6 +1,6 @@
 module github.com/devfile/alizer
 
-go 1.25.0
+go 1.26.9
 
 require (
 	github.com/go-git/go-git/v5 v5.18.0
