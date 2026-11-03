@@ -16,6 +16,10 @@ _Testing and documentation do not need to be complete in order for this PR to be
 
    <!-- _This includes product docs and READMEs._ -->
 
+- [ ] [AI Governance](https://github.com/devfile/api/blob/main/GOVERNANCE.md#ai-governance) (if applicable)
+
+_AI-assisted contributions must comply with the project's review, licensing, and attribution requirements._
+
 # Tests Performed
 _Explain what tests you personally ran to ensure the changes are functioning as expected._
 
